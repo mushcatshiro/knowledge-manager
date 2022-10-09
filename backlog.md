@@ -2,6 +2,7 @@
 
 ## web
 - [ ] accomplishing everything in single file and less than 200 lines (not important)
+- [ ] minimize use of packages
 - [ ] remove argparse import in bookmarklet.py
 - [ ] implement indexing function for search
 - [ ] web blog feature list
@@ -23,6 +24,7 @@
   - [ ] implement cache
     - [ ] preload to cache
     - [ ] update cache if content changes
+  - [ ] file structure one blueprint per functionality (search, recommend and etc)
 
 ## bookmarklet
 - [ ] minimize js on save?

@@ -1,16 +1,8 @@
-
-class BaseConfig:
-    pass
-
-class LocalConfig(BaseConfig):
-    pass
-
-class CloudConfig(BaseConfig):
-    pass
+from flask import Blueprint, render_template
 
 
-config = {
-    'development': BaseConfig,
-    'default': LocalConfig,
-    'cloud': CloudConfig
-}
+main = Blueprint("main", __name__)
+
+@main.route("/", methods=["GET"])
+def index():
+    return render_template("main.html")
