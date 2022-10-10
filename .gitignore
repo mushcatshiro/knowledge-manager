@@ -2,3 +2,4 @@ km/
 __pycache__/
 history
 *.webp
+*.env*

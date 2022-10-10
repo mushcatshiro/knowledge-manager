@@ -25,7 +25,12 @@ function search(text) {
     }
     else if (text == "reading list") {
     $.ajax({
-        url: "/api/mock",
+        url: "/api/reading_list",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+        payload: "something"
+        }),
         dataType: "json",
         success: function(result) {
         $("#table").append("<ul>")
@@ -33,10 +38,10 @@ function search(text) {
             $("#table").append(
             `
             <li>
-                <b>${result[i].title}</b>
-                ${result[i].desc}
+                <b>${result[i].page_title}</b>
+                ${result[i].description}
                 <a href="${result[i].url}">link</a>
-                <a onclick="modal()" data-bs-toggle="modal" data-bs-target="#exampleModal">modal</a>
+                <a onclick="modal()" data-bs-toggle="modal" data-bs-target="#exampleModal">peek</a>
             </li>
             `
             )

@@ -9,14 +9,14 @@
   - [ ] html render
     - [ ] target under 1ms
   - [ ] simple search box
-    - [ ] search hints
-  - [ ] search result in modal
+    - [x] search hints
+~~- [ ] search result in modal~~
   - [ ] peek function (imagine further searching up on blog that describes sql optimization on how to optimize on psql after getting the return link)
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
-  - [ ] edit page
+  - [ ] admin edit page
     - [ ] passcode for auth
-  - [ ] site is down update
+  - [ ] site is down update (external)
   - [ ] minimize javascript
   - [ ] blog preload function calls
     - [ ] read index to memory
@@ -25,6 +25,11 @@
     - [ ] preload to cache
     - [ ] update cache if content changes
   - [ ] file structure one blueprint per functionality (search, recommend and etc)
+  - [ ] stable diffusion to change image
+  - [ ] Intersection Observer
+  - [ ] better db conn (with is not the best option)
+    - [x] base conx
+  - [ ] gcp storage mount?
 
 ## bookmarklet
 - [ ] minimize js on save?

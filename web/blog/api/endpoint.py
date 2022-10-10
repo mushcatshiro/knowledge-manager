@@ -1,5 +1,7 @@
 from flask import Blueprint, jsonify, request, current_app, url_for
 
+from utils.database import PostgresConx
+
 api = Blueprint("api", __name__)
 
 
@@ -18,6 +20,19 @@ def mock():
         }
     ])
 
+@api.route("/reading_list", methods=["POST"])
+def reading_list():
+    payload = request.json
+    p = PostgresConx(
+        current_app.config["DSN"],
+        "SELECT page_title, url, description FROM history",
+        "QUERY",
+        None
+    )
+    ret, error = p.run()
+    if not error:
+        return jsonify(ret)
+
 @api.route("/detail")
 def detail():
     return jsonify({
@@ -31,10 +46,10 @@ def image():
     fname = payload["probe"] + ".webp"
     return jsonify({"url": url_for("static", filename=fname)})
 
-'''
+"""
 @api.route("/auth", methods=["POST"])
 def auth():
     payload = request.json
     if payload["auth"] == current_app.config["auth"]:
         return current_app.config[""]
-'''
+"""
