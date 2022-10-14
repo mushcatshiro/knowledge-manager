@@ -24,6 +24,8 @@
   - [ ] implement cache
     - [ ] preload to cache
     - [ ] update cache if content changes
+    - [ ] in-memory
+    - [ ] redis
   - [ ] file structure one blueprint per functionality (search, recommend and etc)
   - [ ] stable diffusion to change image
   - [ ] Intersection Observer
