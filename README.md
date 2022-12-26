@@ -37,6 +37,14 @@ flask --app "app:create_app('default')" run
 
 - adopting ANKI into the km system
   - subsystem to help generating questions based on each document's gist
+  - hints for shortcut-esque questions (i.e. vim short cut for visual mode - v)
+  - filter out questions to be answered found within the documents for
+    - question list api
+    - ANKI challenge
+  - when backlog is greater than N cards, batch them evenly in a reasonable duration
+- attachble task to documents and to another task
+- knowledge graph viz
+- md to 80 width wide document for search result's read only mode
 
 ## Acknowledgements
 
