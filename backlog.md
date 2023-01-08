@@ -31,7 +31,9 @@
     - [ ] NLP subsystem to generate appropriate questions
     - [ ] distinguish question posed during understanding the document
     - [ ] backlog size control and batching
-  - [ ] ability extend documents into TODOs
+  - [ ] ability to referrence to other documents easily
+    - [ ] extend documents into TODOs
+    - [ ] extend into blog post
   - [ ] visualization of the documents
   - [ ] file structure one blueprint per functionality (search, recommend and etc)
   - [ ] stable diffusion to change image
