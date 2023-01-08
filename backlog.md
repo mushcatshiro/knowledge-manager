@@ -8,6 +8,7 @@
 - [ ] web blog feature list
   - [ ] html render
     - [ ] target under 1ms
+    - [ ] custom markdown-esque renderer
   - [ ] simple search box
     - [x] search hints
 ~~- [ ] search result in modal~~
@@ -26,6 +27,12 @@
     - [ ] update cache if content changes
     - [ ] in-memory
     - [ ] redis
+  - [ ] ANKI adoption
+    - [ ] NLP subsystem to generate appropriate questions
+    - [ ] distinguish question posed during understanding the document
+    - [ ] backlog size control and batching
+  - [ ] ability extend documents into TODOs
+  - [ ] visualization of the documents
   - [ ] file structure one blueprint per functionality (search, recommend and etc)
   - [ ] stable diffusion to change image
   - [ ] Intersection Observer
@@ -36,5 +43,6 @@
 ## bookmarklet
 - [ ] minimize js on save?
 - [ ] better error handling
-  - [ ] .py
+  ~~- [ ] .py~~
   - [ ] .js
+- [ ] merge .py into web
