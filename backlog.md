@@ -41,6 +41,7 @@
   - [ ] better db conn (with is not the best option)
     - [x] base conx
   - [ ] gcp storage mount?
+  - [ ] versioning documents
 
 ## bookmarklet
 - [ ] minimize js on save?
