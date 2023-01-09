@@ -54,6 +54,7 @@ javascript:(() => {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", requestURL, true);
     xhr.setRequestHeader("Content-Type", "application/json");
+    
     xhr.send(
         JSON.stringify({
             title: pageTitle,
@@ -62,10 +63,12 @@ javascript:(() => {
             img: metaImage,
         })
     );
-    if (xhr.status >= 400) {
-        alert("error saving "+pageURL)
+    console.log(xhr.status);
+    if (xhr.status >= 400 || xhr.status == 0) {
+        alert("error saving "+pageURL);
     }
-    const _url = new URL(pageURL);
-
-    window.location.href = _url;
+    else {
+        const _url = new URL(pageURL);
+        window.location.href = _url;
+    }
 })();

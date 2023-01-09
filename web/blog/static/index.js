@@ -16,10 +16,10 @@ function search(text) {
     var node = document.createElement("div")
     node.className = "form-text"
     node.id = "help-text"
+    node.setAttribute("style", "white-space: pre-line;")
     var textnode = document.createTextNode(
         `prefixes: blog|recommend;
-        special keywords: surprise|reading list|change image
-        `)
+        special keywords: surprise|reading list|change image`)
     node.appendChild(textnode)
     document.getElementById("searchhelp").appendChild(node)
     }
@@ -29,6 +29,7 @@ function search(text) {
         method: "POST",
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({
+        prefix: "",
         payload: "something"
         }),
         dataType: "json",
@@ -85,6 +86,7 @@ function search(text) {
     }
     else if (text.startsWith("blog")) {}
     else if (text.startsWith("recommend")) {}
+    else if (text.startsWith("todo")) { todosOps(text) }
 }
 
 document.body.addEventListener("keydown", function(e) {
@@ -100,3 +102,20 @@ document.body.addEventListener("keydown", function(e) {
         if (element) { element.remove() }
     }
 })
+
+function localStorageOps(action, key, value) {
+    if (action == "set") {
+        // check for overwriting
+        localStorage.setItem(key, value)
+    }
+    else if (action == "remove") {
+        localStorage.removeItem(key)
+    }
+    else if (action == "get") {
+        localStorage.getItem(key)
+    }
+}
+
+function todosOps() {
+    
+}
