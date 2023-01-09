@@ -1,7 +1,11 @@
+import logging
 from time import time
 
 from .base import BaseCache
 from web.utils.sync import RWLock
+
+
+logger = logging.getLogger(__name__)
 
 
 class SimpleCache(BaseCache):
@@ -25,6 +29,9 @@ class SimpleCache(BaseCache):
             with self.lock.w_locked():
                 for k in toremove:
                     self.cache.pop(k, None)
+                    logger.debug(
+                        f'key: {k} removed'
+                    )
         else:
             with self.lock.r_locked():
                 k_ordered = (
@@ -35,6 +42,9 @@ class SimpleCache(BaseCache):
             with self.lock.w_locked():
                 for k in k_ordered:
                     self.cache.pop(k, None)
+                    logger.debug(
+                        f'key: {k} removed'
+                    )
                     if not len(self.cache) > self.threshold:
                         break
 
@@ -50,6 +60,9 @@ class SimpleCache(BaseCache):
             with self.lock.r_locked():
                 expires, value = self.cache[key]
             if expires > time():
+                logger.debug(
+                    f'get {key}: {value}'
+                )
                 return value
             else:
                 return None
@@ -57,15 +70,24 @@ class SimpleCache(BaseCache):
             return None
 
     def set(self, key, value):
+        """
+        set acts as creating updating entry
+        """
         expires = time() + self.timeout
         with self.lock.w_locked():
             self._prune()
             self.cache[key] = (expires, value)
+            logger.debug(
+                f'{key}: {value} set'
+            )
         return True
 
     def delete(self, key):
         with self.lock.w_locked():
             ret = self.cache.pop(key, None)
+            logger.debug(
+                f'key: {key} removed'
+            )
         return ret
 
     def has(self, key):
