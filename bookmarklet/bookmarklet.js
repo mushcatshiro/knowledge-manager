@@ -51,24 +51,14 @@ javascript:(() => {
 
     console.log("BOOKMARKET PRESSED:", pageTitle, pageURL, metaDescription, metaImage);
 
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", requestURL, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    
-    xhr.send(
-        JSON.stringify({
-            title: pageTitle,
-            url: pageURL,
-            desc: metaDescription,
-            img: metaImage,
-        })
-    );
-    console.log(xhr.status);
-    if (xhr.status >= 400 || xhr.status == 0) {
-        alert("error saving "+pageURL);
-    }
-    else {
-        const _url = new URL(pageURL);
-        window.location.href = _url;
-    }
+    const url = new URL(requestURL);
+    const searchParams = url.searchParams;
+    searchParams.set("title", pageTitle);
+    searchParams.set("url", pageURL);
+    searchParams.set("description", metaDescription);
+    searchParams.set("image", metaImage);
+    searchParams.set("nexturl", pageURL);
+    searchParams.set("token", token);
+
+    window.location.href = url;
 })();

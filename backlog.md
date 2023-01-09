@@ -45,7 +45,7 @@
 
 ## bookmarklet
 - [ ] minimize js on save?
-- [ ] better error handling
+- [x] better error handling
   ~~- [ ] .py~~
   - [ ] .js
 - [ ] merge .py into web
