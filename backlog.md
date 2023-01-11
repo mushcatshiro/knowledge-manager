@@ -42,6 +42,9 @@
     - [x] base conx
   - [ ] gcp storage mount?
   - [ ] versioning documents
+  - [ ] introduction of ORM
+    - [ ] removal of ORM
+    - [ ] SQL injection prevention
 
 ## bookmarklet
 - [ ] minimize js on save?
