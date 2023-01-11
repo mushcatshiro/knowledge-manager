@@ -5,6 +5,7 @@ javascript:(() => {
     const pageURL = window.location.href;
     let metaImage = "";
     let metaDescription = "";
+    let token = "";
 
     function getMetaValue(propName) {
         const x = document.getElementsByTagName("meta");
@@ -55,8 +56,8 @@ javascript:(() => {
     const searchParams = url.searchParams;
     searchParams.set("title", pageTitle);
     searchParams.set("url", pageURL);
-    searchParams.set("description", metaDescription);
-    searchParams.set("image", metaImage);
+    searchParams.set("desc", metaDescription);
+    searchParams.set("img", metaImage);
     searchParams.set("nexturl", pageURL);
     searchParams.set("token", token);
 

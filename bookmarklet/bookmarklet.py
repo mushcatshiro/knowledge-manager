@@ -13,9 +13,9 @@ cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 BOOKMARKLET_STORAGE = "bookmarklet_storage"
 
 
-@app.route("/api/bookmark", methods=["POST"])
+@app.route("/api/bookmark", methods=["GET"])
 def bookmark():
-    payload = request.json
+    payload = request.args.to_dict()
     now = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     conn = s.connect(os.environ.get(BOOKMARKLET_STORAGE))
 
