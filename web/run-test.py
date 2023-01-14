@@ -23,7 +23,7 @@ def coverage_decorator(func):
 
 @coverage_decorator
 def run():
-    tests = unittest.TestLoader().discover("test", pattern="test_m*")
+    tests = unittest.TestLoader().discover("test", pattern="test_t*")
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
