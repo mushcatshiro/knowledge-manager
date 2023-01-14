@@ -11,4 +11,5 @@ def set_env_var(fname=".env") -> None:
     for k, v in config.items():
         if v is not None and v is not '':
             # allowing readable config files
-            os.environ[k.replace('_', '').upper()] = v
+            # os.environ[k.replace('_', '').upper()] = v
+            os.environ[k.upper()] = v

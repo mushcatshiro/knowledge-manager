@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request, current_app, url_for
 
+from blog.models import Bookmark
 from utils.database import PostgresConx
 
 api = Blueprint("api", __name__)
@@ -53,3 +54,18 @@ def auth():
     if payload["auth"] == current_app.config["auth"]:
         return current_app.config[""]
 """
+
+@api.route("/bookmark", methods=["GET"])
+def bookmark():
+    payload = request.args.to_dict()
+    # TODO deal with nexturl
+    payload.pop("nexturl")
+    payload.pop("token")
+    rv = Bookmark().create(payload)
+    return {"status": "success", **rv}
+
+@api.route("/query", methods=["GET"])
+def query():
+    rv = Bookmark().read()
+    print(rv)
+    return {"status": "success", "rvs": rv}

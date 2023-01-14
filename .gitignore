@@ -5,3 +5,5 @@ history
 *.env*
 .vscode/
 contents/
+coverage/
+instance/

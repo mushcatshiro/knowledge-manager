@@ -19,6 +19,7 @@ class RequestFormatter(logging.Formatter):
 class Config:
     PROJECTNAME = os.environ.get('PROJECTNAME')
     DSN = os.environ.get("DSN")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
 
     @staticmethod
     def init_app(app):
