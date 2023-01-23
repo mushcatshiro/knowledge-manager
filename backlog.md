@@ -48,6 +48,9 @@
     - [ ] SQL injection prevention
     - [ ] inverting dependencies using repository pattern
   - [ ] rate limiter
+  - [ ] metric tracking
+    - [ ] traffic and user
+    - [ ] cache hit rate
 
 ## bookmarklet
 - [ ] minimize js on save?
