@@ -47,6 +47,7 @@
     - [ ] removal of ORM
     - [ ] SQL injection prevention
     - [ ] inverting dependencies using repository pattern
+  - [ ] rate limiter
 
 ## bookmarklet
 - [ ] minimize js on save?
