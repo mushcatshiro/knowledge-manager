@@ -6,19 +6,51 @@ markdown syntax
 - bolds
 - blockquotes (single and multi, other MD elements)
 - lists (UL and OL, other MD elements)
-- code (``)
-- links (%20)
+- code (priority?)
+  - inline (``)
+  - block
+- links (%20 / whitespace conversion)
+  - referrence links
 - images
 - character escaping
 - code blocks
-- mermaid blocks
+  - mermaid blocks
 - mathjax
+  - inline (might want to consider not using ($)[.\s\S]+($))
+  - block
 """
 import os
+import re
+
+HEADER = re.compile(r"(#)+(\s){1}(.)+")
+PARAGRAPH = None
+BOLD = re.compile(r"(\*\*)(.)+(\*\*)")
+BLOCKQUOTES = re.compile(r"(\>)(\s){1}(.)+")
+UNORDEREDLIST = re.compile(r"")
+ORDEREDLIST = re.compile(r"")
+INLINECODE = re.compile(r"(`)[.\s\S]+(`)")
+CODEBLOCK = re.compile(r"(```)[.\s\S]+(```)")
+IMAGES = re.compile(r"(\!\[)(.)+(\]\(.+\))")
+MERMAID = re.compile(r"")
+MATHJAXBLOCK = re.compile(r"($$)[.\s\S]+($$)")
+INLINEMATHJAX = re.compiel(r"($)[.\s\S]+($)")
 
 class Templating:
     def __init__(self) -> None:
-        self.preprocessors = []
+        self.preprocessors = [
+            HEADER,
+            UNORDEREDLIST,
+            ORDEREDLIST,
+            CODEBLOCK,
+            MERMAID,
+            INLINECODE,
+            IMAGES,
+            MATHJAXBLOCK,
+            INLINEMATHJAX,
+            BLOCKQUOTES,
+            BOLD,
+            PARAGRAPH
+        ]
         self.treeprocessors = ""
         self.postprocessors = []
 
