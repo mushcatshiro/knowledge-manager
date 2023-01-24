@@ -47,6 +47,9 @@
     - [ ] removal of ORM
     - [ ] SQL injection prevention
     - [ ] inverting dependencies using repository pattern
+  - [ ] micro framework for web
+    - [ ] remove flask
+    - [ ] asgi compatibility
 
 ## bookmarklet
 - [ ] minimize js on save?
