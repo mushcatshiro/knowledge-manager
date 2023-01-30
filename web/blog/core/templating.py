@@ -39,7 +39,7 @@ IMAGE = re.compile(r"(\!\[)(.)+(\]\(.+\))")
 REFERENCE = re.compile(r"")
 MERMAID = re.compile(r"(```)mermaid\n")
 
-class PreprocessorBase:
+class BlockProcessorBase:
     """should be as functional as possible i.e. no side effect
     """
     pattern: Pattern = None
@@ -58,31 +58,31 @@ class PreprocessorBase:
         else:
             return False
 
-    def run(self, line):
+    def run(self, lines):
         """with indentation, can be multiple lines or single line
         to work around the fact that now all inline elements are not processed
         """
         raise NotImplementedError
 
-class ParagraphProcessor(PreprocessorBase):
+class ParagraphProcessor(BlockProcessorBase):
     skip = True  # technically does not matter
     # to figure out how to deal with None pattern
     def run(self, line):
         return "<p>" + line + "</p>"
 
-class OListProcessor(PreprocessorBase):
+class OListProcessor(BlockProcessorBase):
     # having both skip and cont can be confusing
     cont = True
     skip = True
     def run(self):
         pass
 
-class UListProcessor(PreprocessorBase):
+class UListProcessor(BlockProcessorBase):
     cont = True
     skip = True
     pass
 
-class HeaderProcessor(PreprocessorBase):
+class HeaderProcessor(BlockProcessorBase):
     pattern = HEADER
     skip = True
 
@@ -91,10 +91,7 @@ class HeaderProcessor(PreprocessorBase):
         n = len(m[0].group(0))  # counts number of hash(es)
         return f"<h{n}>" + line + f"</h{n}>"
 
-class EmphasizeProcessor(PreprocessorBase):
-    patten = EMPHASIZE
-
-class BlockQuoteProcessor(PreprocessorBase):
+class BlockQuoteProcessor(BlockProcessorBase):
     """block logic is different from other block
     """
     block = True
@@ -103,27 +100,32 @@ class BlockQuoteProcessor(PreprocessorBase):
     def run(self, line):
         pass
 
-class BlockMathJaxProcessor(PreprocessorBase):
+class BlockMathJaxProcessor(BlockProcessorBase):
     cont = True
     block = True
     skip = True
     pattern = BLOCKMATHJAX
     pass
 
-class InlineMathJaxProcessor(PreprocessorBase):
-    pattern = INLINEMATHJAX
-
-class BlockCodeProcessor(PreprocessorBase):
+class BlockCodeProcessor(BlockProcessorBase):
     skip = True
     mermaid_pattern = MERMAID
     pattern = BLOCKCODE
+
+class EmphasizeProcessor(PreprocessorBase):
+    patten = EMPHASIZE
+
+class ImageProcessor(PreprocessorBase):
+    pattern = IMAGE
+
+class InlineMathJaxProcessor(PreprocessorBase):
+    # TODO to remove, mathjax will figure this out
+    pattern = INLINEMATHJAX
 
 class InlineCodeProcessor(PreprocessorBase):
     cont = True
     pass
 
-class ImageProcessor(PreprocessorBase):
-    pattern = IMAGE
 
 class LinkProcessor(PreprocessorBase):
     """to take care of referrence type link
@@ -136,21 +138,16 @@ class ReferenceProcessor(PreprocessorBase):
 
 class Templating:
     def __init__(self) -> None:
-        self.preprocessors: List[PreprocessorBase] = [
+        self.blockprocessors: List[BlockProcessorBase] = [
             HeaderProcessor,
             BlockMathJaxProcessor,
             BlockCodeProcessor, 
-            InlineMathJaxProcessor,
-            InlineCodeProcessor,
-            ImageProcessor,
-            LinkProcessor,
-            EmphasizeProcessor,
             BlockQuoteProcessor,
             UListProcessor,
             OListProcessor,
             ParagraphProcessor
         ]
-        self.processors = []
+        self.inlineprocessors = []
         self.treeprocessors = ""
         self.postprocessors = []
         self.out = ""
@@ -160,14 +157,24 @@ class Templating:
         rv = None
         if os.path.isfile(fname):
             with open(fname, "r") as rf:
-                lines = rf.read()
-                print(type(lines))
+                doc = rf.read()
             
-            start = None
-            end = None
+            lines = doc.split("\n\n")
+
+            """
+            block processing using a single for loop (passing in chunks)
+            by using lines.split("\n\n") one can obtain the logical blocks
+            except for paragraph block or shouldnt matter for simplicity sake?
+
+            inline processing using the following intuition
+            > s = "asd asd sss asd"
+            > p = re.compile(r"asd")  # no sure if re.S flag is needed
+            > re.sub(p, lambda match: "aaa".format(*match.group()), s)
+            # expected output to be "aaa aaa sss aaa"
+            """
             for idx, line in enumerate(lines):
                 if not line.strip():
-                    for processor in self.preprocessors:
+                    for processor in self.blockprocessors:
                         m = processor.check(line.strip())
                         if m == True and processor.cont == True:
                             start = idx
