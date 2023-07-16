@@ -1,5 +1,7 @@
 # Backlog
 
+priority is ranked based on the `*` symbol.
+
 ## web
 - [ ] accomplishing everything in single file and less than 200 lines (not important)
 - [ ] minimize use of packages
@@ -11,7 +13,7 @@
     - [ ] custom markdown-esque renderer
   - [ ] simple search box
     - [x] search hints
-~~- [ ] search result in modal~~
+  - [ ] ~~search result in modal~~
   - [ ] peek function (imagine further searching up on blog that describes sql optimization on how to optimize on psql after getting the return link)
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
@@ -51,10 +53,12 @@
   - [ ] metric tracking
     - [ ] traffic and user
     - [ ] cache hit rate
+    - [ ] google analytic?
+  - [ ] litestar migration *
 
 ## bookmarklet
 - [ ] minimize js on save?
 - [x] better error handling
-  ~~- [ ] .py~~
+  - [ ] ~~.py~~
   - [ ] .js
 - [ ] merge .py into web
