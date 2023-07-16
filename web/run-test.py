@@ -2,6 +2,11 @@ import coverage
 import os
 import unittest
 
+from utils.envvars import set_env_var
+
+
+set_env_var()
+
 
 def coverage_decorator(func):
     def _coverage_decorator(*args, **kwargs):
