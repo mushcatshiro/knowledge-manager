@@ -82,6 +82,7 @@ priority is ranked based on the `*` symbol.
 - [ ] auto ref link between documents
 - [ ] UI
   - [ ] right aligned headers
+- [ ] logging
 
 ## bookmarklet
 - [ ] minimize js on save?
