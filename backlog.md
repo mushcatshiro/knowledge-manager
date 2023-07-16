@@ -1,22 +1,38 @@
 # Backlog
 
+priority is ranked based on the `*` symbol.
+
 ## web
 - [ ] accomplishing everything in single file and less than 200 lines (not important)
 - [ ] minimize use of packages
-- [ ] remove argparse import in bookmarklet.py
+- [ ] bookmarklet (.py)
+  - [ ] remove argparse import in bookmarklet.py
+  - [ ] move init to create_app
+  - [ ] open graph protocol
 - [ ] implement indexing function for search
+- [ ] health monitoring *
+  - [ ] application
+  - [ ] server monitoring
 - [ ] web blog feature list
   - [ ] html render
     - [ ] target under 1ms
-    - [ ] custom markdown-esque renderer
+    - [ ] custom markdown-esque renderer *
   - [ ] simple search box
-    - [x] search hints
-~~- [ ] search result in modal~~
+    - [x] ~~search hints~~
+    - [ ] imitate CLI `executable *args **kwargs`
+  - [ ] ~~search result in modal~~
   - [ ] peek function (imagine further searching up on blog that describes sql optimization on how to optimize on psql after getting the return link)
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
   - [ ] admin edit page
     - [ ] passcode for auth
+    - [ ] taking quick notes
+      - [ ] converting notes to proper documents
+    - [ ] on demand siyuan notes instance
+      - [ ] redirect
+      - [ ] kill instance
+    - [ ] calendar and daily management
+    - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
   - [ ] site is down update (external)
   - [ ] minimize javascript
   - [ ] blog preload function calls
@@ -31,6 +47,7 @@
     - [ ] NLP subsystem to generate appropriate questions
     - [ ] distinguish question posed during understanding the document
     - [ ] backlog size control and batching
+    - [ ] [alternative FSRS](https://github.com/open-spaced-repetition/free-spaced-repetition-scheduler)
   - [ ] ability to referrence to other documents easily
     - [ ] extend documents into TODOs
     - [ ] extend into blog post
@@ -50,10 +67,27 @@
   - [ ] micro framework for web
     - [ ] remove flask
     - [ ] asgi compatibility
+  - [ ] rate limiter
+  - [ ] metric tracking
+    - [ ] traffic and user
+    - [ ] cache hit rate
+    - [ ] google analytic?
+- [ ] litestar migration *
+- [ ] test
+  - [ ] pytest *
+  - [ ] coverage
+- [ ] containerize
+- [ ] poetry?
+- [ ] OCR support?
+- [ ] auto ref link between documents
+- [ ] UI
+  - [ ] right aligned headers
 
 ## bookmarklet
 - [ ] minimize js on save?
+- [ ] crawl innerHTML
+  - [ ] make optional
 - [x] better error handling
-  ~~- [ ] .py~~
+  - [ ] ~~.py~~
   - [ ] .js
 - [ ] merge .py into web
