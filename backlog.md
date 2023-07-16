@@ -28,6 +28,11 @@ priority is ranked based on the `*` symbol.
     - [ ] passcode for auth
     - [ ] taking quick notes
       - [ ] converting notes to proper documents
+    - [ ] on demand siyuan notes instance
+      - [ ] redirect
+      - [ ] kill instance
+    - [ ] calendar and daily management
+    - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
   - [ ] site is down update (external)
   - [ ] minimize javascript
   - [ ] blog preload function calls
@@ -72,6 +77,8 @@ priority is ranked based on the `*` symbol.
 - [ ] poetry?
 - [ ] OCR support?
 - [ ] auto ref link between documents
+- [ ] UI
+  - [ ] right aligned headers
 
 ## bookmarklet
 - [ ] minimize js on save?
