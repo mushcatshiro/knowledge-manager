@@ -83,6 +83,7 @@ priority is ranked based on the `*` symbol.
 - [ ] UI
   - [ ] right aligned headers
 - [ ] logging
+- [ ] pre-commit
 
 ## bookmarklet
 - [ ] minimize js on save?
