@@ -84,6 +84,7 @@ priority is ranked based on the `*` symbol.
   - [ ] right aligned headers
 - [ ] logging
 - [ ] pre-commit
+- [ ] github build-test for merging
 
 ## bookmarklet
 - [ ] minimize js on save?
