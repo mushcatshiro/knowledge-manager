@@ -21,7 +21,7 @@ markdown syntax
   - [ ] inline
 - [ ] mathjax [ref](https://docs.mathjax.org/en/latest/basic/mathematics.html)
   - [ ] inline (might want to consider not using ($)[.\s\S]+($))
-  - [x] block
+  - [ ] block
 - [ ] tables
 - [ ] TOC
 - [ ] thematic breaks
@@ -35,7 +35,7 @@ from typing import List
 
 # to only compile once
 BLOCKQUOTES = re.compile(r"\>\s(.+)\n*")
-UNORDEREDLIST = re.compile(r"(\s\s)*-\s(.+)\n*")
+GENERALLIST = re.compile(r"(\s\s)*(-{1}|\d+\.)\s(.+)\n*")
 ORDEREDLIST = re.compile(r"")
 TODOLIST = re.compile(r"(\s\s)*-\s\[[x|\s]{1}\](.+)\n*")
 INLINECODE = re.compile(r"(`)[.\s\S]+(`)")
@@ -89,39 +89,49 @@ class ParagraphProcessor(BlockProcessorBase):
         return True
 
     def run(self, block):
+        """
+        attempt to deal with the compatibility of codeblocks and paragraphs
+        by returning unformatted block if it is a codeblock. also to append
+        \n\n
+        """
         lines = block.split("\n")
         out = ""
         for line in lines:
             out += "<p>" + line + "</p>\n"
         return out
 
-class OListProcessor(BlockProcessorBase):
-    # having both skip and cont can be confusing
-    cont = True
-    skip = True
-    def run(self):
-        pass
-
-class UListProcessor(BlockProcessorBase):
-    pattern = UNORDEREDLIST
+class ListProcessor(BlockProcessorBase):
+    pattern = GENERALLIST
 
     def run(self, block):
+        """
+        NOTE
+        ----
+        current algorithm only support strict unordered list or ordered list
+        mixed ordered and unordered list is not supported
+        """
         indent = False
         m = self.pattern.findall(block)
         if m:
+            if m[0][2] == "-":
+                ltype = "ul"
+            elif m[0][2][:-1].isnumeric():
+                ltype = "ol"
+            else:
+                raise ValueError
             out = ""
             for i in m:
                 if i[0] == "":
                     if indent:
-                        out += "</ul>\n"
+                        out += f"</{ltype}>\n"
                         indent = False
                     out += "<li>" + i[1] + "</li>\n"
                 else:
                     if not indent:
                         indent = True
-                        out += "<ul>\n"
+                        out += f"<{ltype}>\n"
                     out += "<li>" + i[1] + "</li>\n"
-            return "<ul>\n" + out + "</ul>\n"
+            return f"<{ltype}>\n" + out + f"</{ltype}>\n"
 
 class HeaderProcessor(BlockProcessorBase):
     pattern = HEADER
@@ -140,6 +150,10 @@ class BlockQuoteProcessor(BlockProcessorBase):
         return "<blockquote>\n" + out + "\n</blockquote>\n"
 
 class BlockMathJaxProcessor(BlockProcessorBase):
+    """
+    need to figure out how make the expression lazy i.e. only a pair
+    of ```
+    """
     pattern = BLOCKMATHJAX
 
     def run(self, block):
@@ -148,6 +162,10 @@ class BlockMathJaxProcessor(BlockProcessorBase):
         return "<math>\n" + out + "\n</math>\n"
 
 class BlockCodeProcessor(BlockProcessorBase):
+    """
+    need to figure out how make the expression lazy i.e. only a pair
+    of ```
+    """
     pattern = BLOCKCODE
 
     def run(self, block):
