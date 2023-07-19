@@ -5,23 +5,27 @@ markdown syntax
 - [x] paragraphs and line breaks (lowest priority)
 - [ ] bolds
 - [ ] blockquotes
-    - [ ] single
-    - [ ] multi
+    - [x] single
+    - [x] multi
 - [ ] lists
   - [x] UL
   - [ ] OL
+  - [ ] todo lists
 - [ ] links (%20 / whitespace conversion)
   - [ ] referrence links
 - [ ] images
 - [ ] character escaping
 - [ ] code
   - [ ] mermaid blocks
-  - [x] code blocks
+  - [ ] code blocks
   - [ ] inline
 - [ ] mathjax [ref](https://docs.mathjax.org/en/latest/basic/mathematics.html)
   - [ ] inline (might want to consider not using ($)[.\s\S]+($))
   - [x] block
 - [ ] tables
+- [ ] TOC
+- [ ] thematic breaks
+- [ ] strikethrough
 """
 import os
 import re
@@ -33,16 +37,17 @@ from typing import List
 BLOCKQUOTES = re.compile(r"\>\s(.+)\n*")
 UNORDEREDLIST = re.compile(r"(\s\s)*-\s(.+)\n*")
 ORDEREDLIST = re.compile(r"")
+TODOLIST = re.compile(r"(\s\s)*-\s\[[x|\s]{1}\](.+)\n*")
 INLINECODE = re.compile(r"(`)[.\s\S]+(`)")
-BLOCKCODE = re.compile(r"(```)(.+\n)((.|\n)+)(```)")  # need to change
+BLOCKCODE = re.compile(r"^`{3}.+\n[\w\W\n]+?`{3}\n*?", re.M)
 HEADER = re.compile(r"(#+)\s(.+)\n*")
 ref_HEADER = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\])*?)#*(?:\n|$)')  # noqa
 EMPHASIZE = re.compile(r"(\*\*)(.)+(\*\*)")
-BLOCKMATHJAX = re.compile(r"(\$\$\n)((.|\n)+)(\$\$)")  # need to change
+BLOCKMATHJAX = re.compile(r"(\$\$\n)((.|\n)+)")  # need to change
+BLOCKMATHJAX_END = re.compile(r"(\$\$)\n\n")
 INLINEMATHJAX = re.compile(r"($)[.\s\S]+($)")
 IMAGE = re.compile(r"(\!\[)(.)+(\]\(.+\))")
 REFERENCE = re.compile(r"")
-MERMAID = re.compile(r"(```)mermaid\n(```)")
 
 
 class BlockProcessorBase:
@@ -146,8 +151,15 @@ class BlockCodeProcessor(BlockProcessorBase):
     pattern = BLOCKCODE
 
     def run(self, block):
-        m = self.pattern.match(block)
-        return "<code>\n" + m.group(3) + "\n</code>\n"
+        m = self.pattern.search(block)
+        if m:
+            #     for i in m:
+            #         out = i[2].strip()
+            #         return "<code>\n" + out + "\n</code>\n"
+            # return "<code>\n" + m.group(3) + "\n</code>\n"
+            return m.start(), m.end()
+        else:
+            return None, None
 
 class EmphasizeProcessor():
     patten = EMPHASIZE
@@ -181,6 +193,8 @@ class Templating:
             UListProcessor(),
             ParagraphProcessor()
         ]
+        self.doc = []
+        self.preprocessor = BlockCodeProcessor() 
         self.inlineprocessors = []
         self.treeprocessors = ""
         self.postprocessors = []
@@ -211,49 +225,58 @@ class Templating:
         if os.path.isfile(abspath):
             with open(abspath, "r") as rf:
                 doc = rf.read()
-            blocks = doc.split("\n\n")
-
+            
             """
-            block processing using a single for loop (passing in chunks)
-            by using lines.split("\n\n") one can obtain the logical blocks
-            except for paragraph block or shouldnt matter for simplicity sake?
-
-            inline processing using the following intuition
-            > s = "asd asd sss asd"
-            > p = re.compile(r"asd")  # no sure if re.S flag is needed
-            > re.sub(p, lambda match: "aaa".format(*match.group()), s)
-            # expected output to be "aaa aaa sss aaa"
-
-            NOTE
-            ----
-            need to figure out how to deal with multiple inlineprocessors on
-            single line. one way is to use a for loop within the
-            blockprocessors.
-            or can just match the entire file and process them by priority? the
-            complexity is just O(n) where n is the number of patterns defined.
+            pre-processing to extract code blocks. for the pre_chucks, proceed
+            with the block processing and followed by the inline processor. for
+            the code chunks, proceed with the code/pre processor. finally,
+            combine the entire document and use BS4 to beautify the html.
             """
-            for idx, block in enumerate(blocks):
-                if block.strip():
+            while True:
+                if self.preprocessor.check(doc):
+                    # what if there is no code block?
+                    pre_chunks = doc[:s_i]
+                    pre_chunks = pre_chunks.strip().split("\n\n")
+                    out = []
                     for blockprocessor in self.blockprocessors:
-                        m = blockprocessor.check(block.strip())
-                        # line_out = ""  # might want to make a copy
-                        # for line in block.split("\n"):
-                        #     for inlineprocessor in self.inlineprocessors:
-                        #         m = inlineprocessor.check(line)
-                        #         if m:
-                        #             out = inlineprocessor.run(line)
-                        #         else:
-                        #             out = line
-                        #         line_out += out
-                        if m:
-                            block_out = blockprocessor.run(block.strip())
-                            self.out += block_out
-                            break
-            return self.out.strip()
+                        for chunk in pre_chunks:
+                            if blockprocessor.check(chunk):
+                                out.append(blockprocessor.run(chunk))
+                                break
+                    pre_chunks = "\n\n".join(out)
+                    pre_chunks = pre_chunks.strip().split("\n")
+                    out = []
+                    for inlineprocessor in self.inlineprocessors:
+                        for chunk in pre_chunks:
+                            if chunk == "\n":
+                                out.append("")
+                                continue
+                            if inlineprocessor.check(chunk):
+                                chunk = inlineprocessor.run(chunk)
+                        out.append(chunk)
+                    pre_chunks = "\n".join(out)
+
+                    code_chunk = doc[s_i:e_i]
+                    code_chunk = self.preprocessor.run(code_chunk)
+                    
+                    self.doc.append(pre_chunks)
+                    self.doc.append(code_chunk)
+                    doc = doc[e_i:]
+                else:
+                    break
         else:
             rv = "file does not exists!"
             return rv
 
+    def process_alt(self, abspath):
+        with open(abspath, "r") as rf:
+            doc = rf.read()
+        
+        for blockprocessor in self.blockprocessors:
+            m = blockprocessor.check(doc)
+            if m:
+                self.out += blockprocessor.run(doc)
+        print(self.out)
 
 t = Templating()
 
