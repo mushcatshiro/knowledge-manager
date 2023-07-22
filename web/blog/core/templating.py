@@ -3,13 +3,13 @@ markdown syntax
 
 - [x] headers (1-6)
 - [x] paragraphs and line breaks (lowest priority)
-- [ ] bolds
+- [x] bolds and italics
 - [ ] blockquotes
     - [x] single
     - [x] multi
 - [ ] lists
   - [x] UL
-  - [ ] OL
+  - [x] OL
   - [ ] todo lists
 - [ ] links (%20 / whitespace conversion)
   - [ ] referrence links
@@ -17,7 +17,7 @@ markdown syntax
 - [ ] character escaping
 - [ ] code
   - [ ] mermaid blocks
-  - [ ] code blocks
+  - [x] code blocks
   - [ ] inline
 - [ ] mathjax [ref](https://docs.mathjax.org/en/latest/basic/mathematics.html)
   - [ ] inline (might want to consider not using ($)[.\s\S]+($))
@@ -35,19 +35,18 @@ from pprint import pprint
 
 
 # to only compile once
-BLOCKQUOTES = re.compile(r"\>\s(.+)\n*")
-UNORDEREDLIST = re.compile(r"(\s\s)*-\s(.+)\n*")
-TODOLIST = re.compile(r"(\s\s)*-\s\[[x|\s]{1}\](.+)\n*")
-INLINECODE = re.compile(r"(`)[.\s\S]+(`)")
-BLOCKCODE = re.compile(r"^`{3}.+\n[\w\W\n]+?`{3}\n*?", re.M)
-BLOCKCODE_RUN = re.compile(r"(```)(.+)\n([\w\W\n]+?)(```\n*?)", re.M)
-HEADER = re.compile(r"(#+)\s(.+)\n*")
-EMPHASIZE = re.compile(r"(\*\*)(.)+(\*\*)")
-BLOCKMATHJAX = re.compile(r"(\$\$\n)((.|\n)+)")  # need to change
-BLOCKMATHJAX_END = re.compile(r"(\$\$)\n\n")
-INLINEMATHJAX = re.compile(r"($)[.\s\S]+($)")
-IMAGE = re.compile(r"(\!\[)(.)+(\]\(.+\))")
-REFERENCE = re.compile(r"")
+BLOCKQUOTEPAT = re.compile(r"\>\s(.+)\n*")
+LISTPAT = re.compile(r"(\s\s)*(-|\d+\.|)\s\[[x|\s]{1}\]*(.+)\n*")
+_TODOLIST = re.compile(r"(\s\s)*-\s\[[x|\s]{1}\](.+)\n*")  # to remove
+INLINECODEPAT = re.compile(r"(`)[.\s\S]+(`)")
+BLOCKCODEPAT = re.compile(r"^`{3}.+\n[\w\W\n]+?`{3}\n*?", re.M)
+BLOCKCODE_RUN = re.compile(r"(```)(.+)\n([\w\W\n]+?)(```\n*?)", re.M)  # to merge
+HEADERPAT = re.compile(r"(#+)\s(.+)\n*")
+EMPHASIZEPAT = re.compile(r"(\*{1,2})(.+?|\s*)(\*{1,2})")
+BLOCKMATHJAXPAT = re.compile(r"(\$\$\n)((.|\n)+)(\$\$)")  # need to change
+INLINEMATHJAXPAT = re.compile(r"($)[.\s\S]+($)")
+IMAGEPAT = re.compile(r"(\!\[)(.+|\s*)+(\]\()(.+)(\))")
+REFERENCEPAT = re.compile(r"")
 
 PREFIX =\
 "<!DOCTYPE html>\n"\
@@ -75,7 +74,7 @@ CODEBLOCKJS =\
 "<script>hljs.highlightAll();</script>\n"
 
 
-class BlockProcessorBase:
+class ProcessorBase:
     """
     should be as functional as possible i.e. no side effects
 
@@ -92,12 +91,12 @@ class BlockProcessorBase:
     """
     pattern: Pattern = None
 
-    def check(self, line):
+    def check(self, block):
         """always check without indentation
         """
         if self.pattern is None:
             raise NotImplementedError
-        m = self.pattern.match(line)
+        m = self.pattern.match(block)
         if m:
             return True
         else:
@@ -109,7 +108,7 @@ class BlockProcessorBase:
         """
         raise NotImplementedError
 
-class ParagraphProcessor(BlockProcessorBase):
+class ParagraphProcessor(ProcessorBase):
     def check(self, block):
         return True
 
@@ -120,54 +119,62 @@ class ParagraphProcessor(BlockProcessorBase):
             out += "<p>" + line + "</p>\n"
         return out
 
-class ListProcessor(BlockProcessorBase):
-    pattern = UNORDEREDLIST
+class ListProcessor(ProcessorBase):
+    pattern = LISTPAT
 
     def run(self, block):
+        """
+        TODO
+        ----
+        integration with todo list
+        """
         indent = False
         m = self.pattern.findall(block)
         if m:
+            if m[0][2] == "-":
+                ltype = "ul"
+            elif m[0][2][:-1].isnumeric():
+                ltype = "ol"
+            else:
+                raise ValueError
             out = ""
             for i in m:
                 if i[0] == "":
                     if indent:
-                        out += "</ul>\n"
+                        out += f"</{ltype}l>\n"
                         indent = False
                     out += "<li>" + i[1] + "</li>\n"
                 else:
                     if not indent:
                         indent = True
-                        out += "<ul>\n"
+                        out += f"<{ltype}l>\n"
                     out += "<li>" + i[1] + "</li>\n"
-            return "<ul>\n" + out + "</ul>\n"
+            return f"<{ltype}l>\n" + out + f"</{ltype}l>\n"
 
-class HeaderProcessor(BlockProcessorBase):
-    pattern = HEADER
+class HeaderProcessor(ProcessorBase):
+    pattern = HEADERPAT
 
     def run(self, block):
         m = self.pattern.match(block)
         n = len(m.group(1))  # counts number of hash(es)
         return f"<h{n}>" + m.group(2) + f"</h{n}>\n"
 
-class BlockQuoteProcessor(BlockProcessorBase):
-    pattern = BLOCKQUOTES
+class BlockQuoteProcessor(ProcessorBase):
+    pattern = BLOCKQUOTEPAT
 
     def run(self, block):
         m = self.pattern.findall(block)
         out = "\n".join(m)
         return "<blockquote>\n" + out + "\n</blockquote>\n"
 
-class BlockMathJaxProcessor(BlockProcessorBase):
-    pattern = BLOCKMATHJAX
+class BlockMathJaxProcessor(ProcessorBase):
+    pattern = BLOCKMATHJAXPAT
 
     def run(self, block):
-        # m = self.pattern.match(block)
-        # out = m.group(2).strip()
-        # return "<math>\n" + out + "\n</math>\n"
         return block
 
-class BlockCodeProcessor(BlockProcessorBase):
-    pattern = BLOCKCODE
+class BlockCodeProcessor:
+    pattern = BLOCKCODEPAT
     pattern_run = BLOCKCODE_RUN
 
     def check(self, block):
@@ -181,32 +188,46 @@ class BlockCodeProcessor(BlockProcessorBase):
         m = self.pattern_run.match(block)
         return f"<pre><code class=\"{m.group(2)}\">" + m.group(3).strip() + "</code></pre>\n"
 
-class EmphasizeProcessor():
-    patten = EMPHASIZE
+class EmphasizeProcessor(ProcessorBase):
+    pattern = EMPHASIZEPAT
 
-class ImageProcessor():
-    pattern = IMAGE
+    def check(self, block):
+        m = self.pattern.search(block)
+        if m and (m.group(1) == m.group(3)):
+            return True
+        else:
+            return False
 
-class InlineMathJaxProcessor():
-    # TODO to remove, mathjax will figure this out
-    pattern = INLINEMATHJAX
+    def run(self, line):
+        m = self.pattern.search(line)
+        if len(m.group(1)) == 1:
+            tag = "em"
+        elif len(m.group(1)) == 2:
+            tag = "strong"
+        return re.sub(self.pattern, rf"<{tag}>\2</{tag}>", line)
 
-class InlineCodeProcessor():
-    cont = True
+class ImageProcessor(ProcessorBase):
+    pattern = IMAGEPAT
+
+    def run(self, line):
+        # r"(\!\[)(.+|\s*)+(\]\()(.+)(\))"
+        m = self.pattern.match(line)
+        return f"<img src=\"{m.group(4)}\" alt=\"{m.group(2)}\" title=\"{m.group(2)}\">\n"
+
+class InlineMathJaxProcessor(ProcessorBase):
+    # should have higest priority together with inline code
+    pattern = INLINEMATHJAXPAT
+
+class InlineCodeProcessor(ProcessorBase):
     pass
 
-class LinkProcessor():
-    """to take care of referrence type link
-    """
-    pass
-
-class ReferenceProcessor():
+class ReferenceProcessor(ProcessorBase):
     # check LinkProcessor
     pass
 
 class Templating:
     def __init__(self) -> None:
-        self.blockprocessors: List[BlockProcessorBase] = [
+        self.blockprocessors: List[ProcessorBase] = [
             HeaderProcessor(),
             BlockMathJaxProcessor(),
             BlockQuoteProcessor(),
@@ -215,7 +236,9 @@ class Templating:
         ]
         self.doc = []
         self.preprocessor = BlockCodeProcessor() 
-        self.inlineprocessors = []
+        self.inlineprocessors = [
+            EmphasizeProcessor(),
+        ]
         self.treeprocessors = ""
         self.postprocessors = []
         self.out = ""
@@ -243,59 +266,61 @@ class Templating:
         - dealing with indentations
         - prettify html (with BS4)
         """
-        if os.path.isfile(abspath):
-            with open(abspath, "r") as rf:
-                doc = rf.read()
-            
-            """
-            pre-processing to extract code blocks. for the pre_chucks, proceed
-            with the block processing and followed by the inline processor. for
-            the code chunks, proceed with the code/pre processor. finally,
-            combine the entire document and use BS4 to beautify the html.
-            """
-            while True:
-                if doc == "":
-                    break
-                s_i, e_i = self.preprocessor.check(doc)
-                
-                if s_i:
-                    pre_chunks = doc[:s_i]
-                    pre_chunks = pre_chunks.strip().split("\n\n")
-                    code_chunk = doc[s_i:e_i]
-                    code_chunk = self.preprocessor.run(code_chunk)
-                    doc = doc[e_i:]
-                    self.codeblock = True
-                else:
-                    pre_chunks = doc.strip().split("\n\n")
-                    code_chunk = None
-
-                out = []
-                for block in pre_chunks: 
-                    for blockprocessor in self.blockprocessors:
-                        if blockprocessor.check(block):
-                            out.append(blockprocessor.run(block))
-                            break
-                pre_chunks = "\n".join(out)
-
-                pre_chunks = pre_chunks.strip().split("\n")
-                out = []
-                for block in pre_chunks:
-                    for inlineprocessor in self.inlineprocessors:
-                        if block == "\n":
-                            # or just append "\n"?
-                            out.append("")
-                            continue
-                        if inlineprocessor.check(block):
-                            block = inlineprocessor.run(block)
-                    out.append(block)
-                pre_chunks = "\n".join(out)
-                    
-                self.doc.append(pre_chunks)
-                if code_chunk:
-                    self.doc.append(code_chunk)
-            return PREFIX + "".join(self.doc) + CODEBLOCKJS + MATHJAXJS + SUFFIX
-        else:
+        if not os.path.isfile(abspath):
             raise FileNotFoundError(f"{abspath} not found")
+
+        with open(abspath, "r") as rf:
+                doc = rf.read()
+
+        """
+        pre-processing to extract code blocks. for the pre_chucks, proceed
+        with the block processing and followed by the inline processor. for
+        the code chunks, proceed with the code/pre processor. finally,
+        combine the entire document and use BS4 to beautify the html.
+        """
+        while True:
+            if doc == "":
+                break
+            s_i, e_i = self.preprocessor.check(doc)
+            
+            if s_i:
+                pre_chunks = doc[:s_i]
+                pre_chunks = pre_chunks.strip().split("\n\n")
+                code_chunk = doc[s_i:e_i]
+                code_chunk = self.preprocessor.run(code_chunk)
+                doc = doc[e_i:]
+                self.codeblock = True
+            else:
+                pre_chunks = doc.strip().split("\n\n")
+                code_chunk = None
+                doc = ""
+
+            out = []
+            for block in pre_chunks: 
+                for blockprocessor in self.blockprocessors:
+                    if blockprocessor.check(block):
+                        out.append(blockprocessor.run(block))
+                        break
+            pre_chunks = "\n".join(out)
+
+            pre_chunks = pre_chunks.strip().split("\n")
+            out = []
+            for line in pre_chunks:
+                for inlineprocessor in self.inlineprocessors:
+                    if line == "\n":
+                        # or just append "\n"?
+                        out.append("")
+                        continue
+                    if inlineprocessor.check(line):
+                        line = inlineprocessor.run(line)
+                out.append(line)
+            pre_chunks = "\n".join(out)
+
+            self.doc.append(pre_chunks)
+            if code_chunk:
+                self.doc.append(code_chunk)
+        return PREFIX + "".join(self.doc) + CODEBLOCKJS + MATHJAXJS + SUFFIX
+        
 
 
 t = Templating()

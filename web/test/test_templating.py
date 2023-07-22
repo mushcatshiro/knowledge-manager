@@ -19,11 +19,13 @@ class TestTemplating(unittest.TestCase):
         """
         TODO
         ----
-        average time taken: 140.03ms for 1.59kb; goal is to get this down to
+        average time taken: 14156.85ms for 1.59kb; goal is to get this down to
         hundreds of microseconds range for size of < 50kb range consistently.
+        suspect regex compile time causes 1st render to be slow, given that the
+        time taken was 40k+ ms for 1.59kb.
         """
-        # with open("rendered.html", "w") as wf:
-        #     wf.write(rendered_content)
+        with open("rendered.html", "w") as wf:
+            wf.write(rendered_content)
         print("average time taken: {:.2f}ms for {:.2f}kb".format((sum(t)/len(t))*1e6, size*1e-3))
         rc = rendered_content.split("\n")
         hc = html_content.split("\n")
