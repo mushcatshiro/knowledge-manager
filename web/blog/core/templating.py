@@ -21,7 +21,7 @@ markdown syntax
   - [ ] inline
 - [ ] mathjax [ref](https://docs.mathjax.org/en/latest/basic/mathematics.html)
   - [ ] inline (might want to consider not using ($)[.\s\S]+($))
-  - [ ] block
+  - [x] block
 - [ ] tables
 - [ ] TOC
 - [ ] thematic breaks
@@ -31,23 +31,48 @@ import os
 import re
 from re import Pattern
 from typing import List
+from pprint import pprint
 
 
 # to only compile once
 BLOCKQUOTES = re.compile(r"\>\s(.+)\n*")
-GENERALLIST = re.compile(r"(\s\s)*(-{1}|\d+\.)\s(.+)\n*")
-ORDEREDLIST = re.compile(r"")
+UNORDEREDLIST = re.compile(r"(\s\s)*-\s(.+)\n*")
 TODOLIST = re.compile(r"(\s\s)*-\s\[[x|\s]{1}\](.+)\n*")
 INLINECODE = re.compile(r"(`)[.\s\S]+(`)")
 BLOCKCODE = re.compile(r"^`{3}.+\n[\w\W\n]+?`{3}\n*?", re.M)
+BLOCKCODE_RUN = re.compile(r"(```)(.+)\n([\w\W\n]+?)(```\n*?)", re.M)
 HEADER = re.compile(r"(#+)\s(.+)\n*")
-ref_HEADER = re.compile(r'(?:^|\n)(?P<level>#{1,6})(?P<header>(?:\\.|[^\\])*?)#*(?:\n|$)')  # noqa
 EMPHASIZE = re.compile(r"(\*\*)(.)+(\*\*)")
 BLOCKMATHJAX = re.compile(r"(\$\$\n)((.|\n)+)")  # need to change
 BLOCKMATHJAX_END = re.compile(r"(\$\$)\n\n")
 INLINEMATHJAX = re.compile(r"($)[.\s\S]+($)")
 IMAGE = re.compile(r"(\!\[)(.)+(\]\(.+\))")
 REFERENCE = re.compile(r"")
+
+PREFIX =\
+"<!DOCTYPE html>\n"\
+"<html>\n"\
+"<head>\n"\
+"    <meta charset='utf-8'>\n"\
+"    <meta http-equiv='X-UA-Compatible' content='IE=edge'>\n"\
+"    <title>Page Title</title>\n"\
+"    <meta name='viewport' content='width=device-width, initial-scale=1'>\n"\
+"</head>\n"\
+"<body>\n"
+
+SUFFIX =\
+"</body>\n"\
+"</html>"
+
+MATHJAXJS =\
+"<script type=\"text/javascript\" id=\"MathJax-script\" async=\"\" src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"\
+"<script type=\"text/x-mathjax-config;executed=true\">MathJax.Hub.Config({tex2jax: { inlineMath: [[\"$\",\"$\"],[\"\\(\",\"\\)\"]] },\"HTML-CSS\": {linebreaks: {automatic: true, width: \"container\"}}});\n"\
+"</script>\n"
+
+CODEBLOCKJS =\
+"<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/material-palenight.min.css\">\n"\
+"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js\"></script>\n"\
+"<script>hljs.highlightAll();</script>\n"
 
 
 class BlockProcessorBase:
@@ -89,11 +114,6 @@ class ParagraphProcessor(BlockProcessorBase):
         return True
 
     def run(self, block):
-        """
-        attempt to deal with the compatibility of codeblocks and paragraphs
-        by returning unformatted block if it is a codeblock. also to append
-        \n\n
-        """
         lines = block.split("\n")
         out = ""
         for line in lines:
@@ -101,37 +121,25 @@ class ParagraphProcessor(BlockProcessorBase):
         return out
 
 class ListProcessor(BlockProcessorBase):
-    pattern = GENERALLIST
+    pattern = UNORDEREDLIST
 
     def run(self, block):
-        """
-        NOTE
-        ----
-        current algorithm only support strict unordered list or ordered list
-        mixed ordered and unordered list is not supported
-        """
         indent = False
         m = self.pattern.findall(block)
         if m:
-            if m[0][2] == "-":
-                ltype = "ul"
-            elif m[0][2][:-1].isnumeric():
-                ltype = "ol"
-            else:
-                raise ValueError
             out = ""
             for i in m:
                 if i[0] == "":
                     if indent:
-                        out += f"</{ltype}>\n"
+                        out += "</ul>\n"
                         indent = False
                     out += "<li>" + i[1] + "</li>\n"
                 else:
                     if not indent:
                         indent = True
-                        out += f"<{ltype}>\n"
+                        out += "<ul>\n"
                     out += "<li>" + i[1] + "</li>\n"
-            return f"<{ltype}>\n" + out + f"</{ltype}>\n"
+            return "<ul>\n" + out + "</ul>\n"
 
 class HeaderProcessor(BlockProcessorBase):
     pattern = HEADER
@@ -150,34 +158,28 @@ class BlockQuoteProcessor(BlockProcessorBase):
         return "<blockquote>\n" + out + "\n</blockquote>\n"
 
 class BlockMathJaxProcessor(BlockProcessorBase):
-    """
-    need to figure out how make the expression lazy i.e. only a pair
-    of ```
-    """
     pattern = BLOCKMATHJAX
 
     def run(self, block):
-        m = self.pattern.match(block)
-        out = m.group(2).strip()
-        return "<math>\n" + out + "\n</math>\n"
+        # m = self.pattern.match(block)
+        # out = m.group(2).strip()
+        # return "<math>\n" + out + "\n</math>\n"
+        return block
 
 class BlockCodeProcessor(BlockProcessorBase):
-    """
-    need to figure out how make the expression lazy i.e. only a pair
-    of ```
-    """
     pattern = BLOCKCODE
+    pattern_run = BLOCKCODE_RUN
 
-    def run(self, block):
+    def check(self, block):
         m = self.pattern.search(block)
         if m:
-            #     for i in m:
-            #         out = i[2].strip()
-            #         return "<code>\n" + out + "\n</code>\n"
-            # return "<code>\n" + m.group(3) + "\n</code>\n"
             return m.start(), m.end()
         else:
             return None, None
+
+    def run(self, block):
+        m = self.pattern_run.match(block)
+        return f"<pre><code class=\"{m.group(2)}\">" + m.group(3).strip() + "</code></pre>\n"
 
 class EmphasizeProcessor():
     patten = EMPHASIZE
@@ -208,7 +210,7 @@ class Templating:
             HeaderProcessor(),
             BlockMathJaxProcessor(),
             BlockQuoteProcessor(),
-            UListProcessor(),
+            ListProcessor(),
             ParagraphProcessor()
         ]
         self.doc = []
@@ -218,6 +220,8 @@ class Templating:
         self.postprocessors = []
         self.out = ""
         self.err = ""
+        self.codeblock = False
+        self.mathjax = False
 
     def process(self, abspath):
         """
@@ -239,7 +243,6 @@ class Templating:
         - dealing with indentations
         - prettify html (with BS4)
         """
-        rv = None
         if os.path.isfile(abspath):
             with open(abspath, "r") as rf:
                 doc = rf.read()
@@ -251,50 +254,49 @@ class Templating:
             combine the entire document and use BS4 to beautify the html.
             """
             while True:
-                if self.preprocessor.check(doc):
-                    # what if there is no code block?
+                if doc == "":
+                    break
+                s_i, e_i = self.preprocessor.check(doc)
+                
+                if s_i:
                     pre_chunks = doc[:s_i]
                     pre_chunks = pre_chunks.strip().split("\n\n")
-                    out = []
-                    for blockprocessor in self.blockprocessors:
-                        for chunk in pre_chunks:
-                            if blockprocessor.check(chunk):
-                                out.append(blockprocessor.run(chunk))
-                                break
-                    pre_chunks = "\n\n".join(out)
-                    pre_chunks = pre_chunks.strip().split("\n")
-                    out = []
-                    for inlineprocessor in self.inlineprocessors:
-                        for chunk in pre_chunks:
-                            if chunk == "\n":
-                                out.append("")
-                                continue
-                            if inlineprocessor.check(chunk):
-                                chunk = inlineprocessor.run(chunk)
-                        out.append(chunk)
-                    pre_chunks = "\n".join(out)
-
                     code_chunk = doc[s_i:e_i]
                     code_chunk = self.preprocessor.run(code_chunk)
-                    
-                    self.doc.append(pre_chunks)
-                    self.doc.append(code_chunk)
                     doc = doc[e_i:]
+                    self.codeblock = True
                 else:
-                    break
-        else:
-            rv = "file does not exists!"
-            return rv
+                    pre_chunks = doc.strip().split("\n\n")
+                    code_chunk = None
 
-    def process_alt(self, abspath):
-        with open(abspath, "r") as rf:
-            doc = rf.read()
-        
-        for blockprocessor in self.blockprocessors:
-            m = blockprocessor.check(doc)
-            if m:
-                self.out += blockprocessor.run(doc)
-        print(self.out)
+                out = []
+                for block in pre_chunks: 
+                    for blockprocessor in self.blockprocessors:
+                        if blockprocessor.check(block):
+                            out.append(blockprocessor.run(block))
+                            break
+                pre_chunks = "\n".join(out)
+
+                pre_chunks = pre_chunks.strip().split("\n")
+                out = []
+                for block in pre_chunks:
+                    for inlineprocessor in self.inlineprocessors:
+                        if block == "\n":
+                            # or just append "\n"?
+                            out.append("")
+                            continue
+                        if inlineprocessor.check(block):
+                            block = inlineprocessor.run(block)
+                    out.append(block)
+                pre_chunks = "\n".join(out)
+                    
+                self.doc.append(pre_chunks)
+                if code_chunk:
+                    self.doc.append(code_chunk)
+            return PREFIX + "".join(self.doc) + CODEBLOCKJS + MATHJAXJS + SUFFIX
+        else:
+            raise FileNotFoundError(f"{abspath} not found")
+
 
 t = Templating()
 
