@@ -2,6 +2,11 @@ import coverage
 import os
 import unittest
 
+from utils.envvars import set_env_var
+
+
+set_env_var()
+
 
 def coverage_decorator(func):
     def _coverage_decorator(*args, **kwargs):
@@ -23,7 +28,7 @@ def coverage_decorator(func):
 
 @coverage_decorator
 def run():
-    tests = unittest.TestLoader().discover("test", pattern="test_m*")
+    tests = unittest.TestLoader().discover("test", pattern="test_t*")
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 

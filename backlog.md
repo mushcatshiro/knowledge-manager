@@ -16,7 +16,7 @@ priority is ranked based on the `*` symbol.
 - [ ] web blog feature list
   - [ ] html render
     - [ ] target under 1ms
-    - [ ] custom markdown-esque renderer
+    - [ ] custom markdown-esque renderer *
   - [ ] simple search box
     - [x] ~~search hints~~
     - [ ] imitate CLI `executable *args **kwargs`
@@ -64,6 +64,9 @@ priority is ranked based on the `*` symbol.
     - [ ] removal of ORM
     - [ ] SQL injection prevention
     - [ ] inverting dependencies using repository pattern
+  - [ ] micro framework for web
+    - [ ] remove flask
+    - [ ] asgi compatibility
   - [ ] rate limiter
   - [ ] metric tracking
     - [ ] traffic and user
@@ -79,6 +82,9 @@ priority is ranked based on the `*` symbol.
 - [ ] auto ref link between documents
 - [ ] UI
   - [ ] right aligned headers
+- [ ] logging
+- [ ] pre-commit
+- [ ] github build-test for merging
 
 ## bookmarklet
 - [ ] minimize js on save?
