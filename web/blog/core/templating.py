@@ -26,6 +26,11 @@ markdown syntax
 - [ ] TOC
 - [ ] thematic breaks
 - [ ] strikethrough
+
+---
+html templating
+- kwargs
+- default values
 """
 import os
 import re
@@ -225,7 +230,7 @@ class ReferenceProcessor(ProcessorBase):
     # check LinkProcessor
     pass
 
-class Templating:
+class MarkdownTemplating:
     def __init__(self) -> None:
         self.blockprocessors: List[ProcessorBase] = [
             HeaderProcessor(),
@@ -265,6 +270,10 @@ class Templating:
         - provide indicator of needed js files e.g. mathjax, mermaid etc.
         - dealing with indentations
         - prettify html (with BS4)
+
+        BUG
+        ---
+        - mathjax should be excluded from inline processor
         """
         if not os.path.isfile(abspath):
             raise FileNotFoundError(f"{abspath} not found")
@@ -320,10 +329,8 @@ class Templating:
             if code_chunk:
                 self.doc.append(code_chunk)
         return PREFIX + "".join(self.doc) + CODEBLOCKJS + MATHJAXJS + SUFFIX
-        
 
 
-t = Templating()
-
-def render_template(abspath):
+def render_markdown_template(abspath):
+    t = MarkdownTemplating()
     return t.process(abspath)

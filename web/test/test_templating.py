@@ -23,6 +23,9 @@ class TestTemplating(unittest.TestCase):
         hundreds of microseconds range for size of < 50kb range consistently.
         suspect regex compile time causes 1st render to be slow, given that the
         time taken was 40k+ ms for 1.59kb.
+
+        7/23 average time taken: 230.00ms for 1.59kb; to investigate why the
+        fluctuation in time taken is such big.
         """
         with open("rendered.html", "w") as wf:
             wf.write(rendered_content)
