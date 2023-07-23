@@ -31,6 +31,7 @@ typing-extensions = "4.3.0"
 werkzeug = "2.2.2"
 zipp = "3.8.1"
 numpy = "1.21.6"
+pyjwt = "^2.8.0"
 
 
 [build-system]
