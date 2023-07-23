@@ -73,6 +73,7 @@ priority is ranked based on the `*` symbol.
     - [ ] cache hit rate
     - [ ] google analytic?
 - [ ] litestar migration *
+  - to reconsider as litestar has >= py3.8 requirement
 - [ ] test
   - [ ] pytest *
   - [ ] coverage
