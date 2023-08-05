@@ -21,13 +21,32 @@ class Config:
     DSN = os.environ.get("DSN")
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
     BLOG_PATH = os.environ.get("BLOG_PATH")
+    AUTH = os.environ.get("AUTH")
+    SECRET_KEY = os.environ.get("SECRET_KEY")
 
     @staticmethod
     def init_app(app):
         pass
 
 class TestingConfig(Config):
-    pass
+
+    @classmethod
+    def init_app(cls, app):
+        Config.init_app(app)
+
+        import logging
+
+        app.logger.handlers.clear()
+        app.logger.setLevel(logging.DEBUG)
+        formatter = RequestFormatter(
+            '[%(asctime)s] '
+            '%(levelname)s in %(module)s: %(message)s'
+        )
+
+        log_stream_handler = logging.StreamHandler()
+        log_stream_handler.setFormatter(formatter)
+        log_stream_handler.setLevel(logging.DEBUG)
+        app.logger.addHandler(log_stream_handler)
 
 class LocalDeploymentConfig(Config):
     pass
@@ -37,5 +56,6 @@ class CloudDeploymentConfig(Config):
 
 config = {
     "default": TestingConfig,
-    "production": LocalDeploymentConfig
+    "production": LocalDeploymentConfig,
+    "cloud": CloudDeploymentConfig,
 }

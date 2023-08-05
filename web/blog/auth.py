@@ -11,19 +11,24 @@ def verify_token(token):
     except:
         return False
 
-@auth.route("/auth", methods=["POST"])
-def auth():
-    payload = request.json
-    if payload["auth"] == current_app.config["auth"]:
+@auth.route("/authenticate", methods=["POST"])
+def authenticate():
+    if request.json["auth"] == current_app.config["AUTH"]:
         encoded_jwt = jwt.encode(
-            {"auth": current_app.config["auth"]},
+            {
+                "auth": current_app.config["AUTH"],
+                # "exp": current_app.config["EXPIRE_AFTER_SECS"],
+                # "path": current_app.config["BLOG_PAT"]
+            },
             current_app.config["SECRET_KEY"],
             algorithm="HS256"
         )
-        return current_app.config[""]
+        return jsonify({"status": "success", "token": encoded_jwt})
+    else:
+        return jsonify({"status": "failed", "token": None})
 
 @auth.route("/token", methods=["POST"])
 def token():
-    payload = request.json
-    if payload["auth"] == current_app.config["auth"]:
-        return current_app.config[""]
+    if not verify_token(request.json["token"]):
+        return jsonify({"status": "failed", "token": request.json["token"]})
+    return jsonify({"status": "success", "token": request.json["token"]})
