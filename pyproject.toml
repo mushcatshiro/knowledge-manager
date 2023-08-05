@@ -5,7 +5,6 @@ description = "personal management system"
 authors = ["mushcatshiro <yingjieho@hotmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "knowledge_manager"}]
 
 [tool.poetry.dependencies]
 python = ">=3.7,<3.11"
@@ -24,7 +23,6 @@ markupsafe = "2.1.1"
 marshmallow = "3.19.0"
 marshmallow-sqlalchemy = "0.28.1"
 packaging = "23.0"
-psycopg2 = "2.9.4"
 six = "1.16.0"
 sqlalchemy = "1.4.46"
 typing-extensions = "4.3.0"
@@ -32,7 +30,11 @@ werkzeug = "2.2.2"
 zipp = "3.8.1"
 numpy = "1.21.6"
 pyjwt = "^2.8.0"
+psycopg2-binary = "^2.9.7"
 
+
+[tool.poetry.group.production.dependencies]
+gunicorn = "^21.2.0"
 
 [build-system]
 requires = ["poetry-core"]
