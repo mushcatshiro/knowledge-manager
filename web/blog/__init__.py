@@ -28,8 +28,8 @@ def create_app(config_name):
     from blog.auth import auth
     app.register_blueprint(auth, url_prefix="/auth")
 
-    # from blog.api import api
-    # app.register_blueprint(api, url_prefix="/api")
+    from blog.api import api
+    app.register_blueprint(api, url_prefix="/api")
 
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
@@ -54,9 +54,11 @@ def register_request_handlers(app, config_name="default"):
         """
         TODO
         ----
-        - implement exclude/include path
+        - exclude logic modification to prevent hard code
         """
         ctx = _request_ctx_stack.top
+        if ctx.request.path in ['/favicon.ico']:
+            return response
         request_duration = time.time() - g.request_received_time
         data = {
             'user_agent': ctx.request.user_agent,
@@ -91,8 +93,15 @@ def register_request_handlers(app, config_name="default"):
 
 def error_handler(e):
     """
-    to handle those with e.code and those without
+    TODO
+    ----
+    - to handle those with e.code and those without
+    - return html or json based on request
     """
+    if not hasattr(e, "code"):
+        e.code = 500
+        e.description = "Unexpected error raised within the code"
+        e.name = "Internal Server Error"
     return render_template(
         "error.html", error_code=e.code, error_msg=e.description, error_name=e.name
     ), 400
