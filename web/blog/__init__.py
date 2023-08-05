@@ -7,7 +7,7 @@ from config import config
 
 
 cors = CORS()
-db = SQLAlchemy()
+# db = SQLAlchemy()
 ma = Marshmallow()
 
 def create_app(config_name):
@@ -17,11 +17,11 @@ def create_app(config_name):
 
     # TODO update CORS allowable resource    
     cors.init_app(app)
-    db.init_app(app)
+    # db.init_app(app)
     ma.init_app(app)
 
     from blog.app import main
     app.register_blueprint(main)
-    from blog.api import api
-    app.register_blueprint(api, url_prefix="/api")
+    # from blog.api import api
+    # app.register_blueprint(api, url_prefix="/api")
     return app
