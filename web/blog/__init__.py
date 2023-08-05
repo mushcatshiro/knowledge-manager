@@ -57,11 +57,11 @@ def register_request_handlers(app, config_name="default"):
         - exclude logic modification to prevent hard code
         """
         ctx = _request_ctx_stack.top
-        if ctx.request.path in ['/favicon.ico']:
+        if ctx.request.path in ['/favicon.ico'] or ctx.request.path.startswith('/static'):
             return response
         request_duration = time.time() - g.request_received_time
         data = {
-            'user_agent': ctx.request.user_agent,
+            'user_agent': ctx.request.user_agent.string,
             'app_name': ctx.app.name,
             'date': str(datetime.date.today()),
             'request': "{} {} {}".format(
