@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+{% if notes_list %}
+<h1>Notes</h1>
+<ul>
+{% for li in notes_list %}
+    <li><a href="{{ url_for('main.notes_with_title', title=li) }}">{{ li }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+{% if content %}
+{{ content|safe}}
+{% endif %}
+{% endblock %}
