@@ -1,7 +1,6 @@
 from flask import Flask, g, _request_ctx_stack, current_app, request, render_template
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
-from flask_sqlalchemy import SQLAlchemy
 import time
 import datetime
 
@@ -9,7 +8,6 @@ from config import config
 
 
 cors = CORS()
-# db = SQLAlchemy()
 ma = Marshmallow()
 
 def create_app(config_name):
@@ -19,7 +17,6 @@ def create_app(config_name):
 
     # TODO update CORS allowable resource    
     cors.init_app(app)
-    # db.init_app(app)
     ma.init_app(app)
 
     from blog.app import main
