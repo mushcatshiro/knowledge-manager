@@ -1,6 +1,6 @@
 import unittest
 
-from blog import create_app, db
+from web.blog import create_app, db
 
 
 class TestModels(unittest.TestCase):

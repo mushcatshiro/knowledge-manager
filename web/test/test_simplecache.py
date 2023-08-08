@@ -1,6 +1,6 @@
 import unittest
 
-from web.cache import SimpleCache
+from blog.cache import SimpleCache
 
 
 class TestSimpleCache(unittest.TestCase):

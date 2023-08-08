@@ -5,8 +5,8 @@ import time
 
 # from blog.models import Bookmark
 from blog.auth import verify_token
-from utils.database import PostgresConx
-from utils.healthcheck import server_healthcheck
+from blog.utils.database import PostgresConx
+from blog.utils.healthcheck import server_healthcheck
 
 api = Blueprint("api", __name__)
 

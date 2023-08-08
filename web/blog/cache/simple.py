@@ -2,7 +2,7 @@ import logging
 from time import time
 
 from .base import BaseCache
-from web.utils.sync import RWLock
+from blog.utils.sync import RWLock
 
 
 logger = logging.getLogger(__name__)
