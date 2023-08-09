@@ -6,13 +6,13 @@ priority is ranked based on the `*` symbol.
 - [ ] accomplishing everything in single file and less than 200 lines (not important)
 - [ ] minimize use of packages
 - [ ] bookmarklet (.py)
-  - [ ] remove argparse import in bookmarklet.py
-  - [ ] move init to create_app
+  - [x] remove argparse import in bookmarklet.py
+  - [x] move to web
   - [ ] open graph protocol
 - [ ] implement indexing function for search
 - [ ] health monitoring *
-  - [ ] application
-  - [ ] server monitoring
+  - [x] application
+  - [x] server monitoring
 - [ ] web blog feature list
   - [ ] html render
     - [ ] target under 1ms
@@ -25,12 +25,10 @@ priority is ranked based on the `*` symbol.
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
   - [ ] admin edit page
-    - [ ] passcode for auth
+    - [x] passcode for auth
     - [ ] taking quick notes
       - [ ] converting notes to proper documents
-    - [ ] on demand siyuan notes instance
-      - [ ] redirect
-      - [ ] kill instance
+    - [ ] ~~on demand siyuan notes instance~~
     - [ ] calendar and daily management
     - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
   - [ ] site is down update (external)
@@ -69,16 +67,17 @@ priority is ranked based on the `*` symbol.
     - [ ] asgi compatibility
   - [ ] rate limiter
   - [ ] metric tracking
-    - [ ] traffic and user
+    - [x] traffic and user
     - [ ] cache hit rate
     - [ ] google analytic?
 - [ ] litestar migration *
   - to reconsider as litestar has >= py3.8 requirement
+  - to consider python3.8
 - [ ] test
-  - [ ] pytest *
-  - [ ] coverage
+  - [x] pytest *
+  - [ ] pytest-coverage
 - [ ] containerize
-- [ ] poetry?
+- [x] poetry
 - [ ] OCR support?
 - [ ] auto ref link between documents
 - [ ] UI
