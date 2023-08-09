@@ -1,11 +1,25 @@
-from flask import Blueprint, render_template, current_app
+from flask import Blueprint, render_template, current_app, request, send_from_directory
 import os
+
+from blog.core import process_request
 
 main = Blueprint("main", __name__)
 
 
-@main.route("/", methods=["GET"])
+@main.route("/", methods=["GET", "POST"])
 def index():
+    """
+    TODO
+    ----
+    - handle payload schema (validation and error handling)
+      - handle at hook level or through a decorator
+    - permission handling for certain fns
+    - alternative to return resp as a string/html string
+      - or having multiple templates for different responses
+    """
+    if request.method == "POST":
+        resp = process_request(request.form["query"])
+        return render_template("main.html", resp=resp)
     return render_template("main.html")
 
 @main.route("/about", methods=["GET"])
@@ -49,3 +63,11 @@ def notes_with_title(title):
 @main.route("/admin")
 def admin():
     pass
+
+@main.route("/favicon.ico")
+def favicon():
+    return send_from_directory(
+        os.path.join(current_app.root_path, "static"),
+        "favicon.ico",
+        mimetype="image/vnd.microsoft.icon"
+    )
