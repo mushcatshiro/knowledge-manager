@@ -1,8 +1,9 @@
-from flask import Flask, g, _request_ctx_stack, current_app, request, render_template
+from flask import Flask, g, _request_ctx_stack, current_app, request, render_template, url_for
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 import time
 import datetime
+import traceback
 
 from config import config
 
@@ -41,10 +42,12 @@ def register_request_handlers(app, config_name="default"):
     @app.before_request
     def before_request_handler():
         g.request_received_time = time.time()
-        if request.method == "POST":
-            g.context = request.json
-        else:
-            g.context = None
+        g.context = {
+            "unhandled": request.data if request.data else "",
+            "form": dict(request.form) if request.form else {},
+        }
+        if request.content_type == "application/json":
+            g.context["json"] = request.json
 
     @app.after_request
     def log_request(response):
@@ -94,11 +97,16 @@ def error_handler(e):
     ----
     - to handle those with e.code and those without
     - return html or json based on request
+
+    NOTE
+    ----
+    error handler runs before after_request
     """
     if not hasattr(e, "code"):
         e.code = 500
         e.description = "Unexpected error raised within the code"
         e.name = "Internal Server Error"
+    current_app.logger.error({"error": e, "traceback": traceback.format_exc()})
     return render_template(
         "error.html", error_code=e.code, error_msg=e.description, error_name=e.name
     ), 400
