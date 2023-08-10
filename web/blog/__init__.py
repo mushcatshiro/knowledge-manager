@@ -1,7 +1,6 @@
 from flask import Flask, g, current_app, request, render_template
 from flask.globals import request_ctx
 from flask_cors import CORS
-from flask_marshmallow import Marshmallow
 import time
 import datetime
 import traceback
@@ -10,7 +9,6 @@ from config import config
 
 
 cors = CORS()
-ma = Marshmallow()
 
 def create_app(config_name):
     app = Flask(__name__)
@@ -19,7 +17,6 @@ def create_app(config_name):
 
     # TODO update CORS allowable resource    
     cors.init_app(app)
-    ma.init_app(app)
 
     from blog.app import main
     app.register_blueprint(main)
