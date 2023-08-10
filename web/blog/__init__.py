@@ -1,4 +1,5 @@
-from flask import Flask, g, _request_ctx_stack, current_app, request, render_template, url_for
+from flask import Flask, g, current_app, request, render_template
+from flask.globals import request_ctx
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 import time
@@ -56,7 +57,7 @@ def register_request_handlers(app, config_name="default"):
         ----
         - exclude logic modification to prevent hard code
         """
-        ctx = _request_ctx_stack.top
+        ctx = request_ctx
         if ctx.request.path in ['/favicon.ico'] or ctx.request.path.startswith('/static'):
             return response
         request_duration = time.time() - g.request_received_time
