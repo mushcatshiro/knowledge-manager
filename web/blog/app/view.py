@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, current_app, request, send_from_directory
 import os
+import markdown
 
 from blog.core import process_request
 
 main = Blueprint("main", __name__)
 
+md = markdown.Markdown(extensions=["fenced_code", "tables"])
 
 @main.route("/", methods=["GET", "POST"])
 def index():
@@ -49,7 +51,8 @@ def blog_with_title(title):
         content = f"Blog {title} not found!"
     else:
         with open (blog_path, "r", encoding="utf-8") as f:
-            content = f.readlines()
+            content = f.read()
+            content = md.convert(content)
     return render_template("blog.html", content=content, blog=True)
 
 @main.route("/notes", methods=["GET"])
