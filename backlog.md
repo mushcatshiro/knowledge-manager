@@ -17,6 +17,7 @@ priority is ranked based on the `*` symbol.
   - [ ] html render
     - [ ] target under 1ms
     - [ ] custom markdown-esque renderer *
+    - [ ] remove dependency `highlight.js` with codehilite/pygments
   - [ ] simple search box
     - [x] ~~search hints~~
     - [ ] imitate CLI `executable *args **kwargs`
