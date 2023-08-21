@@ -33,6 +33,17 @@ export FLASK_APP=app.py
 flask --app "app:create_app('default')" run
 ```
 
+test
+```bash
+cd web
+# to print `print()` statement and run specific tests
+pytest --capture=no test\test_crud\test_crud.py
+# to run test in quiet mode
+pytest -q test\test_crud\test_crud.py
+# to run all test
+pytest
+```
+
 ## Acknowledgements
 
 - bookmarklet is a fork of/heavily inspired by [this project](https://gist.github.com/codemicro/f7d4d4b687c3ec2e7186ef7efecfcc35) and [the following post](https://www.tdpain.net/blog/a-year-of-reading)
