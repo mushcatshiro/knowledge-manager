@@ -9,3 +9,4 @@ coverage/
 instance/
 venv/
 templates/*
+*.db
