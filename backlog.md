@@ -5,10 +5,13 @@ priority is ranked based on the `*` symbol.
 ## web
 - [ ] accomplishing everything in single file and less than 200 lines (not important)
 - [ ] minimize use of packages
-- [ ] bookmarklet (.py)
+- [x] bookmarklet (.py)
   - [x] remove argparse import in bookmarklet.py
   - [x] move to web
   - [ ] open graph protocol
+  - [ ] minimize js on save?
+  - [ ] crawl innerHTML
+    - [ ] make optional
 - [ ] implement indexing function for search
 - [ ] health monitoring *
   - [x] application
@@ -88,12 +91,3 @@ priority is ranked based on the `*` symbol.
 - [ ] logging
 - [ ] pre-commit
 - [ ] github build-test for merging
-
-## bookmarklet
-- [ ] minimize js on save?
-- [ ] crawl innerHTML
-  - [ ] make optional
-- [x] better error handling
-  - [ ] ~~.py~~
-  - [ ] .js
-- [ ] merge .py into web
