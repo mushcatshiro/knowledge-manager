@@ -15,7 +15,6 @@ def bookmark():
     payload = request.args.to_dict()
     if verify_token(payload["token"]):
         payload.pop("token")
-        payload.pop("nexturl")
         basecrud = CRUDBase(BookmarkModel, db)
         instance: BookmarkModel = basecrud.execute(
             operation="create",

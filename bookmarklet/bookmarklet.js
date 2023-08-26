@@ -58,7 +58,6 @@ javascript:(() => {
     searchParams.set("url", pageURL);
     searchParams.set("desc", metaDescription);
     searchParams.set("img", metaImage);
-    searchParams.set("nexturl", pageURL);
     searchParams.set("token", token);
 
     window.location.href = url;
