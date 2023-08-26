@@ -1,10 +1,14 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import text, select
+from sqlalchemy.orm import declarative_base
 
 import logging
 
 
 logger = logging.getLogger(__name__)
+
+
+Base = declarative_base()
 
 
 class CRUDBase:
@@ -130,6 +134,7 @@ class CRUDBase:
             except Exception as e:
                 session.rollback()
                 logger.error(e)
+                return None
             else:
                 # refresh the instance to get the latest data
                 # or make sure BookmarksModel is bound to some session

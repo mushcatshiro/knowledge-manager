@@ -1,12 +1,11 @@
-from flask import Blueprint, jsonify, request, current_app, url_for
+from flask import Blueprint, jsonify, request
 import datetime as dt
-import os
-import time
 
-# from blog.models import Bookmark
+from blog.bookmark import BookmarkModel
 from blog.auth import verify_token
-from blog.utils.database import PostgresConx
+from blog.core.crud import CRUDBase
 from blog.utils.healthcheck import server_healthcheck
+from blog import db
 
 api = Blueprint("api", __name__)
 
@@ -15,9 +14,16 @@ api = Blueprint("api", __name__)
 def bookmark():
     payload = request.args.to_dict()
     if verify_token(payload["token"]):
-        payload["timestamp"] = dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        current_app.logger.info(payload)
-        return jsonify({"status": "success", "payload": payload})
+        payload.pop("token")
+        payload.pop("nexturl")
+        basecrud = CRUDBase(BookmarkModel, db)
+        instance: BookmarkModel = basecrud.execute(
+            operation="create",
+            **payload
+        )
+        if not instance:
+            raise Exception("Bookmark not created")
+        return jsonify({"status": "success", "payload": instance.to_json()})
     else:
         raise Exception("Invalid token")
 

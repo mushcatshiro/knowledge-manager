@@ -4,11 +4,15 @@ from flask_cors import CORS
 import time
 import datetime
 import traceback
+from sqlalchemy import create_engine
+import os
 
 from config import config
 
 
 cors = CORS()
+db = create_engine(os.environ.get("SQLALCHEMY_DATABASE_URI"))
+
 
 def create_app(config_name):
     app = Flask(__name__)
