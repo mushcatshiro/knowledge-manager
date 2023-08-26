@@ -27,13 +27,15 @@ priority is ranked based on the `*` symbol.
   - [ ] updating desc for better search results
   - [ ] admin edit page
     - [x] passcode for auth
-    - [ ] taking quick notes
+    - [x] taking quick notes
       - [ ] converting notes to proper documents
     - [ ] ~~on demand siyuan notes instance~~
     - [ ] calendar and daily management
     - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
   - [ ] site is down update (external)
   - [ ] minimize javascript
+    - [ ] code highlight
+    - [ ] bootstrap
   - [ ] blog preload function calls
     - [ ] read index to memory
     - [ ] check static folder
@@ -51,7 +53,7 @@ priority is ranked based on the `*` symbol.
     - [ ] extend documents into TODOs
     - [ ] extend into blog post
   - [ ] visualization of the documents
-  - [ ] file structure one blueprint per functionality (search, recommend and etc)
+  - [x] file structure one blueprint per functionality (search, recommend and etc)
   - [ ] stable diffusion to change image
   - [ ] Intersection Observer
   - [ ] better db conn (with is not the best option)
