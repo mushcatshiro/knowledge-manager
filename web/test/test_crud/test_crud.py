@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
 from blog.core.crud import CRUDBase
-from blog.models import BookmarkModel
+from blog.bookmark import BookmarkModel
 
 
 def test_create(db):

@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import insert, select
 import os
 
-from blog.models import Base, BookmarkModel
+from blog.bookmark import BookmarkModel
+from blog.core.crud import Base
+
 
 @pytest.fixture(scope='session')
 def db():

@@ -1,8 +1,8 @@
 from datetime import datetime
-from sqlalchemy.orm import declarative_base
+
 from sqlalchemy import Column, Integer, String, DateTime
 
-Base = declarative_base()
+from blog.core.crud import Base
 
 
 class BookmarkModel(Base):
