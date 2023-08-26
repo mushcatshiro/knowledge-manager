@@ -2,7 +2,7 @@ import numpy as np
 
 
 class IndexObj:
-    '''
+    """
     idea
     a cosine similarity "covariance" matrix
     search by getting largest N documents
@@ -11,7 +11,8 @@ class IndexObj:
     to try out cosine similarity?
 
     how to do validation?
-    '''
+    """
+
     def __init__(self):
         pass
 
@@ -20,6 +21,7 @@ class IndexObj:
 
     def index(self):
         pass
+
 
 class Index:
     pass

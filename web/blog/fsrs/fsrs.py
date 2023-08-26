@@ -9,6 +9,7 @@ class FSRS:
     ----
     - integrate with database
     """
+
     p: Parameters
 
     def __init__(self) -> None:
@@ -65,18 +66,28 @@ class FSRS:
         s.easy.difficulty = self.init_difficulty(Rating.Easy)
         s.easy.stability = self.init_stability(Rating.Easy)
 
-    def next_ds(self, s: SchedulingCards, last_d: float, last_s: float, retrievability: float):
+    def next_ds(
+        self, s: SchedulingCards, last_d: float, last_s: float, retrievability: float
+    ):
         s.again.difficulty = self.next_difficulty(last_d, Rating.Again)
-        s.again.stability = self.next_forget_stability(s.again.difficulty, last_s, retrievability)
+        s.again.stability = self.next_forget_stability(
+            s.again.difficulty, last_s, retrievability
+        )
         s.hard.difficulty = self.next_difficulty(last_d, Rating.Hard)
-        s.hard.stability = self.next_recall_stability(s.hard.difficulty, last_s, retrievability, Rating.Hard)
+        s.hard.stability = self.next_recall_stability(
+            s.hard.difficulty, last_s, retrievability, Rating.Hard
+        )
         s.good.difficulty = self.next_difficulty(last_d, Rating.Good)
-        s.good.stability = self.next_recall_stability(s.good.difficulty, last_s, retrievability, Rating.Good)
+        s.good.stability = self.next_recall_stability(
+            s.good.difficulty, last_s, retrievability, Rating.Good
+        )
         s.easy.difficulty = self.next_difficulty(last_d, Rating.Easy)
-        s.easy.stability = self.next_recall_stability(s.easy.difficulty, last_s, retrievability, Rating.Easy)
+        s.easy.stability = self.next_recall_stability(
+            s.easy.difficulty, last_s, retrievability, Rating.Easy
+        )
 
     def init_stability(self, r: int) -> float:
-        return max(self.p.w[r-1], 0.1)
+        return max(self.p.w[r - 1], 0.1)
 
     def init_difficulty(self, r: int) -> float:
         return min(max(self.p.w[4] - self.p.w[5] * (r - 3), 1), 10)
@@ -95,15 +106,20 @@ class FSRS:
     def next_recall_stability(self, d: float, s: float, r: float, rating: int) -> float:
         hard_penalty = self.p.w[15] if rating == Rating.Hard else 1
         easy_bonus = self.p.w[16] if rating == Rating.Easy else 1
-        return s * (1 + math.exp(self.p.w[8]) *
-                    (11 - d) *
-                    math.pow(s, -self.p.w[9]) *
-                    (math.exp((1 - r) * self.p.w[10]) - 1) *
-                    hard_penalty *
-                    easy_bonus)
+        return s * (
+            1
+            + math.exp(self.p.w[8])
+            * (11 - d)
+            * math.pow(s, -self.p.w[9])
+            * (math.exp((1 - r) * self.p.w[10]) - 1)
+            * hard_penalty
+            * easy_bonus
+        )
 
     def next_forget_stability(self, d: float, s: float, r: float) -> float:
-        return self.p.w[11] * \
-            math.pow(d, -self.p.w[12]) * \
-            (math.pow(s + 1, self.p.w[13]) - 1) * \
-            math.exp((1 - r) * self.p.w[14])
+        return (
+            self.p.w[11]
+            * math.pow(d, -self.p.w[12])
+            * (math.pow(s + 1, self.p.w[13]) - 1)
+            * math.exp((1 - r) * self.p.w[14])
+        )

@@ -53,30 +53,31 @@ INLINEMATHJAXPAT = re.compile(r"($)[.\s\S]+($)")
 IMAGEPAT = re.compile(r"(\!\[)(.+|\s*)+(\]\()(.+)(\))")
 REFERENCEPAT = re.compile(r"")
 
-PREFIX =\
-"<!DOCTYPE html>\n"\
-"<html>\n"\
-"<head>\n"\
-"    <meta charset='utf-8'>\n"\
-"    <meta http-equiv='X-UA-Compatible' content='IE=edge'>\n"\
-"    <title>Page Title</title>\n"\
-"    <meta name='viewport' content='width=device-width, initial-scale=1'>\n"\
-"</head>\n"\
-"<body>\n"
+PREFIX = (
+    "<!DOCTYPE html>\n"
+    "<html>\n"
+    "<head>\n"
+    "    <meta charset='utf-8'>\n"
+    "    <meta http-equiv='X-UA-Compatible' content='IE=edge'>\n"
+    "    <title>Page Title</title>\n"
+    "    <meta name='viewport' content='width=device-width, initial-scale=1'>\n"
+    "</head>\n"
+    "<body>\n"
+)
 
-SUFFIX =\
-"</body>\n"\
-"</html>"
+SUFFIX = "</body>\n" "</html>"
 
-MATHJAXJS =\
-"<script type=\"text/javascript\" id=\"MathJax-script\" async=\"\" src=\"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML\"></script>\n"\
-"<script type=\"text/x-mathjax-config;executed=true\">MathJax.Hub.Config({tex2jax: { inlineMath: [[\"$\",\"$\"],[\"\\(\",\"\\)\"]] },\"HTML-CSS\": {linebreaks: {automatic: true, width: \"container\"}}});\n"\
-"</script>\n"
+MATHJAXJS = (
+    '<script type="text/javascript" id="MathJax-script" async="" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML"></script>\n'
+    '<script type="text/x-mathjax-config;executed=true">MathJax.Hub.Config({tex2jax: { inlineMath: [["$","$"],["\\(","\\)"]] },"HTML-CSS": {linebreaks: {automatic: true, width: "container"}}});\n'
+    "</script>\n"
+)
 
-CODEBLOCKJS =\
-"<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/material-palenight.min.css\">\n"\
-"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js\"></script>\n"\
-"<script>hljs.highlightAll();</script>\n"
+CODEBLOCKJS = (
+    '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/material-palenight.min.css">\n'
+    '<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>\n'
+    "<script>hljs.highlightAll();</script>\n"
+)
 
 
 class ProcessorBase:
@@ -94,11 +95,11 @@ class ProcessorBase:
     to determine the priority of each processor by running a validation against
     the existing markdown files.
     """
+
     pattern: Pattern = None
 
     def check(self, block):
-        """always check without indentation
-        """
+        """always check without indentation"""
         if self.pattern is None:
             raise NotImplementedError
         m = self.pattern.match(block)
@@ -113,6 +114,7 @@ class ProcessorBase:
         """
         raise NotImplementedError
 
+
 class ParagraphProcessor(ProcessorBase):
     def check(self, block):
         return True
@@ -123,6 +125,7 @@ class ParagraphProcessor(ProcessorBase):
         for line in lines:
             out += "<p>" + line + "</p>\n"
         return out
+
 
 class ListProcessor(ProcessorBase):
     pattern = LISTPAT
@@ -156,6 +159,7 @@ class ListProcessor(ProcessorBase):
                     out += "<li>" + i[1] + "</li>\n"
             return f"<{ltype}l>\n" + out + f"</{ltype}l>\n"
 
+
 class HeaderProcessor(ProcessorBase):
     pattern = HEADERPAT
 
@@ -163,6 +167,7 @@ class HeaderProcessor(ProcessorBase):
         m = self.pattern.match(block)
         n = len(m.group(1))  # counts number of hash(es)
         return f"<h{n}>" + m.group(2) + f"</h{n}>\n"
+
 
 class BlockQuoteProcessor(ProcessorBase):
     pattern = BLOCKQUOTEPAT
@@ -172,11 +177,13 @@ class BlockQuoteProcessor(ProcessorBase):
         out = "\n".join(m)
         return "<blockquote>\n" + out + "\n</blockquote>\n"
 
+
 class BlockMathJaxProcessor(ProcessorBase):
     pattern = BLOCKMATHJAXPAT
 
     def run(self, block):
         return block
+
 
 class BlockCodeProcessor:
     pattern = BLOCKCODEPAT
@@ -191,7 +198,10 @@ class BlockCodeProcessor:
 
     def run(self, block):
         m = self.pattern_run.match(block)
-        return f"<pre><code class=\"{m.group(2)}\">" + m.group(3).strip() + "</code></pre>\n"
+        return (
+            f'<pre><code class="{m.group(2)}">' + m.group(3).strip() + "</code></pre>\n"
+        )
+
 
 class EmphasizeProcessor(ProcessorBase):
     pattern = EMPHASIZEPAT
@@ -211,24 +221,29 @@ class EmphasizeProcessor(ProcessorBase):
             tag = "strong"
         return re.sub(self.pattern, rf"<{tag}>\2</{tag}>", line)
 
+
 class ImageProcessor(ProcessorBase):
     pattern = IMAGEPAT
 
     def run(self, line):
         # r"(\!\[)(.+|\s*)+(\]\()(.+)(\))"
         m = self.pattern.match(line)
-        return f"<img src=\"{m.group(4)}\" alt=\"{m.group(2)}\" title=\"{m.group(2)}\">\n"
+        return f'<img src="{m.group(4)}" alt="{m.group(2)}" title="{m.group(2)}">\n'
+
 
 class InlineMathJaxProcessor(ProcessorBase):
     # should have higest priority together with inline code
     pattern = INLINEMATHJAXPAT
 
+
 class InlineCodeProcessor(ProcessorBase):
     pass
+
 
 class ReferenceProcessor(ProcessorBase):
     # check LinkProcessor
     pass
+
 
 class MarkdownTemplating:
     def __init__(self) -> None:
@@ -237,10 +252,10 @@ class MarkdownTemplating:
             BlockMathJaxProcessor(),
             BlockQuoteProcessor(),
             ListProcessor(),
-            ParagraphProcessor()
+            ParagraphProcessor(),
         ]
         self.doc = []
-        self.preprocessor = BlockCodeProcessor() 
+        self.preprocessor = BlockCodeProcessor()
         self.inlineprocessors = [
             EmphasizeProcessor(),
         ]
@@ -279,7 +294,7 @@ class MarkdownTemplating:
             raise FileNotFoundError(f"{abspath} not found")
 
         with open(abspath, "r") as rf:
-                doc = rf.read()
+            doc = rf.read()
 
         """
         pre-processing to extract code blocks. for the pre_chucks, proceed
@@ -291,7 +306,7 @@ class MarkdownTemplating:
             if doc == "":
                 break
             s_i, e_i = self.preprocessor.check(doc)
-            
+
             if s_i:
                 pre_chunks = doc[:s_i]
                 pre_chunks = pre_chunks.strip().split("\n\n")
@@ -305,7 +320,7 @@ class MarkdownTemplating:
                 doc = ""
 
             out = []
-            for block in pre_chunks: 
+            for block in pre_chunks:
                 for blockprocessor in self.blockprocessors:
                     if blockprocessor.check(block):
                         out.append(blockprocessor.run(block))

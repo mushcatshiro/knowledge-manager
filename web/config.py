@@ -16,7 +16,7 @@ class RequestFormatter(logging.Formatter):
 
 
 class Config:
-    PROJECTNAME = os.environ.get('PROJECTNAME')
+    PROJECTNAME = os.environ.get("PROJECTNAME")
     DSN = os.environ.get("DSN")
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
     BLOG_PATH = os.environ.get("BLOG_PATH")
@@ -27,8 +27,8 @@ class Config:
     def init_app(app):
         pass
 
-class TestingConfig(Config):
 
+class TestingConfig(Config):
     @classmethod
     def init_app(cls, app):
         Config.init_app(app)
@@ -38,8 +38,7 @@ class TestingConfig(Config):
         app.logger.handlers.clear()
         app.logger.setLevel(logging.DEBUG)
         formatter = RequestFormatter(
-            '[%(asctime)s] '
-            '%(levelname)s in %(module)s: %(message)s'
+            "[%(asctime)s] " "%(levelname)s in %(module)s: %(message)s"
         )
 
         log_stream_handler = logging.StreamHandler()
@@ -47,11 +46,14 @@ class TestingConfig(Config):
         log_stream_handler.setLevel(logging.DEBUG)
         app.logger.addHandler(log_stream_handler)
 
+
 class LocalDeploymentConfig(Config):
     pass
 
+
 class CloudDeploymentConfig(Config):
     pass
+
 
 config = {
     "default": TestingConfig,

@@ -19,21 +19,25 @@ def create_app(config_name):
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
-    # TODO update CORS allowable resource    
+    # TODO update CORS allowable resource
     cors.init_app(app)
 
     from blog.app import main
+
     app.register_blueprint(main)
 
     from blog.auth import auth
+
     app.register_blueprint(auth, url_prefix="/auth")
 
     from blog.api import api
+
     app.register_blueprint(api, url_prefix="/api")
 
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
     return app
+
 
 def register_request_handlers(app, config_name="default"):
     """
@@ -41,6 +45,7 @@ def register_request_handlers(app, config_name="default"):
     ----
     - profiler
     """
+
     @app.before_request
     def before_request_handler():
         g.request_received_time = time.time()
@@ -59,39 +64,41 @@ def register_request_handlers(app, config_name="default"):
         - exclude logic modification to prevent hard code
         """
         ctx = request_ctx
-        if ctx.request.path in ['/favicon.ico'] or ctx.request.path.startswith('/static'):
+        if ctx.request.path in ["/favicon.ico"] or ctx.request.path.startswith(
+            "/static"
+        ):
             return response
         request_duration = time.time() - g.request_received_time
         data = {
-            'user_agent': ctx.request.user_agent.string,
-            'app_name': ctx.app.name,
-            'date': str(datetime.date.today()),
-            'request': "{} {} {}".format(
+            "user_agent": ctx.request.user_agent.string,
+            "app_name": ctx.app.name,
+            "date": str(datetime.date.today()),
+            "request": "{} {} {}".format(
                 ctx.request.method,
                 ctx.request.url,
-                ctx.request.environ.get('SERVER_PROTOCOL')
+                ctx.request.environ.get("SERVER_PROTOCOL"),
             ),
-            'url_args': dict(
-                [(k, ctx.request.args[k]) for k in ctx.request.args]
-            ),
-            'content_length': response.content_length,
-            'blueprint': ctx.request.blueprint,
-            'view_args': ctx.request.view_args,
-            'path': ctx.request.path,
-            'status_code': response.status_code,
-            'remote_addr': ctx.request.remote_addr,
-            'xforwardedfor': ctx.request.headers.get('X-Forwarded-For', None),
-            'authorization': bool(ctx.request.authorization),
-            'speed': float(request_duration),
-            'payload': g.context,
+            "url_args": dict([(k, ctx.request.args[k]) for k in ctx.request.args]),
+            "content_length": response.content_length,
+            "blueprint": ctx.request.blueprint,
+            "view_args": ctx.request.view_args,
+            "path": ctx.request.path,
+            "status_code": response.status_code,
+            "remote_addr": ctx.request.remote_addr,
+            "xforwardedfor": ctx.request.headers.get("X-Forwarded-For", None),
+            "authorization": bool(ctx.request.authorization),
+            "speed": float(request_duration),
+            "payload": g.context,
         }
-        current_app.logger.info(f'after request logging: {data}')
+        current_app.logger.info(f"after request logging: {data}")
         return response
-    
+
     if config_name == "debug":
+
         @app.after_request
         def profiler(response):
             return response
+
 
 def error_handler(e):
     """
@@ -109,6 +116,9 @@ def error_handler(e):
         e.description = "Unexpected error raised within the code"
         e.name = "Internal Server Error"
     current_app.logger.error({"error": e, "traceback": traceback.format_exc()})
-    return render_template(
-        "error.html", error_code=e.code, error_msg=e.description, error_name=e.name
-    ), 400
+    return (
+        render_template(
+            "error.html", error_code=e.code, error_msg=e.description, error_name=e.name
+        ),
+        400,
+    )

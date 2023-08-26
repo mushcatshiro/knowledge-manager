@@ -16,15 +16,13 @@ def bookmark():
     if verify_token(payload["token"]):
         payload.pop("token")
         basecrud = CRUDBase(BookmarkModel, db)
-        instance: BookmarkModel = basecrud.execute(
-            operation="create",
-            **payload
-        )
+        instance: BookmarkModel = basecrud.execute(operation="create", **payload)
         if not instance:
             raise Exception("Bookmark not created")
         return jsonify({"status": "success", "payload": instance.to_json()})
     else:
         raise Exception("Invalid token")
+
 
 @api.route("/healthcheck", methods=["GET"])
 def healthcheck():

@@ -1,20 +1,20 @@
 from contextlib import contextmanager
-from threading  import Lock
+from threading import Lock
 
 
 class RWLock(object):
-    """ RWLock class; this is meant to allow an object to be read from by
-        multiple threads, but only written to by a single thread at a time. See:
-        https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock
-        Usage:
-            from rwlock import RWLock
-            my_obj_rwlock = RWLock()
-            # When reading from my_obj:
-            with my_obj_rwlock.r_locked():
-                do_read_only_things_with(my_obj)
-            # When writing to my_obj:
-            with my_obj_rwlock.w_locked():
-                mutate(my_obj)
+    """RWLock class; this is meant to allow an object to be read from by
+    multiple threads, but only written to by a single thread at a time. See:
+    https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock
+    Usage:
+        from rwlock import RWLock
+        my_obj_rwlock = RWLock()
+        # When reading from my_obj:
+        with my_obj_rwlock.r_locked():
+            do_read_only_things_with(my_obj)
+        # When writing to my_obj:
+        with my_obj_rwlock.w_locked():
+            mutate(my_obj)
     """
 
     def __init__(self):
@@ -40,7 +40,7 @@ class RWLock(object):
 
     @contextmanager
     def r_locked(self):
-        """ This method is designed to be used via the `with` statement. """
+        """This method is designed to be used via the `with` statement."""
         try:
             self.r_acquire()
             yield
@@ -55,7 +55,7 @@ class RWLock(object):
 
     @contextmanager
     def w_locked(self):
-        """ This method is designed to be used via the `with` statement. """
+        """This method is designed to be used via the `with` statement."""
         try:
             self.w_acquire()
             yield

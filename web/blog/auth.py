@@ -6,10 +6,13 @@ auth = Blueprint("auth", __name__)
 
 def verify_token(token):
     try:
-        decoded_jwt = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
+        decoded_jwt = jwt.decode(
+            token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
+        )
         return True
     except:
         return False
+
 
 @auth.route("/authenticate", methods=["POST"])
 def authenticate():
@@ -21,11 +24,12 @@ def authenticate():
                 # "path": current_app.config["BLOG_PAT"]
             },
             current_app.config["SECRET_KEY"],
-            algorithm="HS256"
+            algorithm="HS256",
         )
         return jsonify({"status": "success", "token": encoded_jwt})
     else:
         return jsonify({"status": "failed", "token": None})
+
 
 @auth.route("/token", methods=["POST"])
 def token():

@@ -16,10 +16,7 @@ def main(fname, opt):
     if opt == "initialize_cloud":
         initialize_cloud(os.environ.get("DSN"))
     elif opt == "push":
-        push(
-            os.environ.get("ABSDIR"),
-            os.environ.get("DSN")
-        )
+        push(os.environ.get("ABSDIR"), os.environ.get("DSN"))
     elif opt == "test":
         pass
     # elif opt == "query":

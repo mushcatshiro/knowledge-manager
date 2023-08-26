@@ -6,14 +6,14 @@ from blog.core.crud import Base
 
 
 class BookmarkModel(Base):
-    __tablename__ = 'bookmark'
+    __tablename__ = "bookmark"
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     url = Column(String, unique=True, nullable=False)
     img = Column(String, nullable=False)
     desc = Column(String, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    
+
     def __repr__(self) -> str:
         return "<title %r>" % self.title
 
@@ -27,5 +27,5 @@ class BookmarkModel(Base):
             "url": self.url,
             "img": self.img,
             "desc": self.desc,
-            "timestamp": self.timestamp
+            "timestamp": self.timestamp,
         }

@@ -17,19 +17,19 @@ class BaseCache:
             if self.delete(key):
                 deleted_keys.append(key)
         return deleted_keys
-    
+
     def set(self, key, value):
         return True
-    
+
     def set_many(self, map):
         set_keys = []
         for k, v in map.items():
             if self.set(k, v):
                 set_keys.append(k)
         return set_keys
-    
+
     def has(self):
         raise NotImplementedError
-    
+
     def clear(self):
         return True

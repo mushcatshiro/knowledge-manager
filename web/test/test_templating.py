@@ -13,7 +13,7 @@ class TestTemplating(unittest.TestCase):
         # t = []
         # for i in range(100):
         #     s = time.time()
-        #     rendered_content = render_markdown_template(os.environ.get("TESTEMPLATE")) 
+        #     rendered_content = render_markdown_template(os.environ.get("TESTEMPLATE"))
         #     e = time.time()
         #     t.append(e-s)
         """

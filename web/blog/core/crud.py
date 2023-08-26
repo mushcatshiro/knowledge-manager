@@ -32,9 +32,11 @@ class CRUDBase:
         instance: Model
         """
         del query
-        instance = session.execute(
-            select(model).where(model.id == kwargs.get("id")
-        )).scalars().first()
+        instance = (
+            session.execute(select(model).where(model.id == kwargs.get("id")))
+            .scalars()
+            .first()
+        )
         return instance
 
     def create(self, session, model, query, **kwargs):
