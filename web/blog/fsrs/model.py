@@ -3,6 +3,11 @@ import copy
 from typing import Tuple, Optional
 from enum import IntEnum
 
+from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
+
+from blog.core.crud import Base
+
 
 class State(IntEnum):
     New = 0
@@ -39,6 +44,29 @@ class ReviewLog:
         self.review = review
         self.state = state
 
+class CardModel(Base):
+    __tablename__ = "card"
+    due: datetime = Column(DateTime, default=datetime.utcnow)
+    stability: float = Column(Integer, default=0)
+    difficulty: float = Column(Integer, default=0)
+    elapsed_days: int = Column(Integer, default=0)
+    scheduled_days: int = Column(Integer, default=0)
+    reps: int = Column(Integer, default=0)
+    lapses: int = Column(Integer, default=0)
+    state: State = Column(Integer, default=State.New)
+    last_review: datetime = Column(DateTime, default=datetime.utcnow)
+    title: str = relationship('')
+
+    def __repr__(self) -> str:
+        return "<title %r>" % self.title
+
+
+    def get_retrievability(self, now: datetime) -> Optional[float]:
+        if self.state == State.Review:
+            elapsed_days = max(0, (now - self.last_review).days)
+            return (1 + elapsed_days / (9 * self.stability)) ** -1
+        else:
+            return None
 
 class Card:
     due: datetime
