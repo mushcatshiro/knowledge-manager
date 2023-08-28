@@ -1,6 +1,7 @@
 from flask import Flask, g, current_app, request, render_template
 from flask.globals import request_ctx
 from flask_cors import CORS
+from flask_session import Session
 import time
 import datetime
 import traceback
@@ -12,6 +13,7 @@ from config import config
 
 cors = CORS()
 db = create_engine(os.environ.get("SQLALCHEMY_DATABASE_URI"))
+sess = Session()
 
 
 def create_app(config_name):
@@ -21,6 +23,7 @@ def create_app(config_name):
 
     # TODO update CORS allowable resource
     cors.init_app(app)
+    sess.init_app(app)
 
     from blog.app import main
 
@@ -33,6 +36,10 @@ def create_app(config_name):
     from blog.api import api
 
     app.register_blueprint(api, url_prefix="/api")
+
+    from blog.admin import admin
+
+    app.register_blueprint(admin, url_prefix="/admin")
 
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)

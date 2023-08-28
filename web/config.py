@@ -22,6 +22,11 @@ class Config:
     BLOG_PATH = os.environ.get("BLOG_PATH")
     AUTH = os.environ.get("AUTH")
     SECRET_KEY = os.environ.get("SECRET_KEY")
+    SESSION_COOKIE_PATH = os.environ.get("SESSION_COOKIE_PATH")
+    SESSION_COOKIE_SECURE = True
+    PERMANENT_SESSION_LIFETIME = int(os.environ.get("PERMANENT_SESSION_LIFETIME"))
+    SESSION_TYPE = os.environ.get("SESSION_TYPE")
+    SESSION_FILE_THRESHOLD = int(os.environ.get("SESSION_FILE_THRESHOLD"))
 
     @staticmethod
     def init_app(app):
