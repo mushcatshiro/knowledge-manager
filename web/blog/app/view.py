@@ -71,11 +71,6 @@ def blog_with_title(title):
     return render_template("blog.html", content=content, blog=True)
 
 
-@main.route("/admin")
-def admin():
-    pass
-
-
 @main.route("/draft", methods=["GET", "POST"])
 def draft():
     content = ""
