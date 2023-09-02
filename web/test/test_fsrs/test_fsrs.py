@@ -1,8 +1,9 @@
-from web.blog.fsrs import *
+from blog.fsrs import FSRS, Rating, Card
 from datetime import datetime
 
 
 def print_scheduling_cards(scheduling_cards):
+    print()
     print("again.card:", scheduling_cards[Rating.Again].card.__dict__)
     print("again.review_log:", scheduling_cards[Rating.Again].review_log.__dict__)
     print("hard.card:", scheduling_cards[Rating.Hard].card.__dict__)

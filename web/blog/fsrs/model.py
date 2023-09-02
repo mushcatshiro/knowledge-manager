@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 import copy
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 from enum import IntEnum
 
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
+from sqlalchemy.orm import relationship, validates
 
 from blog.core.crud import Base
 
@@ -21,6 +21,18 @@ class Rating(IntEnum):
     Hard = 2
     Good = 3
     Easy = 4
+
+
+class ReviewLogModel(Base):
+    __tablename__ = "review_logs"
+    ridx = Column(Integer, primary_key=True, index=True)
+    rating: int = Column(Integer)
+    elapsed_days: int = Column(Integer)
+    scheduled_days: int = Column(Integer)
+    review: datetime = Column(DateTime)
+    state: int = Column(Integer)
+    cidx = Column(Integer, ForeignKey("cards.cidx"))
+    card = relationship("CardModel", back_populates="review_logs")
 
 
 class ReviewLog:
@@ -45,7 +57,19 @@ class ReviewLog:
         self.state = state
 
 class CardModel(Base):
-    __tablename__ = "card"
+    """
+    Card model
+    TODO
+    ----
+    - chinese support
+    - image support
+    - audio support
+    - video support
+    - latex support
+    - markdown support
+    """
+    __tablename__ = "cards"
+    cidx = Column(Integer, primary_key=True, index=True)
     due: datetime = Column(DateTime, default=datetime.utcnow)
     stability: float = Column(Integer, default=0)
     difficulty: float = Column(Integer, default=0)
@@ -54,12 +78,14 @@ class CardModel(Base):
     reps: int = Column(Integer, default=0)
     lapses: int = Column(Integer, default=0)
     state: State = Column(Integer, default=State.New)
-    last_review: datetime = Column(DateTime, default=datetime.utcnow)
-    title: str = relationship('')
+    last_review: datetime = Column(DateTime, nullable=True)
+    title = Column(String, index=True)
+    question = Column(String)
+    answer = Column(String)
+    review_logs = relationship("ReviewLogModel", back_populates="card")
 
     def __repr__(self) -> str:
         return "<title %r>" % self.title
-
 
     def get_retrievability(self, now: datetime) -> Optional[float]:
         if self.state == State.Review:
@@ -67,6 +93,10 @@ class CardModel(Base):
             return (1 + elapsed_days / (9 * self.stability)) ** -1
         else:
             return None
+
+    def render(self) -> str:
+        raise NotImplementedError
+
 
 class Card:
     due: datetime
@@ -156,7 +186,7 @@ class SchedulingCards:
         self.good.due = now + timedelta(days=good_interval)
         self.easy.due = now + timedelta(days=easy_interval)
 
-    def record_log(self, card: Card, now: datetime) -> dict[int, SchedulingInfo]:
+    def record_log(self, card: Card, now: datetime) -> Dict[int, SchedulingInfo]:
         return {
             Rating.Again: SchedulingInfo(
                 self.again,

@@ -1,5 +1,6 @@
 from .model import *
 import math
+from typing import Dict
 
 
 class FSRS:
@@ -15,7 +16,7 @@ class FSRS:
     def __init__(self) -> None:
         self.p = Parameters()
 
-    def repeat(self, card: Card, now: datetime) -> dict[int, SchedulingInfo]:
+    def repeat(self, card: Card, now: datetime) -> Dict[int, SchedulingInfo]:
         card = copy.deepcopy(card)
         if card.state == State.New:
             card.elapsed_days = 0
