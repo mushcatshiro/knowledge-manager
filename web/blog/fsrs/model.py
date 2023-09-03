@@ -25,13 +25,13 @@ class Rating(IntEnum):
 
 class ReviewLogModel(Base):
     __tablename__ = "review_logs"
-    ridx = Column(Integer, primary_key=True, index=True)
+    rid = Column(Integer, primary_key=True, index=True)
     rating: int = Column(Integer)
     elapsed_days: int = Column(Integer)
     scheduled_days: int = Column(Integer)
     review: datetime = Column(DateTime)
     state: int = Column(Integer)
-    cidx = Column(Integer, ForeignKey("cards.cidx"))
+    id = Column(Integer, ForeignKey("cards.id"))
     card = relationship("CardModel", back_populates="review_logs")
 
 
@@ -71,7 +71,7 @@ class CardModel(Base):
     """
 
     __tablename__ = "cards"
-    cidx = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True)
     due: datetime = Column(DateTime, default=datetime.utcnow)
     stability: float = Column(Integer, default=0)
     difficulty: float = Column(Integer, default=0)
@@ -87,17 +87,44 @@ class CardModel(Base):
     review_logs = relationship("ReviewLogModel", back_populates="card")
 
     def __repr__(self) -> str:
-        return "<title %r>" % self.title
+        return "<id %r title %r>" % (self.id, self.title)
 
-    def get_retrievability(self, now: datetime) -> Optional[float]:
-        if self.state == State.Review:
-            elapsed_days = max(0, (now - self.last_review).days)
-            return (1 + elapsed_days / (9 * self.stability)) ** -1
-        else:
-            return None
+    def get_fsrs_details(self):
+        return {
+            "due": self.due,
+            "stability": self.stability,
+            "difficulty": self.difficulty,
+            "elapsed_days": self.elapsed_days,
+            "scheduled_days": self.scheduled_days,
+            "reps": self.reps,
+            "lapses": self.lapses,
+            "state": self.state,
+            "last_review": self.last_review,
+        }
+
+    def update_fsrs_details(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def render(self) -> str:
         raise NotImplementedError
+
+    def to_dict(self) -> Dict:
+        return {
+            "id": self.id,
+            "due": self.due,
+            "stability": self.stability,
+            "difficulty": self.difficulty,
+            "elapsed_days": self.elapsed_days,
+            "scheduled_days": self.scheduled_days,
+            "reps": self.reps,
+            "lapses": self.lapses,
+            "state": self.state,
+            "last_review": self.last_review,
+            "title": self.title,
+            "question": self.question,
+            "answer": self.answer,
+        }
 
 
 class Card:
@@ -111,15 +138,33 @@ class Card:
     state: State
     last_review: datetime
 
-    def __init__(self) -> None:
-        self.due = datetime.utcnow()
-        self.stability = 0
-        self.difficulty = 0
-        self.elapsed_days = 0
-        self.scheduled_days = 0
-        self.reps = 0
-        self.lapses = 0
-        self.state = State.New
+    def __init__(
+        self,
+        due=None,
+        stability=0,
+        difficulty=0,
+        elapsed_days=0,
+        scheduled_days=0,
+        reps=0,
+        lapses=0,
+        state=None,
+        last_review=None,
+    ) -> None:
+        """
+        TODO
+        ----
+        self.last_review should be set to None if state is New and maybe also
+        when state is relearning.
+        """
+        self.due = due if due else datetime.utcnow()
+        self.stability = stability
+        self.difficulty = difficulty
+        self.elapsed_days = elapsed_days
+        self.scheduled_days = scheduled_days
+        self.reps = reps
+        self.lapses = lapses
+        self.state = state if state else State.New
+        self.last_review = last_review if last_review else datetime.utcnow()
 
     def get_retrievability(self, now: datetime) -> Optional[float]:
         if self.state == State.Review:

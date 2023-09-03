@@ -1,5 +1,3 @@
-from sqlalchemy.orm import Session
-
 from blog.core.crud import CRUDBase
 from blog.bookmark import BookmarkModel
 

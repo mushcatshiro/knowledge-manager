@@ -1,6 +1,9 @@
 from blog.fsrs import FSRS, Rating, Card
 from datetime import datetime
 
+from blog.core.crud import CRUDBase
+from blog.fsrs.model import CardModel
+
 
 def print_scheduling_cards(scheduling_cards):
     print()
@@ -68,3 +71,17 @@ def test_repeat():
 
     print(ivl_history)
     assert ivl_history == [0, 5, 16, 43, 106, 236, 0, 0, 12, 25, 47, 85, 147]
+
+def test_functionality(db):
+    instance, engine = db
+    cb = CRUDBase(CardModel, engine)
+    instance = cb.execute(operation="get", id=1)
+    c_details = instance.get_fsrs_details()
+    f = FSRS()
+    card = Card(**c_details)
+    now = datetime(2023, 9, 3, 22, 0, 0, 0)
+    scheduling_cards = f.repeat(card, now)
+    c = scheduling_cards[Rating.Easy].card.__dict__
+    instance.update_fsrs_details(**c)
+    cb = CRUDBase(CardModel, engine)
+    instance = cb.execute("update", **instance.to_dict())
