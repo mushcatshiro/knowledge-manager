@@ -72,6 +72,7 @@ def test_repeat():
     print(ivl_history)
     assert ivl_history == [0, 5, 16, 43, 106, 236, 0, 0, 12, 25, 47, 85, 147]
 
+
 def test_functionality(db):
     instance, engine = db
     cb = CRUDBase(CardModel, engine)

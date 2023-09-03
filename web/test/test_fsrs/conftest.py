@@ -17,4 +17,3 @@ def db():
     )
     yield instance, engine
     os.remove("./test.db")
-    
