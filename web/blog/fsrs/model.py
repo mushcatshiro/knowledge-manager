@@ -56,6 +56,7 @@ class ReviewLog:
         self.review = review
         self.state = state
 
+
 class CardModel(Base):
     """
     Card model
@@ -68,6 +69,7 @@ class CardModel(Base):
     - latex support
     - markdown support
     """
+
     __tablename__ = "cards"
     cidx = Column(Integer, primary_key=True, index=True)
     due: datetime = Column(DateTime, default=datetime.utcnow)
