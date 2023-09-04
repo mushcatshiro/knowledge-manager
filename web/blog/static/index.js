@@ -117,5 +117,5 @@ function localStorageOps(action, key, value) {
 }
 
 function todosOps() {
-    
+
 }

@@ -8,3 +8,6 @@ contents/
 coverage/
 instance/
 venv/
+templates/*
+*.db
+flask_session/

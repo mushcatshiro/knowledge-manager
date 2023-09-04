@@ -1,71 +1,47 @@
-from flask import Blueprint, jsonify, request, current_app, url_for
+from flask import Blueprint, jsonify, request
+import datetime as dt
 
-from blog.models import Bookmark
-from utils.database import PostgresConx
+from blog.bookmark import BookmarkModel
+from blog.auth import verify_token
+from blog.core.crud import CRUDBase
+from blog.utils.healthcheck import server_healthcheck
+from blog import db
 
 api = Blueprint("api", __name__)
 
 
-@api.route("/mock", methods=["GET"])
-def mock():
-    return jsonify([
-        {
-            "title": "optimization",
-            "url": "www.example.com",
-            "desc": "optimization is interesting!"
-        },
-        {
-            "title": "distributed systems",
-            "url": "www.example.com",
-            "desc": "distributed system is fun"
-        }
-    ])
-
-@api.route("/reading_list", methods=["POST"])
-def reading_list():
-    payload = request.json
-    p = PostgresConx(
-        current_app.config["DSN"],
-        "SELECT page_title, url, description FROM history",
-        "QUERY",
-        None
-    )
-    ret, error = p.run()
-    if not error:
-        return jsonify(ret)
-
-@api.route("/detail")
-def detail():
-    return jsonify({
-        "text": "lorem"
-    })
-
-
-@api.route("/image", methods=["POST"])
-def image():
-    payload = request.json
-    fname = payload["probe"] + ".webp"
-    return jsonify({"url": url_for("static", filename=fname)})
-
-"""
-@api.route("/auth", methods=["POST"])
-def auth():
-    payload = request.json
-    if payload["auth"] == current_app.config["auth"]:
-        return current_app.config[""]
-"""
-
 @api.route("/bookmark", methods=["GET"])
 def bookmark():
     payload = request.args.to_dict()
-    # TODO deal with nexturl
-    payload.pop("nexturl")
-    payload.pop("token")
-    rv = Bookmark().create(payload)
-    return {"status": "success", **rv}
+    if verify_token(payload["token"]):
+        payload.pop("token")
+        basecrud = CRUDBase(BookmarkModel, db)
+        instance: BookmarkModel = basecrud.execute(operation="create", **payload)
+        if not instance:
+            raise Exception("Bookmark not created")
+        return jsonify({"status": "success", "payload": instance.to_json()})
+    else:
+        raise Exception("Invalid token")
 
-@api.route("/query", methods=["GET"])
-def query():
-    rv = Bookmark().read()
-    print(rv)
-    return {"status": "success", "rvs": rv}
+
+@api.route("/healthcheck", methods=["GET"])
+def healthcheck():
+    """
+    - Add database healthcheck
+    - Add redis healthcheck
+    - Add celery healthcheck
+    """
+    payload = {
+        "timestamp": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "status": None,
+        "message": None,
+    }
+    try:
+        health = server_healthcheck()
+    except Exception as e:
+        payload["status"] = "error"
+        payload["message"] = str(e)
+    else:
+        payload["status"] = "success"
+        payload.update(health)
+    return jsonify(payload)

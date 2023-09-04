@@ -1,0 +1,14 @@
+version: '1'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    env_file: .env
+    restart: always
+    links:
+      - db:dbserver
+  db:
+    image: "postgres:15.3"
+    env_file: .env-postgres
+    restart: always

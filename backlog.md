@@ -5,18 +5,22 @@ priority is ranked based on the `*` symbol.
 ## web
 - [ ] accomplishing everything in single file and less than 200 lines (not important)
 - [ ] minimize use of packages
-- [ ] bookmarklet (.py)
-  - [ ] remove argparse import in bookmarklet.py
-  - [ ] move init to create_app
+- [x] bookmarklet (.py)
+  - [x] remove argparse import in bookmarklet.py
+  - [x] move to web
   - [ ] open graph protocol
+  - [ ] minimize js on save?
+  - [ ] crawl innerHTML
+    - [ ] make optional
 - [ ] implement indexing function for search
 - [ ] health monitoring *
-  - [ ] application
-  - [ ] server monitoring
+  - [x] application
+  - [x] server monitoring
 - [ ] web blog feature list
   - [ ] html render
     - [ ] target under 1ms
     - [ ] custom markdown-esque renderer *
+    - [ ] remove dependency `highlight.js` with codehilite/pygments
   - [ ] simple search box
     - [x] ~~search hints~~
     - [ ] imitate CLI `executable *args **kwargs`
@@ -25,16 +29,16 @@ priority is ranked based on the `*` symbol.
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
   - [ ] admin edit page
-    - [ ] passcode for auth
-    - [ ] taking quick notes
+    - [x] passcode for auth
+    - [x] taking quick notes
       - [ ] converting notes to proper documents
-    - [ ] on demand siyuan notes instance
-      - [ ] redirect
-      - [ ] kill instance
+    - [ ] ~~on demand siyuan notes instance~~
     - [ ] calendar and daily management
     - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
   - [ ] site is down update (external)
   - [ ] minimize javascript
+    - [ ] code highlight
+    - [ ] bootstrap
   - [ ] blog preload function calls
     - [ ] read index to memory
     - [ ] check static folder
@@ -52,7 +56,7 @@ priority is ranked based on the `*` symbol.
     - [ ] extend documents into TODOs
     - [ ] extend into blog post
   - [ ] visualization of the documents
-  - [ ] file structure one blueprint per functionality (search, recommend and etc)
+  - [x] file structure one blueprint per functionality (search, recommend and etc)
   - [ ] stable diffusion to change image
   - [ ] Intersection Observer
   - [ ] better db conn (with is not the best option)
@@ -69,15 +73,17 @@ priority is ranked based on the `*` symbol.
     - [ ] asgi compatibility
   - [ ] rate limiter
   - [ ] metric tracking
-    - [ ] traffic and user
+    - [x] traffic and user
     - [ ] cache hit rate
     - [ ] google analytic?
 - [ ] litestar migration *
+  - to reconsider as litestar has >= py3.8 requirement
+  - to consider python3.8
 - [ ] test
-  - [ ] pytest *
-  - [ ] coverage
+  - [x] pytest *
+  - [ ] pytest-coverage
 - [ ] containerize
-- [ ] poetry?
+- [x] poetry
 - [ ] OCR support?
 - [ ] auto ref link between documents
 - [ ] UI
@@ -85,12 +91,3 @@ priority is ranked based on the `*` symbol.
 - [ ] logging
 - [ ] pre-commit
 - [ ] github build-test for merging
-
-## bookmarklet
-- [ ] minimize js on save?
-- [ ] crawl innerHTML
-  - [ ] make optional
-- [x] better error handling
-  - [ ] ~~.py~~
-  - [ ] .js
-- [ ] merge .py into web

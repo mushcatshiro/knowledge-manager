@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+{% if blog_list %}
+<h1>Blog Posts</h1>
+<ul>
+{% for li in blog_list %}
+    <li><a href="{{ url_for('main.blog_with_title', title=li) }}">{{ li }}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
+{% if content %}
+{{ content|safe}}
+{% endif %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/material-palenight.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>
+  hljs.highlightAll();
+  var elm = document.getElementsByTagName('table')
+  var length = elm.length;
+  for (var i = 0; i < length; i++) {
+    elm[i].className = elm[i].className + " table";
+  };
+</script>
+{% endblock %}

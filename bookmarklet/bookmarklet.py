@@ -21,9 +21,9 @@ def bookmark():
 
     with conn:
         cur = conn.cursor()
-        try: 
+        try:
             cur.execute(
-                '''
+                """
                 INSERT INTO history (
                     page_title,
                     url,
@@ -32,19 +32,20 @@ def bookmark():
                     date,
                     is_pushed
                 ) VALUES(?,?,?,?,?,?)
-                ''',
+                """,
                 (
-                    payload['title'],
-                    payload['url'],
-                    payload['desc'],
-                    payload['img'],
+                    payload["title"],
+                    payload["url"],
+                    payload["desc"],
+                    payload["img"],
                     now,
-                    0
-                )
+                    0,
+                ),
             )
         except s.IntegrityError:
             return jsonify({"status": "entry existed"}), 400
     return jsonify({"status": "success", "payload": payload})
+
 
 @app.cli.command()
 @click.option("--storage", required=True)
@@ -54,7 +55,7 @@ def init(storage):
         with conn:
             cur = conn.cursor()
             cur.execute(
-                '''
+                """
                 CREATE TABLE IF NOT EXISTS history (
                     page_title TEXT NOT NULL,
                     url TEXT PRIMARY KEY NOT NULL,
@@ -63,13 +64,15 @@ def init(storage):
                     date TEXT NOT NULL,
                     is_pushed INT
                 )
-                '''
+                """
             )
+
 
 @app.cli.command()
 @click.option("--storage", required=True)
 def backup(storage, username, password, database, port):
     pass
+
 
 @app.cli.command()
 @click.option("--storage", required=True)
@@ -77,11 +80,16 @@ def backup(storage, username, password, database, port):
 def inspect(storage, full):
     if os.path.exists(storage):
         conn = s.connect(storage)
-        q = 'SELECT * FROM history' if full else 'SELECT * FROM history WHERE is_pushed=0'
+        q = (
+            "SELECT * FROM history"
+            if full
+            else "SELECT * FROM history WHERE is_pushed=0"
+        )
         with conn:
             cur = conn.cursor()
             cur.execute(q)
             import json
+
             click.echo(json.dumps(cur.fetchall(), indent=2))
 
 
