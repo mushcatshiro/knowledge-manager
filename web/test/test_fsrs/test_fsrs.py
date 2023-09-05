@@ -82,7 +82,7 @@ def test_functionality(db):
     card = Card(**c_details)
     now = datetime(2023, 9, 3, 22, 0, 0, 0)
     scheduling_cards = f.repeat(card, now)
-    c = scheduling_cards[Rating.Easy].card.__dict__
+    c = scheduling_cards[Rating.convert("Easy")].card.__dict__
     instance.update_fsrs_details(**c)
     cb = CRUDBase(CardModel, engine)
     instance = cb.execute("update", **instance.to_dict())

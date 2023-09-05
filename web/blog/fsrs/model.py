@@ -22,6 +22,13 @@ class Rating(IntEnum):
     Good = 3
     Easy = 4
 
+    @classmethod
+    def convert(cls, rating: str) -> "Rating":
+        if rating in cls.__members__:
+            return cls.__members__[rating]
+        else:
+            raise ValueError
+
 
 class ReviewLogModel(Base):
     __tablename__ = "review_logs"
