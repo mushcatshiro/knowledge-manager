@@ -10,8 +10,11 @@ from flask import (
 import os
 import markdown
 
+from blog import db
 from blog.auth import verify_token
+from blog.bookmark import BookmarkModel
 from blog.core import process_request
+from blog.core.crud import CRUDBase
 
 main = Blueprint("main", __name__)
 
@@ -106,6 +109,15 @@ def preview():
         title=title,
         converted_content=converted_content,
     )
+
+
+@main.route("/bookmarklet-list", methods=["GET"])
+def bookmarklet_list():
+    basecrud = CRUDBase(BookmarkModel, db)
+    instances = basecrud.execute(operation="get_all")
+    if not instances:
+        raise Exception("Bookmark not created")
+    return render_template("bookmarklet.html", bookmarks=instances, bookmarklet_list=True)
 
 
 @main.route("/favicon.ico")

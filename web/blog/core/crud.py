@@ -39,6 +39,27 @@ class CRUDBase:
         )
         return instance
 
+    def get_all(self, session, model, query, **kwargs):
+        """
+        Get an instance of a model with the given id
+        Args:
+        -----
+        session: Session
+            SQLAlchemy session object bound to the engine
+        model: Model
+            SQLAlchemy model class
+        id: int
+            id of the instance to be fetched
+        Returns:
+        --------
+        instance: Model
+        """
+        del query
+        instance = (
+            session.execute(select(model))
+        )
+        return instance
+
     def create(self, session, model, query, **kwargs):
         """
         Create an instance of a model with the given kwargs
