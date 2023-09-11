@@ -55,9 +55,7 @@ class CRUDBase:
         instance: Model
         """
         del query
-        instance = (
-            session.execute(select(model))
-        )
+        instance = session.execute(select(model))
         return instance
 
     def create(self, session, model, query, **kwargs):
