@@ -14,6 +14,7 @@ priority is ranked based on the `*` symbol.
     - [ ] make optional
   - [ ] list view of saved reads
     - [ ] search fn
+    - [ ] pagination
 - [ ] implement indexing function for search
 - [ ] health monitoring *
   - [x] application

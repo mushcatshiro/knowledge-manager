@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<ul>
+{% for li in bookmarks %}
+  <li>
+    <a href="{% li.url %}">{{ li.title }}</a>
+    <p>{{ li.desc }}</p>
+    <p>{{ li.timestamp }}</p>
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}
