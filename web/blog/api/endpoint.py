@@ -31,6 +31,8 @@ def healthcheck():
     - Add redis healthcheck
     - Add celery healthcheck
     """
+    if not verify_token(request.args.get("token")):
+        raise Exception("Invalid token")
     payload = {
         "timestamp": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "status": None,
