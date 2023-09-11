@@ -12,6 +12,8 @@ priority is ranked based on the `*` symbol.
   - [ ] minimize js on save?
   - [ ] crawl innerHTML
     - [ ] make optional
+  - [ ] list view of saved reads
+    - [ ] search fn
 - [ ] implement indexing function for search
 - [ ] health monitoring *
   - [x] application
