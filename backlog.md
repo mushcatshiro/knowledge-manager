@@ -16,6 +16,9 @@ priority is ranked based on the `*` symbol.
 - [ ] health monitoring *
   - [x] application
   - [x] server monitoring
+  - [ ] make request task queue async
+    - [ ] timestamp checkpoint
+    - [ ] cron ping internal api
 - [ ] web blog feature list
   - [ ] html render
     - [ ] target under 1ms
