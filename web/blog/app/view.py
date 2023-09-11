@@ -117,7 +117,9 @@ def bookmarklet_list():
     instances = basecrud.execute(operation="get_all")
     if not instances:
         raise Exception("Bookmark not created")
-    return render_template("bookmarklet.html", bookmarks=instances, bookmarklet_list=True)
+    return render_template(
+        "bookmarklet.html", bookmarks=instances, bookmarklet_list=True
+    )
 
 
 @main.route("/favicon.ico")
