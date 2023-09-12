@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 {% block content %}
+<h1>Bookmarks</h1>
+<p>Here are the reading list bookmarked. They do not represent the opinion or
+the view of the owner of this site and should not be constructed as such.</p>
+<p>There are {{ total }} entries in total</p>
 <ul>
 {% for li in bookmarks %}
   <li>
-    <a href="{% li.url %}">{{ li.title }}</a>
-    <p>{{ li.desc }}</p>
-    <p>{{ li.timestamp }}</p>
+    <a href="{{ li.url }}">{{ li.title }}</a> - 
+    <span style="font-style: italic; color: darkgray;">{{ li.desc }}</span> -
+    <span>{{ li.timestamp }}</span>
   </li>
 {% endfor %}
 </ul>
