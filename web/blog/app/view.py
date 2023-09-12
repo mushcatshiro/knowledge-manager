@@ -118,7 +118,10 @@ def bookmarklet_list():
     if not instances:
         raise Exception("Bookmark not created")
     return render_template(
-        "bookmarklet.html", bookmarks=instances, total=len(instances), bookmarklet_list=True
+        "bookmarklet.html",
+        bookmarks=instances,
+        total=len(instances),
+        bookmarklet_list=True,
     )
 
 
