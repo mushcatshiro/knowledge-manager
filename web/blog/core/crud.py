@@ -41,21 +41,23 @@ class CRUDBase:
 
     def get_all(self, session, model, query, **kwargs):
         """
-        Get an instance of a model with the given id
+        Get all instance of a model
         Args:
         -----
         session: Session
             SQLAlchemy session object bound to the engine
         model: Model
             SQLAlchemy model class
-        id: int
-            id of the instance to be fetched
         Returns:
         --------
-        instance: Model
+        instances: List[Model]
+        TODO
+        ----
+        - add pagination
         """
         del query
-        instance = session.execute(select(model))
+        # query all instances
+        instance = session.execute(select(model)).scalars().all()
         return instance
 
     def create(self, session, model, query, **kwargs):
