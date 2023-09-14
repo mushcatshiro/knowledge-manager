@@ -119,7 +119,7 @@ def bookmarklet_list():
         raise Exception("Bookmark not created")
     return render_template(
         "bookmarklet.html",
-        bookmarks=instances,
+        bookmarks=[instance.to_json() for instance in instances],
         total=len(instances),
         bookmarklet_list=True,
     )
