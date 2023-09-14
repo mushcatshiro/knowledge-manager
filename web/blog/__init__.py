@@ -120,7 +120,9 @@ def error_handler(e):
     """
     if not hasattr(e, "code"):
         e.code = 500
+    if not hasattr(e, "description"):
         e.description = "Unexpected error raised within the code"
+    if not hasattr(e, "name"):
         e.name = "Internal Server Error"
     current_app.logger.error({"error": e, "traceback": traceback.format_exc()})
     return (
