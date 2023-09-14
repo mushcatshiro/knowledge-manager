@@ -161,5 +161,8 @@ class CRUDBase:
             else:
                 # refresh the instance to get the latest data
                 # or make sure BookmarksModel is bound to some session
+                if operation == "get_all":
+                   # resp = [session.refresh(r) for r in resp]
+                   return resp
                 session.refresh(resp)
                 return resp

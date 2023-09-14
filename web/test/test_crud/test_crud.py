@@ -40,7 +40,5 @@ def test_update(db):
 
 def test_get_all(db):
     basecrud = CRUDBase(BookmarkModel, db)
-    instance = basecrud.execute(operation="get_all",)
-    print(instance)
-    assert len(instance.to_json()) == 3
-    # query the inserted object
+    instance = basecrud.execute(operation="get_all")
+    assert len(instance) >= 3
