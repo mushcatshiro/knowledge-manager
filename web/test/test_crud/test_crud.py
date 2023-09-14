@@ -36,3 +36,11 @@ def test_update(db):
     assert instance.url == "http://test_update.com"
     assert instance.img == "http://test_update.com/img"
     assert instance.desc == "test_update"
+
+
+def test_get_all(db):
+    basecrud = CRUDBase(BookmarkModel, db)
+    instance = basecrud.execute(operation="get_all",)
+    print(instance)
+    assert len(instance.to_json()) == 3
+    # query the inserted object
