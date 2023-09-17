@@ -113,8 +113,17 @@ def preview():
 
 @main.route("/bookmarklet-list", methods=["GET"])
 def bookmarklet_list():
+    # page = request.args.get('page', 1, type=int)
+    query_string =\
+    "select * from bookmark "\
+    "order by timestamp desc "\
+    # f"limit {100 * page} offset {100 * (page - 1)}"
+
     basecrud = CRUDBase(BookmarkModel, db)
-    instances = basecrud.execute(operation="get_all")
+    instances = basecrud.execute(
+        operation="custom_query",
+        query=query_string,
+    )
     if not instances:
         raise Exception("Bookmark not created")
     return render_template(
@@ -132,3 +141,12 @@ def favicon():
         "favicon.ico",
         mimetype="image/vnd.microsoft.icon",
     )
+
+
+@main.route("/robots.txt")
+def robots():
+    stmt =\
+    "User-agent: *\n"\
+    "allow: /blog\n"\
+    "allow: /about\n"
+    return stmt

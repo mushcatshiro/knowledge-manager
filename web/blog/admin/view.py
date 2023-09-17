@@ -1,8 +1,9 @@
 from flask import Blueprint, request, render_template, session, redirect
 from urllib.parse import quote_plus
 
-from blog import sess
+from blog import sess, db
 from blog.auth import verify_token
+from blog.core.crud import CRUDBase
 
 
 admin = Blueprint("admin", __name__)
@@ -35,4 +36,19 @@ def fsrs_setup_configs():
 
 @admin.route("/fsrs/review", methods=["GET", "POST"])
 def fsrs_review():
+    pass
+
+
+@admin.route("/edit/<string:modelname>", methods=["GET", "POST"])
+def edit(modelname):
+    if request.method == "POST":
+        basecrud = CRUDBase(modelname, db)
+        instance = basecrud.execute(
+            operation="update",
+            id=request.form["id"],
+            title=request.form["title"],
+            url=request.form["url"],
+            img=request.form["img"],
+            desc=request.form["desc"],
+        )
     pass
