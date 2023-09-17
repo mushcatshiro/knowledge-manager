@@ -9,7 +9,7 @@ def set_env_var(fname=".env") -> None:
         try:
             config = json.loads(rf.read())
         except json.decoder.JSONDecodeError:
-            config = json.loads(dict(rf.read()))
+            config = json.load(rf.read())
 
     for k, v in config.items():
         if v is not None and v is not "":
