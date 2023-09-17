@@ -39,6 +39,7 @@ priority is ranked based on the `*` symbol.
     - [x] passcode for auth
     - [x] taking quick notes
       - [ ] converting notes to proper documents
+      - [ ] move to admin
     - [ ] ~~on demand siyuan notes instance~~
     - [ ] calendar and daily management
     - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
