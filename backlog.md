@@ -13,6 +13,7 @@ priority is ranked based on the `*` symbol.
   - [ ] crawl innerHTML
     - [ ] make optional
   - [ ] list view of saved reads
+    - [x] base
     - [ ] search fn
     - [ ] pagination
 - [ ] implement indexing function for search
@@ -41,6 +42,9 @@ priority is ranked based on the `*` symbol.
     - [ ] ~~on demand siyuan notes instance~~
     - [ ] calendar and daily management
     - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
+    - [ ] flask-admin
+      - [ ] database model views
+      - [ ] static file handling for blog and blog images
   - [ ] site is down update (external)
   - [ ] minimize javascript
     - [ ] code highlight
@@ -88,6 +92,7 @@ priority is ranked based on the `*` symbol.
 - [ ] test
   - [x] pytest *
   - [ ] pytest-coverage
+  - [ ] integration test (test_app)
 - [ ] containerize
 - [x] poetry
 - [ ] OCR support?
@@ -96,4 +101,5 @@ priority is ranked based on the `*` symbol.
   - [ ] right aligned headers
 - [ ] logging
 - [ ] pre-commit
+  - [ ] isort (py3.8)
 - [ ] github build-test for merging
