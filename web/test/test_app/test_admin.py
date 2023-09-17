@@ -1,4 +1,4 @@
-def test_before_request_handler(test_app):
+def test_admin_route_before_request_handler(test_app):
     client = test_app.test_client(use_cookies=True)
     response = client.get("/admin/fsrs/setup/cards")
     assert response.status_code == 302
