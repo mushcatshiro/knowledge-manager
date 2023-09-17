@@ -1,4 +1,15 @@
-from flask import Blueprint, request, render_template, session, redirect
+import os
+import markdown
+
+from flask import (
+    Blueprint,
+    request,
+    render_template,
+    session,
+    redirect,
+    url_for,
+    current_app,
+)
 from urllib.parse import quote_plus
 
 from blog import sess, db
@@ -7,6 +18,8 @@ from blog.core.crud import CRUDBase
 
 
 admin = Blueprint("admin", __name__)
+
+md = markdown.Markdown(extensions=["fenced_code", "tables"])
 
 
 @admin.before_request
@@ -37,6 +50,43 @@ def fsrs_setup_configs():
 @admin.route("/fsrs/review", methods=["GET", "POST"])
 def fsrs_review():
     pass
+
+
+@admin.route("/draft", methods=["GET", "POST"])
+def draft():
+    content = ""
+    title = ""
+    if request.method == "POST":
+        content = request.form["content"]
+        title = request.form["title"]
+    return render_template("draft.html", content=content, title=title, draft=True)
+
+
+@admin.route("/save", methods=["POST"])
+def save():
+    if verify_token(request.form["token"]):
+        blog_root = current_app.config["BLOG_PATH"]
+        blog_title = request.form["title"]
+        with open(
+            os.path.join(blog_root, f"{blog_title}.md"), "w", encoding="utf-8"
+        ) as f:
+            f.write(request.form["content"])
+        return redirect(url_for("main.blog"))
+    else:
+        raise Exception("Invalid token")
+
+
+@admin.route("/preview", methods=["POST"])
+def preview():
+    content = request.form["content"]
+    title = request.form["title"]
+    converted_content = md.convert(content)
+    return render_template(
+        "preview.html",
+        content=content,
+        title=title,
+        converted_content=converted_content,
+    )
 
 
 @admin.route("/edit/<string:modelname>", methods=["GET", "POST"])

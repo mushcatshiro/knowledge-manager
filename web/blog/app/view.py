@@ -74,50 +74,12 @@ def blog_with_title(title):
     return render_template("blog.html", content=content, blog=True)
 
 
-@main.route("/draft", methods=["GET", "POST"])
-def draft():
-    content = ""
-    title = ""
-    if request.method == "POST":
-        content = request.form["content"]
-        title = request.form["title"]
-    return render_template("draft.html", content=content, title=title, draft=True)
-
-
-@main.route("/save", methods=["POST"])
-def save():
-    if verify_token(request.form["token"]):
-        blog_root = current_app.config["BLOG_PATH"]
-        blog_title = request.form["title"]
-        with open(
-            os.path.join(blog_root, f"{blog_title}.md"), "w", encoding="utf-8"
-        ) as f:
-            f.write(request.form["content"])
-        return redirect(url_for("main.blog"))
-    else:
-        raise Exception("Invalid token")
-
-
-@main.route("/preview", methods=["POST"])
-def preview():
-    content = request.form["content"]
-    title = request.form["title"]
-    converted_content = md.convert(content)
-    return render_template(
-        "preview.html",
-        content=content,
-        title=title,
-        converted_content=converted_content,
-    )
-
-
 @main.route("/bookmarklet-list", methods=["GET"])
 def bookmarklet_list():
     # page = request.args.get('page', 1, type=int)
-    query_string =\
-    "select * from bookmark "\
-    "order by timestamp desc "\
-    # f"limit {100 * page} offset {100 * (page - 1)}"
+    query_string = (
+        "select * from bookmark " "order by timestamp desc "
+    )  # f"limit {100 * page} offset {100 * (page - 1)}"
 
     basecrud = CRUDBase(BookmarkModel, db)
     instances = basecrud.execute(
@@ -145,8 +107,5 @@ def favicon():
 
 @main.route("/robots.txt")
 def robots():
-    stmt =\
-    "User-agent: *\n"\
-    "allow: /blog\n"\
-    "allow: /about\n"
+    stmt = "User-agent: *\n" "allow: /blog\n" "allow: /about\n"
     return stmt
