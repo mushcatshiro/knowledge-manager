@@ -31,4 +31,5 @@ jobs:
         echo "${{ secrets.INTEGRATION_ENV }}" > .env
     - name: Run integration tests
       run: |
+        cd web
         python -m poetry run pytest -v --cov=blog/app/ test/test_app/
