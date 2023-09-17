@@ -69,7 +69,6 @@ priority is ranked based on the `*` symbol.
   - [ ] visualization of the documents
   - [x] file structure one blueprint per functionality (search, recommend and etc)
   - [ ] stable diffusion to change image
-  - [ ] Intersection Observer
   - [ ] better db conn (with is not the best option)
     - [x] base conx
   - [ ] gcp storage mount?
@@ -92,8 +91,8 @@ priority is ranked based on the `*` symbol.
   - to consider python3.8
 - [ ] test
   - [x] pytest *
-  - [ ] pytest-coverage
-  - [ ] integration test (test_app)
+  - [x] pytest-coverage
+  - [x] integration test (test_app)
 - [ ] containerize
 - [x] poetry
 - [ ] OCR support?
