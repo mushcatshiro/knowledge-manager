@@ -16,6 +16,12 @@ def test_main_route_blog_dne(test_app):
 
 
 def test_main_route_bookmarklet_list(test_app, monkeypatch):
+    """
+    TODO
+    ----
+    - use database instead of monkeypatch
+    """
+
     def mock_query(*args, **kwargs):
         return MockCrudBase().execute()
 

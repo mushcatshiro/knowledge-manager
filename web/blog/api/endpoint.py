@@ -12,6 +12,11 @@ api = Blueprint("api", __name__)
 
 @api.route("/bookmark", methods=["GET"])
 def bookmark():
+    """
+    TODO
+    ----
+    - redirect to bookmark page
+    """
     payload = request.args.to_dict()
     if verify_token(payload["token"]):
         payload.pop("token")
@@ -30,6 +35,8 @@ def healthcheck():
     - Add database healthcheck
     - Add redis healthcheck
     - Add celery healthcheck
+    - run as async task
+    - add a view to show historical trend
     """
     if not verify_token(request.args.get("token")):
         raise Exception("Invalid token")

@@ -6,11 +6,17 @@ import os
 
 from blog.bookmark import BookmarkModel
 from blog.core.crud import Base
+from blog.utils import set_env_var
+
+
+def pytest_sessionstart(session):
+    config = session.config
+    set_env_var(fname=".env.test")
 
 
 @pytest.fixture(scope="session")
 def db():
-    engine = create_engine("sqlite:///./test.db", echo=True)
+    engine = create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"), echo=True)
     Base.metadata.create_all(engine)
     with Session(engine) as session:
         session.execute(
@@ -38,4 +44,4 @@ def db():
         )
         session.commit()
     yield engine
-    os.remove("./test.db")
+    os.remove(os.getenv("SQLALCHEMY_DATABASE_NAME"))
