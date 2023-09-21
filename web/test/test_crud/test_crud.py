@@ -42,3 +42,13 @@ def test_get_all(db):
     basecrud = CRUDBase(BookmarkModel, db)
     instance = basecrud.execute(operation="get_all")
     assert len(instance) >= 3
+
+
+def test_custom_query(db):
+    basecrud = CRUDBase(BookmarkModel, db)
+    instance = basecrud.execute(
+        operation="custom_query",
+        query="select * from bookmark"
+    )
+    assert len(instance) >= 3
+
