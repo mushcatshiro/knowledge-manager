@@ -144,10 +144,15 @@ class CRUDBase:
         """
         del model
         del kwargs
-        instance = session.execute(text(query))
+        instance = session.execute(text(query)).mappings().all()
         return instance
 
-    def execute(self, operation, query=None, **kwargs):
+    def execute(self, operation, query=None, **kwargs) -> dict:
+        """
+        TODO
+        ----
+        - always return result in dict
+        """
         if not hasattr(self, operation):
             raise Exception(f"operation {operation} not found")
         fn = getattr(self, operation)
@@ -163,6 +168,8 @@ class CRUDBase:
                 # or make sure BookmarksModel is bound to some session
                 if operation == "get_all":
                    # resp = [session.refresh(r) for r in resp]
+                   return resp
+                if operation == "custom_query":
                    return resp
                 session.refresh(resp)
                 return resp

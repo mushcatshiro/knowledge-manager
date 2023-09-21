@@ -78,7 +78,7 @@ def blog_with_title(title):
 def bookmarklet_list():
     # page = request.args.get('page', 1, type=int)
     query_string = (
-        "select * from bookmark " "order by timestamp desc "
+        "select * from bookmark order by timestamp desc"
     )  # f"limit {100 * page} offset {100 * (page - 1)}"
 
     basecrud = CRUDBase(BookmarkModel, db)
@@ -90,7 +90,7 @@ def bookmarklet_list():
         raise Exception("Bookmark not created")
     return render_template(
         "bookmarklet.html",
-        bookmarks=[instance.to_json() for instance in instances],
+        bookmarks=instances,
         total=len(instances),
         bookmarklet_list=True,
     )
@@ -107,5 +107,5 @@ def favicon():
 
 @main.route("/robots.txt")
 def robots():
-    stmt = "User-agent: *\n" "allow: /blog\n" "allow: /about\n"
+    stmt = "User-agent: *\nallow: /blog\n allow: /about\n"
     return stmt
