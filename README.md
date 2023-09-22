@@ -42,6 +42,8 @@ pytest --capture=no test\test_crud\test_crud.py
 pytest -q test\test_crud\test_crud.py
 # to run all test
 pytest
+# show coverage
+pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
 ```
 
 ## Acknowledgements
