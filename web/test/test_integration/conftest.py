@@ -1,3 +1,4 @@
+import os
 import pytest
 
 
@@ -12,3 +13,10 @@ def test_app():
     yield app
 
     ctx.pop()
+
+
+@pytest.fixture(scope="session")
+def auth_token(test_app):
+    client = test_app.test_client()
+    response = client.post("/auth/authenticate", json={"auth": os.getenv("AUTH")})
+    return response.json["token"]

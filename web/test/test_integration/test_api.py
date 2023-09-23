@@ -1,13 +1,4 @@
-import os
 import random
-import pytest
-
-
-@pytest.fixture(scope="module")
-def auth_token(test_app):
-    client = test_app.test_client()
-    response = client.post("/auth/authenticate", json={"auth": os.getenv("AUTH")})
-    return response.json["token"]
 
 
 def test_api_bookmark(test_app, auth_token):
