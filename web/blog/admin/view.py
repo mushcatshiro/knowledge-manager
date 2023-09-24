@@ -1,5 +1,5 @@
 import os
-import markdown
+from urllib.parse import quote_plus
 
 from flask import (
     Blueprint,
@@ -10,7 +10,7 @@ from flask import (
     url_for,
     current_app,
 )
-from urllib.parse import quote_plus
+import markdown
 
 from blog import sess, db
 from blog.auth import verify_token
@@ -25,15 +25,15 @@ md = markdown.Markdown(extensions=["fenced_code", "tables"])
 @admin.before_request
 def before_request_handler():
     if "token" not in session:
-        return redirect("/admin/login?next={}".format(quote_plus(request.url)))
+        return redirect(f"/admin/login?next={quote_plus(request.url)}")
 
 
 @admin.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST" and verify_token(request.form["token"]):
         sess["token"] = request.form["token"]
-        next = request.args.get("next", "/")
-        return redirect(next)
+        next_url = request.args.get("next", "/")
+        return redirect(next_url)
     return render_template("login.html")
 
 
@@ -69,11 +69,10 @@ def save():
         blog_title = request.form["title"]
         with open(
             os.path.join(blog_root, f"{blog_title}.md"), "w", encoding="utf-8"
-        ) as f:
-            f.write(request.form["content"])
+        ) as wf:
+            wf.write(request.form["content"])
         return redirect(url_for("main.blog"))
-    else:
-        raise Exception("Invalid token")
+    raise Exception("Invalid token")
 
 
 @admin.route("/preview", methods=["POST"])
@@ -89,16 +88,15 @@ def preview():
     )
 
 
-@admin.route("/edit/<string:modelname>", methods=["GET", "POST"])
+@admin.route("/edit/<string:modelname>", methods=["POST"])
 def edit(modelname):
-    if request.method == "POST":
-        basecrud = CRUDBase(modelname, db)
-        instance = basecrud.execute(
-            operation="update",
-            id=request.form["id"],
-            title=request.form["title"],
-            url=request.form["url"],
-            img=request.form["img"],
-            desc=request.form["desc"],
-        )
-    pass
+    basecrud = CRUDBase(modelname, db)
+    instance = basecrud.execute(
+        operation="update",
+        id=request.form["id"],
+        title=request.form["title"],
+        url=request.form["url"],
+        img=request.form["img"],
+        desc=request.form["desc"],
+    )
+    return instance

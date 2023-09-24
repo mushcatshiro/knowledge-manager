@@ -22,7 +22,7 @@ def test_main_route_bookmarklet_list(test_app, monkeypatch):
     - use database instead of monkeypatch
     """
 
-    def mock_query(*args, **kwargs):
+    def mock_query():
         return MockCrudBase().execute()
 
     monkeypatch.setattr(CRUDBase, "execute", mock_query)

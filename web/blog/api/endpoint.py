@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify, request
 import datetime as dt
+
+from flask import Blueprint, jsonify, request
 
 from blog.bookmark import BookmarkModel
 from blog.auth import verify_token
@@ -25,8 +26,7 @@ def bookmark():
         if not instance:
             raise Exception("Bookmark not created")
         return jsonify({"status": "success", "payload": instance.to_json()})
-    else:
-        raise Exception("Invalid token")
+    raise Exception("Invalid token")
 
 
 @api.route("/healthcheck", methods=["GET"])
@@ -47,9 +47,9 @@ def healthcheck():
     }
     try:
         health = server_healthcheck()
-    except Exception as e:
+    except Exception as error:
         payload["status"] = "error"
-        payload["message"] = str(e)
+        payload["message"] = str(error)
     else:
         payload["status"] = "success"
         payload.update(health)

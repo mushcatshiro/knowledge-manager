@@ -38,12 +38,10 @@ class TestingConfig(Config):
     def init_app(cls, app):
         Config.init_app(app)
 
-        import logging
-
         app.logger.handlers.clear()
         app.logger.setLevel(logging.DEBUG)
         formatter = RequestFormatter(
-            "[%(asctime)s] " "%(levelname)s in %(module)s: %(message)s"
+            "[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
         )
 
         log_stream_handler = logging.StreamHandler()

@@ -1,3 +1,5 @@
+import os
+
 from flask import (
     Blueprint,
     render_template,
@@ -7,7 +9,6 @@ from flask import (
     redirect,
     url_for,
 )
-import os
 import markdown
 
 from blog import db
@@ -56,9 +57,9 @@ def blog():
     blog_path = current_app.config["BLOG_PATH"]
     blog_list = os.listdir(blog_path)
     output = []
-    for i in range(len(blog_list)):
-        if blog_list[i].endswith(".md"):
-            output.append(blog_list[i].replace(".md", ""))
+    for idx, _ in enumerate(blog_list):
+        if blog_list[idx].endswith(".md"):
+            output.append(blog_list[idx].replace(".md", ""))
     return render_template("blog.html", blog_list=output, blog=True)
 
 
@@ -68,8 +69,8 @@ def blog_with_title(title):
     if not os.path.exists(blog_path):
         content = f"Blog {title} not found!"
     else:
-        with open(blog_path, "r", encoding="utf-8") as f:
-            content = f.read()
+        with open(blog_path, "r", encoding="utf-8") as rf:
+            content = rf.read()
             content = md.convert(content)
     return render_template("blog.html", content=content, blog=True)
 

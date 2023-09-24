@@ -3,8 +3,8 @@ import copy
 from typing import Tuple, Optional, Dict
 from enum import IntEnum
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum
-from sqlalchemy.orm import relationship, validates
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 
 from blog.core.crud import Base
 
@@ -26,11 +26,10 @@ class Rating(IntEnum):
     def convert(cls, rating: str) -> "Rating":
         if rating in cls.__members__:
             return cls.__members__[rating]
-        else:
-            raise ValueError
+        raise ValueError
 
 
-class ReviewLogModel(Base):
+class ReviewLogModel(Base):  # pylint: disable=too-few-public-methods
     __tablename__ = "review_logs"
     rid = Column(Integer, primary_key=True, index=True)
     rating: int = Column(Integer)
@@ -64,7 +63,7 @@ class ReviewLog:
         self.state = state
 
 
-class CardModel(Base):
+class CardModel(Base):  # pylint: disable=too-few-public-methods
     """
     Card model
     TODO
@@ -94,7 +93,7 @@ class CardModel(Base):
     review_logs = relationship("ReviewLogModel", back_populates="card")
 
     def __repr__(self) -> str:
-        return "<id %r title %r>" % (self.id, self.title)
+        return f"<id {self.id} title {self.title}>"
 
     def get_fsrs_details(self):
         return {
@@ -177,8 +176,7 @@ class Card:
         if self.state == State.Review:
             elapsed_days = max(0, (now - self.last_review).days)
             return (1 + elapsed_days / (9 * self.stability)) ** -1
-        else:
-            return None
+        return None
 
 
 class SchedulingInfo:
@@ -209,7 +207,7 @@ class SchedulingCards:
             self.good.state = State.Learning
             self.easy.state = State.Review
             self.again.lapses += 1
-        elif state == State.Learning or state == State.Relearning:
+        elif state in (State.Learning, State.Relearning):
             self.again.state = state
             self.hard.state = state
             self.good.state = State.Review

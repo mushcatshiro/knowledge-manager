@@ -1,8 +1,9 @@
+import os
+
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from sqlalchemy import insert, select
-import os
+from sqlalchemy import insert
 
 from blog.bookmark import BookmarkModel
 from blog.core.crud import Base
@@ -10,7 +11,7 @@ from blog.utils import set_env_var
 
 
 def pytest_sessionstart(session):
-    config = session.config
+    config = session.config  # noqa remove?
     set_env_var(fname=".env.test")
 
 

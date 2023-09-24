@@ -16,7 +16,7 @@ class Search:
         self.indexobj.index()
 
     def find_similar(self):
-        return self.indexobj.get_top_N_items()
+        return self.indexobj.get_top_n_items()
 
 
 class SearchServer:

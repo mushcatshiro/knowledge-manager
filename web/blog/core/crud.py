@@ -1,8 +1,8 @@
+import logging
+
 from sqlalchemy.orm import Session
 from sqlalchemy import text, select
 from sqlalchemy.orm import declarative_base
-
-import logging
 
 
 logger = logging.getLogger(__name__)
@@ -56,6 +56,7 @@ class CRUDBase:
         - add pagination
         """
         del query
+        del kwargs
         # query all instances
         instance = session.execute(select(model)).scalars().all()
         return instance
@@ -159,17 +160,16 @@ class CRUDBase:
         with Session(self.engine) as session:
             try:
                 resp = fn(session, self.model, query, **kwargs)
-            except Exception as e:
+            except Exception as error:
                 session.rollback()
-                logger.error(e)
+                logger.error(error)
                 return None
-            else:
-                # refresh the instance to get the latest data
-                # or make sure BookmarksModel is bound to some session
-                if operation == "get_all":
-                   # resp = [session.refresh(r) for r in resp]
-                   return resp
-                if operation == "custom_query":
-                   return resp
-                session.refresh(resp)
+            # refresh the instance to get the latest data
+            # or make sure BookmarksModel is bound to some session
+            if operation == "get_all":
+                # resp = [session.refresh(r) for r in resp]
                 return resp
+            if operation == "custom_query":
+                return resp
+            session.refresh(resp)
+            return resp

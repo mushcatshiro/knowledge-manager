@@ -51,4 +51,3 @@ def test_custom_query(db):
         query="select * from bookmark"
     )
     assert len(instance) >= 3
-

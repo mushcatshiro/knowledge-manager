@@ -15,10 +15,10 @@ class BookmarkModel(Base):
     timestamp = Column(DateTime, default=datetime.utcnow)
 
     def __repr__(self) -> str:
-        return "<title %r>" % self.title
+        return f"<title {self.title}>"
 
     def format_timestamp(self, format="%Y-%m-%d %H:%M:%S"):
-        return self.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        return self.timestamp.strftime(format)
 
     def get_editable(self):
         return {

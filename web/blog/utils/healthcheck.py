@@ -39,9 +39,9 @@ def server_healthcheck():
     total_2, idle_2 = cpu_util()
     total = int(total_2 - total_1)
     usage = int(int(total_2 - total_1) - int(idle_2 - idle_1))
-    usageRate = str(int(float(usage * 100 / total))) + "%"
+    usage_rate = str(int(float(usage * 100 / total))) + "%"
     return {
-        "cpu": usageRate,
+        "cpu": usage_rate,
         "temp": cpu_temp(),
         "mem": mem_usage(),
         "disk": disk_usage(),
