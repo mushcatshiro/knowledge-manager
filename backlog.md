@@ -11,6 +11,7 @@ priority is ranked based on the `*` symbol.
   - [ ] open graph protocol
   - [ ] crawl innerHTML
     - [ ] make optional
+  - [ ] zhihu scrap
   - [ ] list view of saved reads
     - [x] base
     - [ ] search fn
