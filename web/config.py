@@ -3,9 +3,7 @@ import os
 
 from flask import request
 
-from blog.utils.envvars import set_env_var
 
-set_env_var()
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
