@@ -1,5 +1,6 @@
+import datetime as dt
+
 from blog.fsrs import FSRS, Rating, Card
-from datetime import datetime
 
 from blog.core.crud import CRUDBase
 from blog.fsrs.model import CardModel
@@ -40,7 +41,7 @@ def test_repeat():
         2.0902,
     )
     card = Card()
-    now = datetime(2022, 11, 29, 12, 30, 0, 0)
+    now = dt.datetime(2022, 11, 29, 12, 30, 0, 0)
     scheduling_cards = f.repeat(card, now)
     print_scheduling_cards(scheduling_cards)
 
@@ -80,7 +81,7 @@ def test_functionality(db):
     c_details = instance.get_fsrs_details()
     f = FSRS()
     card = Card(**c_details)
-    now = datetime(2023, 9, 3, 22, 0, 0, 0)
+    now = dt.datetime(2023, 9, 3, 22, 0, 0, 0)
     scheduling_cards = f.repeat(card, now)
     c = scheduling_cards[Rating.convert("Easy")].card.__dict__
     instance.update_fsrs_details(**c)

@@ -1,12 +1,13 @@
+import time
+import datetime
+import traceback
+import os
+
 from flask import Flask, g, current_app, request, render_template
 from flask.globals import request_ctx
 from flask_cors import CORS
 from flask_session import Session
-import time
-import datetime
-import traceback
 from sqlalchemy import create_engine
-import os
 
 from config import config
 
@@ -80,12 +81,8 @@ def register_request_handlers(app, config_name="default"):
             "user_agent": ctx.request.user_agent.string,
             "app_name": ctx.app.name,
             "date": str(datetime.date.today()),
-            "request": "{} {} {}".format(
-                ctx.request.method,
-                ctx.request.url,
-                ctx.request.environ.get("SERVER_PROTOCOL"),
-            ),
-            "url_args": dict([(k, ctx.request.args[k]) for k in ctx.request.args]),
+            "request": f"{ctx.request.method} {ctx.request.url} {ctx.request.environ.get('SERVER_PROTOCOL')}",
+            "url_args": {k: ctx.request.args[k] for k in ctx.request.args},
             "content_length": response.content_length,
             "blueprint": ctx.request.blueprint,
             "view_args": ctx.request.view_args,
@@ -107,7 +104,7 @@ def register_request_handlers(app, config_name="default"):
             return response
 
 
-def error_handler(e):
+def error_handler(error):
     """
     TODO
     ----
@@ -118,16 +115,27 @@ def error_handler(e):
     ----
     error handler runs before after_request
     """
-    if not hasattr(e, "code"):
-        e.code = 500
-    if not hasattr(e, "description"):
-        e.description = "Unexpected error raised within the code"
-    if not hasattr(e, "name"):
-        e.name = "Internal Server Error"
-    current_app.logger.error({"error": e, "traceback": traceback.format_exc()})
+    if not hasattr(error, "code"):
+        error.code = 500
+    if not hasattr(error, "description"):
+        error.description = "Unexpected error raised within the code"
+    if not hasattr(error, "name"):
+        error.name = "Internal Server Error"
+    current_app.logger.error({"error": error, "traceback": traceback.format_exc()})
     return (
         render_template(
-            "error.html", error_code=e.code, error_msg=e.description, error_name=e.name
+            "error.html",
+            error_code=error.code,
+            error_msg=error.description,
+            error_name=error.name,
         ),
         400,
     )
+
+
+class CustomException(Exception):
+    def __init__(self, code, description, name):
+        self.code = code
+        self.description = description
+        self.name = name
+        super().__init__(self, description)

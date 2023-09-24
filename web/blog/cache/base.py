@@ -28,7 +28,7 @@ class BaseCache:
                 set_keys.append(k)
         return set_keys
 
-    def has(self):
+    def has(self, key):
         raise NotImplementedError
 
     def clear(self):

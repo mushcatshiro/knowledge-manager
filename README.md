@@ -37,12 +37,16 @@ test
 ```bash
 cd web
 # to print `print()` statement and run specific tests
-pytest --capture=no test\test_crud\test_crud.py
+ENVFILE=.env.test pytest --capture=no test\test_crud\test_crud.py
 # to run test in quiet mode
-pytest -q test\test_crud\test_crud.py
+ENVFILE=.env.test pytest -q test\test_crud\test_crud.py
 # to run all test
-pytest
+ENVFILE=.env.test pytest
+# show coverage
+ENVFILE=.env.test pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
 ```
+
+> `ENVFILE=.env.test` is needed until hack is fixed
 
 ## Acknowledgements
 

@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from threading import Lock
 
 
-class RWLock(object):
+class RWLock:
     """RWLock class; this is meant to allow an object to be read from by
     multiple threads, but only written to by a single thread at a time. See:
     https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock

@@ -1,8 +1,8 @@
+import logging
+
 from sqlalchemy.orm import Session
 from sqlalchemy import text, select
 from sqlalchemy.orm import declarative_base
-
-import logging
 
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ class CRUDBase:
             .scalars()
             .first()
         )
-        return instance
+        return instance.to_json()
 
     def get_all(self, session, model, query, **kwargs):
         """
@@ -56,8 +56,9 @@ class CRUDBase:
         - add pagination
         """
         del query
+        del kwargs
         # query all instances
-        instance = session.execute(select(model)).scalars().all()
+        instance = session.execute(select(model)).mappings().all()
         return instance
 
     def create(self, session, model, query, **kwargs):
@@ -79,7 +80,7 @@ class CRUDBase:
         instance = model(**kwargs)
         session.add(instance)
         session.commit()
-        return instance
+        return instance.to_json()
 
     def _bulk_insert(self, session, model, query, **kwargs):
         """
@@ -107,13 +108,17 @@ class CRUDBase:
         - should not include id during updating
         """
         del query
-        instance = self.get(session, model, query=None, id=kwargs.get("id"))
+        instance = (
+            session.execute(select(model).where(model.id == kwargs.get("id")))
+            .scalars()
+            .first()
+        )
         if not instance:
             raise Exception(f"instance with {id} not found")
         for key, value in kwargs.items():
             setattr(instance, key, value)
         session.commit()
-        return instance
+        return instance.to_json()
 
     def delete(self, session, model, query, **kwargs):
         """
@@ -129,6 +134,10 @@ class CRUDBase:
         Returns:
         --------
         instance: Model
+
+        TODO
+        ----
+        should never delete an instance, just set a flag
         """
         del query
         instance = self.get(session, model, kwargs.get("id"))
@@ -136,7 +145,7 @@ class CRUDBase:
             raise Exception(f"instance with {id} not found")
         session.delete(instance)
         session.commit()
-        return instance
+        return instance.to_json()
 
     def custom_query(self, session: Session, model, query: str, **kwargs):
         """
@@ -144,25 +153,30 @@ class CRUDBase:
         """
         del model
         del kwargs
-        instance = session.execute(text(query))
+        # TODO below is faster but can be more coherent
+        # instances = session.execute(text(query))
+        # resp = [instance.to_json() for instance in instances]
+        # return resp
+        instance = session.execute(text(query)).mappings().all()
         return instance
 
-    def execute(self, operation, query=None, **kwargs):
+    def execute(self, operation, query=None, **kwargs) -> dict:
+        """
+        TODO
+        ----
+        - always return result in dict
+        """
         if not hasattr(self, operation):
             raise Exception(f"operation {operation} not found")
         fn = getattr(self, operation)
         with Session(self.engine) as session:
             try:
                 resp = fn(session, self.model, query, **kwargs)
-            except Exception as e:
+            except Exception as error:
                 session.rollback()
-                logger.error(e)
+                logger.error(error)
                 return None
-            else:
-                # refresh the instance to get the latest data
-                # or make sure BookmarksModel is bound to some session
-                if operation == "get_all":
-                   # resp = [session.refresh(r) for r in resp]
-                   return resp
-                session.refresh(resp)
-                return resp
+            # refresh the instance to get the latest data
+            # or make sure BookmarksModel is bound to some session
+            # resp = [session.refresh(r) for r in resp]
+            return resp

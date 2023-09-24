@@ -1,6 +1,16 @@
-from .model import *
+import copy
+import datetime as dt
 import math
 from typing import Dict
+
+from .model import (
+    State,
+    Rating,
+    Card,
+    SchedulingInfo,
+    SchedulingCards,
+    Parameters
+)
 
 
 class FSRS:
@@ -16,7 +26,7 @@ class FSRS:
     def __init__(self) -> None:
         self.p = Parameters()
 
-    def repeat(self, card: Card, now: datetime) -> Dict[int, SchedulingInfo]:
+    def repeat(self, card: Card, now: dt.datetime) -> Dict[int, SchedulingInfo]:
         card = copy.deepcopy(card)
         if card.state == State.New:
             card.elapsed_days = 0
@@ -30,13 +40,13 @@ class FSRS:
         if card.state == State.New:
             self.init_ds(s)
 
-            s.again.due = now + timedelta(minutes=1)
-            s.hard.due = now + timedelta(minutes=5)
-            s.good.due = now + timedelta(minutes=10)
+            s.again.due = now + dt.timedelta(minutes=1)
+            s.hard.due = now + dt.timedelta(minutes=5)
+            s.good.due = now + dt.timedelta(minutes=10)
             easy_interval = self.next_interval(s.easy.stability)
             s.easy.scheduled_days = easy_interval
-            s.easy.due = now + timedelta(days=easy_interval)
-        elif card.state == State.Learning or card.state == State.Relearning:
+            s.easy.due = now + dt.timedelta(days=easy_interval)
+        elif card.state in (State.Learning, State.Relearning):
             hard_interval = 0
             good_interval = self.next_interval(s.good.stability)
             easy_interval = max(self.next_interval(s.easy.stability), good_interval + 1)

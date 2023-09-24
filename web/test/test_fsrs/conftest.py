@@ -1,10 +1,10 @@
+import os
+
 import pytest
 from sqlalchemy import create_engine
 
 from blog.fsrs.model import CardModel
 from blog.core.crud import CRUDBase, Base
-
-import os
 
 
 @pytest.fixture(scope="session")

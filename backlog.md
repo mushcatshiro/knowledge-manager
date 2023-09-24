@@ -9,12 +9,14 @@ priority is ranked based on the `*` symbol.
   - [x] remove argparse import in bookmarklet.py
   - [x] move to web
   - [ ] open graph protocol
-  - [ ] minimize js on save?
   - [ ] crawl innerHTML
     - [ ] make optional
+  - [ ] zhihu scrap
   - [ ] list view of saved reads
+    - [x] base
     - [ ] search fn
     - [ ] pagination
+  - [ ] visualization
 - [ ] implement indexing function for search
 - [ ] health monitoring *
   - [x] application
@@ -34,13 +36,18 @@ priority is ranked based on the `*` symbol.
   - [ ] peek function (imagine further searching up on blog that describes sql optimization on how to optimize on psql after getting the return link)
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
-  - [ ] admin edit page
+  - [ ] admin
     - [x] passcode for auth
     - [x] taking quick notes
       - [ ] converting notes to proper documents
+      - [ ] move to admin
     - [ ] ~~on demand siyuan notes instance~~
     - [ ] calendar and daily management
     - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
+    - [ ] flask-admin
+      - [ ] database model views
+      - [ ] static file handling for blog and blog images (upload etc)
+    - [ ] request for bookmarklet js
   - [ ] site is down update (external)
   - [ ] minimize javascript
     - [ ] code highlight
@@ -57,14 +64,13 @@ priority is ranked based on the `*` symbol.
     - [ ] NLP subsystem to generate appropriate questions
     - [ ] distinguish question posed during understanding the document
     - [ ] backlog size control and batching
-    - [ ] [alternative FSRS](https://github.com/open-spaced-repetition/free-spaced-repetition-scheduler)
+    - [x] [alternative FSRS](https://github.com/open-spaced-repetition/free-spaced-repetition-scheduler)
   - [ ] ability to referrence to other documents easily
     - [ ] extend documents into TODOs
     - [ ] extend into blog post
   - [ ] visualization of the documents
   - [x] file structure one blueprint per functionality (search, recommend and etc)
   - [ ] stable diffusion to change image
-  - [ ] Intersection Observer
   - [ ] better db conn (with is not the best option)
     - [x] base conx
   - [ ] gcp storage mount?
@@ -87,13 +93,15 @@ priority is ranked based on the `*` symbol.
   - to consider python3.8
 - [ ] test
   - [x] pytest *
-  - [ ] pytest-coverage
-- [ ] containerize
+  - [x] pytest-coverage
+  - [x] integration test (test_app)
+- [x] containerize
+  - [ ] docker-compose
 - [x] poetry
-- [ ] OCR support?
 - [ ] auto ref link between documents
 - [ ] UI
   - [ ] right aligned headers
-- [ ] logging
-- [ ] pre-commit
+- [x] logging
+- [x] pre-commit
+  - [ ] isort (py3.8)
 - [ ] github build-test for merging

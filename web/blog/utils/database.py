@@ -1,7 +1,7 @@
 import os
+import sqlite3 as s
 import psycopg2 as p
 from psycopg2.extras import RealDictCursor
-import sqlite3 as s
 
 
 class BaseConx:
@@ -16,7 +16,7 @@ class BaseConx:
         return query_string.replace("\n", " ").replace("    ", "")
 
     def _format_query_string(self, query_string, format_string):
-        pass
+        return ""
 
     def establish_conx(self):
         raise NotImplementedError
@@ -61,7 +61,7 @@ class PostgresConx(BaseConx):
 
 
 def initialize_cloud(dsn):
-    p = PostgresConx(
+    pgc = PostgresConx(
         dsn,
         """
         CREATE TABLE IF NOT EXISTS history (
@@ -75,12 +75,13 @@ def initialize_cloud(dsn):
         )
         """,
         "INSERT",
+        None
     )
-    p.run()
+    pgc.run()
 
 
 def push(abspath, dsn):
-    s = Sqlite3Conx(
+    sc = Sqlite3Conx(
         abspath,
         """
         SELECT
@@ -92,7 +93,7 @@ def push(abspath, dsn):
         "QUERY",
         None,
     )
-    ret, error = s.run()
+    ret, error = sc.run()
 
     if ret:
         format_string = ""
