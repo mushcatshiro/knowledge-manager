@@ -1,14 +1,16 @@
 from blog.core.crud import CRUDBase
 
 
-def test_main_route_blog(test_app, db):
+def test_main_route_blog(test_app, monkeypatch, db):
+    def mock_blog_list(*args, **kwargs):
+        return ["test1", "test2", "test3"]
+
+    monkeypatch.setattr("os.listdir", mock_blog_list)
     client = test_app.test_client()
     response = client.get("/blog")
     assert response.status_code == 200
     assert b'<a class="nav-link active" href="/blog">Blog</a>' in response.data
 
-
-def test_main_route_blog_dne(test_app):
     client = test_app.test_client()
     response = client.get("/blog/does-not-exist")
     assert response.status_code == 200

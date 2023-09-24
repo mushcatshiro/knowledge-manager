@@ -51,7 +51,7 @@ def blog():
     - date of blog
     - better filter i.e. non .md files
     """
-    blog_list = os.listdir(current_app.config["BLOG_PATH"].strip())
+    blog_list = os.listdir(current_app.config["BLOG_PATH"])
     output = []
     for idx, _ in enumerate(blog_list):
         if blog_list[idx].endswith(".md"):
