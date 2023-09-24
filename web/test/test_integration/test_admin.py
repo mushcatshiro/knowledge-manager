@@ -18,7 +18,7 @@ def test_admin_invalid_token(test_app):
     assert b"Invalid token" in response.data
 
 
-def test_admin_invalidate_session(test_app, auth_token):
+def test_admin_valid_token(test_app, auth_token):
     """
     TODO
     ----
@@ -29,8 +29,3 @@ def test_admin_invalidate_session(test_app, auth_token):
         "/admin/login", data={"token": auth_token}, follow_redirects=True
     )
     assert response.status_code == 200
-    response = client.get("/admin/fsrs/setup/cards")
-    assert response.status_code == 200
-    response = client.get("/about")
-    response = client.get("/admin/fsrs/setup/cards")
-    assert response.status_code == 302

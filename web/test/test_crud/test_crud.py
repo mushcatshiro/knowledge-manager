@@ -11,10 +11,10 @@ def test_create(db):
         img="http://test4.com/img",
         desc="test4",
     )
-    assert instance.id == 4
+    assert instance["id"] == 4
     # query the inserted object
     instance = basecrud.execute(operation="get", id=4)
-    assert instance.id == 4
+    assert instance["id"] == 4
 
 
 def test_update(db):
@@ -28,14 +28,14 @@ def test_update(db):
         img="http://test_update.com/img",
         desc="test_update",
     )
-    assert instance.id == 1
+    assert instance["id"] == 1
     # query the updated entry
     instance = basecrud.execute(operation="get", id=1)
-    assert instance.id == 1
-    assert instance.title == "test_update"
-    assert instance.url == "http://test_update.com"
-    assert instance.img == "http://test_update.com/img"
-    assert instance.desc == "test_update"
+    assert instance["id"] == 1
+    assert instance["title"] == "test_update"
+    assert instance["url"] == "http://test_update.com"
+    assert instance["img"] == "http://test_update.com/img"
+    assert instance["desc"] == "test_update"
 
 
 def test_get_all(db):
@@ -47,7 +47,6 @@ def test_get_all(db):
 def test_custom_query(db):
     basecrud = CRUDBase(BookmarkModel, db)
     instance = basecrud.execute(
-        operation="custom_query",
-        query="select * from bookmark"
+        operation="custom_query", query="select * from bookmark"
     )
     assert len(instance) >= 3

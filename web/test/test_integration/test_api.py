@@ -1,7 +1,7 @@
 import random
 
 
-def test_api_bookmark(test_app, auth_token):
+def test_api_bookmark(test_app, auth_token, db):  # noqa db to ensure fixture is called
     """
     TODO
     ----

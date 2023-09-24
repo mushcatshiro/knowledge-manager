@@ -25,7 +25,7 @@ def bookmark():
         instance: BookmarkModel = basecrud.execute(operation="create", **payload)
         if not instance:
             raise Exception("Bookmark not created")
-        return jsonify({"status": "success", "payload": instance.to_json()})
+        return jsonify({"status": "success", "payload": instance})
     raise Exception("Invalid token")
 
 

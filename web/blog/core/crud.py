@@ -37,7 +37,7 @@ class CRUDBase:
             .scalars()
             .first()
         )
-        return instance.to_json() if instance else {}
+        return instance.to_json()
 
     def get_all(self, session, model, query, **kwargs):
         """
@@ -58,7 +58,7 @@ class CRUDBase:
         del query
         del kwargs
         # query all instances
-        instance = session.execute(select(model)).scalars().all()
+        instance = session.execute(select(model)).mappings().all()
         return instance
 
     def create(self, session, model, query, **kwargs):
@@ -108,7 +108,11 @@ class CRUDBase:
         - should not include id during updating
         """
         del query
-        instance = self.get(session, model, query=None, id=kwargs.get("id"))
+        instance = (
+            session.execute(select(model).where(model.id == kwargs.get("id")))
+            .scalars()
+            .first()
+        )
         if not instance:
             raise Exception(f"instance with {id} not found")
         for key, value in kwargs.items():
@@ -174,10 +178,5 @@ class CRUDBase:
                 return None
             # refresh the instance to get the latest data
             # or make sure BookmarksModel is bound to some session
-            if operation == "get_all":
-                # resp = [session.refresh(r) for r in resp]
-                return resp
-            if operation == "custom_query":
-                return resp
-            session.refresh(resp)
+            # resp = [session.refresh(r) for r in resp]
             return resp

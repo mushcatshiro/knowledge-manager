@@ -2,7 +2,9 @@ import logging
 import os
 
 from flask import request
+from blog.utils.envvars import set_env_var
 
+set_env_var(os.environ.get("ENVFILE", ".env"))  # TODO this is a hack
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 

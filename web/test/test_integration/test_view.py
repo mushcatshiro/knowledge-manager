@@ -1,7 +1,7 @@
 from blog.core.crud import CRUDBase
 
 
-def test_main_route_blog(test_app):
+def test_main_route_blog(test_app, db):
     client = test_app.test_client()
     response = client.get("/blog")
     assert response.status_code == 200
@@ -22,7 +22,7 @@ def test_main_route_bookmarklet_list(test_app, monkeypatch):
     - use database instead of monkeypatch
     """
 
-    def mock_query():
+    def mock_query(*args, **kwargs):
         return MockCrudBase().execute()
 
     monkeypatch.setattr(CRUDBase, "execute", mock_query)

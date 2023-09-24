@@ -10,4 +10,4 @@ def set_env_var(fname=".env") -> None:
     for pair in config:
         k, v = pair.split("=", 1)
         if v is not None and v != "":
-            os.environ[k.upper()] = v
+            os.environ[k.upper()] = v.strip()
