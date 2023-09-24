@@ -37,7 +37,7 @@ class CRUDBase:
             .scalars()
             .first()
         )
-        return instance
+        return instance.to_json() if instance else {}
 
     def get_all(self, session, model, query, **kwargs):
         """
@@ -80,7 +80,7 @@ class CRUDBase:
         instance = model(**kwargs)
         session.add(instance)
         session.commit()
-        return instance
+        return instance.to_json()
 
     def _bulk_insert(self, session, model, query, **kwargs):
         """
@@ -114,7 +114,7 @@ class CRUDBase:
         for key, value in kwargs.items():
             setattr(instance, key, value)
         session.commit()
-        return instance
+        return instance.to_json()
 
     def delete(self, session, model, query, **kwargs):
         """
@@ -130,6 +130,10 @@ class CRUDBase:
         Returns:
         --------
         instance: Model
+
+        TODO
+        ----
+        should never delete an instance, just set a flag
         """
         del query
         instance = self.get(session, model, kwargs.get("id"))
@@ -137,7 +141,7 @@ class CRUDBase:
             raise Exception(f"instance with {id} not found")
         session.delete(instance)
         session.commit()
-        return instance
+        return instance.to_json()
 
     def custom_query(self, session: Session, model, query: str, **kwargs):
         """
@@ -145,6 +149,10 @@ class CRUDBase:
         """
         del model
         del kwargs
+        # TODO below is faster but can be more coherent
+        # instances = session.execute(text(query))
+        # resp = [instance.to_json() for instance in instances]
+        # return resp
         instance = session.execute(text(query)).mappings().all()
         return instance
 
