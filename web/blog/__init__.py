@@ -124,7 +124,18 @@ def error_handler(error):
     current_app.logger.error({"error": error, "traceback": traceback.format_exc()})
     return (
         render_template(
-            "error.html", error_code=error.code, error_msg=error.description, error_name=error.name
+            "error.html",
+            error_code=error.code,
+            error_msg=error.description,
+            error_name=error.name,
         ),
         400,
     )
+
+
+class CustomException(Exception):
+    def __init__(self, code, description, name):
+        self.code = code
+        self.description = description
+        self.name = name
+        super().__init__(self, description)

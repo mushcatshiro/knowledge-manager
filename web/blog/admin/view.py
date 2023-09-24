@@ -12,7 +12,7 @@ from flask import (
 )
 import markdown
 
-from blog import sess, db
+from blog import db, CustomException
 from blog.auth import verify_token
 from blog.core.crud import CRUDBase
 
@@ -24,16 +24,23 @@ md = markdown.Markdown(extensions=["fenced_code", "tables"])
 
 @admin.before_request
 def before_request_handler():
-    if "token" not in session:
+    """
+    TODO
+    ---
+    - check token expiry
+    """
+    if not session.get("token") and request.endpoint != "admin.login":
         return redirect(f"/admin/login?next={quote_plus(request.url)}")
 
 
 @admin.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "POST" and verify_token(request.form["token"]):
-        sess["token"] = request.form["token"]
-        next_url = request.args.get("next", "/")
-        return redirect(next_url)
+    if request.method == "POST":
+        if verify_token(request.form["token"]):
+            session["token"] = request.form["token"]
+            next_url = request.args.get("next", "/")
+            return redirect(next_url)
+        raise CustomException(400, "Invalid token", "Invalid token")
     return render_template("login.html")
 
 

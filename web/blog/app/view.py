@@ -6,13 +6,10 @@ from flask import (
     current_app,
     request,
     send_from_directory,
-    redirect,
-    url_for,
 )
 import markdown
 
 from blog import db
-from blog.auth import verify_token
 from blog.bookmark import BookmarkModel
 from blog.core import process_request
 from blog.core.crud import CRUDBase
@@ -78,9 +75,7 @@ def blog_with_title(title):
 @main.route("/bookmarklet-list", methods=["GET"])
 def bookmarklet_list():
     # page = request.args.get('page', 1, type=int)
-    query_string = (
-        "select * from bookmark order by timestamp desc"
-    )  # f"limit {100 * page} offset {100 * (page - 1)}"
+    query_string = "select * from bookmark order by timestamp desc"  # f"limit {100 * page} offset {100 * (page - 1)}"
 
     basecrud = CRUDBase(BookmarkModel, db)
     instances = basecrud.execute(
