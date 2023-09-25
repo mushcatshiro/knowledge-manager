@@ -33,4 +33,4 @@ jobs:
     - name: Run integration tests
       run: |
         cd web
-        ENVFILE=.env.test python -m poetry run pytest -v --cov=blog/app/ --cov=blog/api/ --cov=blog/admin test/test_integration/
+        ENVFILE=.env.test python -m poetry run pytest -v --cov --cov-config=.coveragerc test/test_integration/
