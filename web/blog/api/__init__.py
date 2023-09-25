@@ -1,1 +1,1 @@
-from .endpoint import api
+from .endpoint import api  # pragma: no cover

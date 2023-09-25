@@ -129,7 +129,7 @@ def error_handler(error):
             error_msg=error.description,
             error_name=error.name,
         ),
-        400,
+        error.code,
     )
 
 

@@ -1,1 +1,1 @@
-from .view import main
+from .view import main  # pragma: no cover
