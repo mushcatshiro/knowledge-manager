@@ -54,18 +54,15 @@ def server_healthcheck(to_db, db):
 
     if to_db:
         basecrud = CRUDBase(ServerHealthModel, db)
-        instance = basecrud.execite(
-            "create",
-            **health
-        )
+        instance = basecrud.execite("create", **health)
     return health
 
 
 class ServerHealthModel(Base):
     __tablename__ = "bookmark"
-    id = Column(Integer, primary_key=True)
-    cpu = Column()
-    temp = Column()
-    memory = Column()
-    disk = Column()
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    # id = Column(Integer, primary_key=True)
+    # cpu = Column()
+    # temp = Column()
+    # memory = Column()
+    # disk = Column()
+    # timestamp = Column(DateTime, default=datetime.utcnow)

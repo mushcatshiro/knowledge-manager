@@ -26,7 +26,7 @@ def test_api_bookmark(test_app, auth_token, db):  # noqa db to ensure fixture is
     response = client.get(
         bookmark_url_helper("invalid_token", s2, f"http://{s2}.com", "img", "desc")
     )
-    assert response.status_code == 400
+    assert response.status_code == 401
     # assert "Invalid token" in response.text
 
 

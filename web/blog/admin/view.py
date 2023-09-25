@@ -29,12 +29,14 @@ def before_request_handler():
     ---
     - check token expiry
     """
-    if not session.get("token"):
+    if request.path == "/admin/login":
+        pass
+    elif not session.get("token"):
         # TODO with token and yet going to login route?
         return redirect(f"/admin/login?next={quote_plus(request.url)}")
-    if not verify_token(session.get("token")):
+    elif not verify_token(session.get("token")):
         session.pop("token")
-        raise CustomException(401, "unauthorized access", "unauthorized access")
+        raise CustomException(401, "Invalid token", "Unauthorized access")
 
 
 @admin.route("/login", methods=["GET", "POST"])
@@ -44,14 +46,14 @@ def login():
             session["token"] = request.form["token"]
             next_url = request.args.get("next", "/")
             return redirect(next_url)
-        raise CustomException(400, "Invalid token", "Invalid token")
+        raise CustomException(401, "Invalid token", "Unauthorized access")
     return render_template("login.html")
 
 
 @admin.route("/logout", methods=["GET"])
 def logout():
     session.pop("token")
-    return redirect("/")
+    return redirect(url_for("main.index"))
 
 
 @admin.route("/fsrs/setup/cards", methods=["GET", "POST"])
@@ -155,9 +157,9 @@ def bookmarkletjs():
         'searchParams.set("desc", metaDescription);',
         'searchParams.set("img", metaImage);',
         'searchParams.set("token", token);',
-        "window.location.href = url; })();"
+        "window.location.href = url; })();",
     ]
     return render_template(
         "bookmarkletjs.html",
-        script=script.join("") if request.args.get("min") else script.join("\n")
+        script=script.join("") if request.args.get("min") else script.join("\n"),
     )

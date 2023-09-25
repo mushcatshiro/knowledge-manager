@@ -7,7 +7,7 @@ from blog.bookmark import BookmarkModel
 from blog.auth import verify_token
 from blog.core.crud import CRUDBase
 from blog.utils.healthcheck import server_healthcheck
-from blog import db
+from blog import db, CustomException
 
 api = Blueprint("api", __name__)
 
@@ -25,9 +25,9 @@ def bookmark():
         basecrud = CRUDBase(BookmarkModel, db)
         instance: BookmarkModel = basecrud.execute(operation="create", **payload)
         if not instance:
-            raise Exception("Bookmark not created")
+            raise CustomException(400, "Bookmark not created", "Bad request")
         return jsonify({"status": "success", "payload": instance})
-    raise Exception("Invalid token")
+    raise CustomException(401, "Invalid token", "Unauthorized access")
 
 
 @api.route("/healthcheck", methods=["GET"])
@@ -42,10 +42,7 @@ def healthcheck():
     if not verify_token(request.args.get("token")):
         raise Exception("Invalid token")
     if request.args.get("user") == "cron":
-        Thread(
-            target=server_healthcheck,
-            kwargs={"to_db": True}
-        ).start()
+        Thread(target=server_healthcheck, kwargs={"to_db": True}).start()
         return jsonify(
             {"message": f"triggered server healthcheck at {dt.datetime.now()}"}
         )
