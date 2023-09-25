@@ -103,8 +103,11 @@ priority is ranked based on the `*` symbol.
 - [x] logging
 - [x] pre-commit
   - [ ] isort (py3.8)
-- [ ] github build-test for merging
 - [ ] ansible playbook
   - [ ] test
   - [ ] deployment
   - [ ] backup data
+- [x] github build-test for merging
+- [ ] conf test generation
+  - [ ] nginx
+  - [ ] supervisord
