@@ -1,4 +1,5 @@
 import datetime as dt
+from threading import Thread
 
 from flask import Blueprint, jsonify, request
 
@@ -40,17 +41,12 @@ def healthcheck():
     """
     if not verify_token(request.args.get("token")):
         raise Exception("Invalid token")
-    payload = {
-        "timestamp": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "status": None,
-        "message": None,
-    }
-    try:
-        health = server_healthcheck()
-    except Exception as error:
-        payload["status"] = "error"
-        payload["message"] = str(error)
-    else:
-        payload["status"] = "success"
-        payload.update(health)
-    return jsonify(payload)
+    if request.args.get("user") == "cron":
+        Thread(
+            target=server_healthcheck,
+            kwargs={"to_db": True}
+        ).start()
+        return jsonify(
+            {"message": f"triggered server healthcheck at {dt.datetime.now()}"}
+        )
+    return server_healthcheck(False, None)

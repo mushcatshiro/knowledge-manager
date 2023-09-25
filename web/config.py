@@ -27,6 +27,7 @@ class Config:
     PERMANENT_SESSION_LIFETIME = int(os.environ.get("PERMANENT_SESSION_LIFETIME"))
     SESSION_TYPE = os.environ.get("SESSION_TYPE")
     SESSION_FILE_THRESHOLD = int(os.environ.get("SESSION_FILE_THRESHOLD"))
+    SITE_BASE_URL = os.environ.get("SITE_BASE_URL")
 
     @staticmethod
     def init_app(app):

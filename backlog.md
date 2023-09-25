@@ -9,13 +9,11 @@ priority is ranked based on the `*` symbol.
   - [x] remove argparse import in bookmarklet.py
   - [x] move to web
   - [ ] open graph protocol
-  - [ ] crawl innerHTML
-    - [ ] make optional
-  - [ ] zhihu scrap
-  - [ ] list view of saved reads
-    - [x] base
-    - [ ] search fn
-    - [ ] pagination
+- [ ] zhihu scrap
+- [x] list view of saved reads
+  - [x] base
+  - [ ] search fn
+  - [ ] pagination
   - [ ] visualization
 - [ ] implement indexing function for search
 - [ ] health monitoring *
@@ -36,58 +34,60 @@ priority is ranked based on the `*` symbol.
   - [ ] peek function (imagine further searching up on blog that describes sql optimization on how to optimize on psql after getting the return link)
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
-  - [ ] admin
-    - [x] passcode for auth
-    - [x] taking quick notes
-      - [ ] converting notes to proper documents
-      - [ ] move to admin
-    - [ ] ~~on demand siyuan notes instance~~
-    - [ ] calendar and daily management
-    - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
-    - [ ] flask-admin
-      - [ ] database model views
-      - [ ] static file handling for blog and blog images (upload etc)
-    - [ ] request for bookmarklet js
-  - [ ] site is down update (external)
-  - [ ] minimize javascript
-    - [ ] code highlight
-    - [ ] bootstrap
-  - [ ] blog preload function calls
-    - [ ] read index to memory
-    - [ ] check static folder
-  - [ ] implement cache
-    - [ ] preload to cache
-    - [ ] update cache if content changes
-    - [ ] in-memory
-    - [ ] redis
-  - [ ] ANKI adoption
-    - [ ] NLP subsystem to generate appropriate questions
-    - [ ] distinguish question posed during understanding the document
-    - [ ] backlog size control and batching
-    - [x] [alternative FSRS](https://github.com/open-spaced-repetition/free-spaced-repetition-scheduler)
-  - [ ] ability to referrence to other documents easily
-    - [ ] extend documents into TODOs
-    - [ ] extend into blog post
-  - [ ] visualization of the documents
-  - [x] file structure one blueprint per functionality (search, recommend and etc)
-  - [ ] stable diffusion to change image
-  - [ ] better db conn (with is not the best option)
-    - [x] base conx
-  - [ ] gcp storage mount?
-  - [ ] versioning documents
-  - [ ] ORM
-    - [x] introduction of ORM
-    - [ ] removal of ORM
-    - [ ] SQL injection prevention
-    - [ ] inverting dependencies using repository pattern
-  - [ ] micro framework for web
-    - [ ] remove flask
-    - [ ] asgi compatibility
-  - [ ] rate limiter
-  - [ ] metric tracking
-    - [x] traffic and user
-    - [ ] cache hit rate
-    - [ ] google analytic?
+  - [ ] comments
+    - [ ] OAuth2
+- [ ] admin
+  - [x] passcode for auth
+  - [x] taking quick notes
+    - [ ] converting notes to proper documents
+  - [ ] ~~on demand siyuan notes instance~~
+  - [ ] calendar and daily management
+  - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
+  - [ ] flask-admin
+    - [ ] database model views
+    - [ ] static file handling for blog and blog images (upload etc)
+  - [ ] request for bookmarklet js
+- [ ] site is down update (external)
+- [ ] minimize javascript
+  - [ ] code highlight
+  - [ ] bootstrap
+- [ ] blog preload function calls
+  - [ ] read index to memory
+  - [ ] check static folder
+- [ ] implement cache
+  - [ ] preload to cache
+  - [ ] update cache if content changes
+  - [ ] in-memory
+  - [ ] redis
+- [ ] ANKI adoption
+  - [ ] NLP subsystem to generate appropriate questions
+  - [ ] distinguish question posed during understanding the document
+  - [ ] backlog size control and batching
+  - [x] [alternative FSRS](https://github.com/open-spaced-repetition/free-spaced-repetition-scheduler)
+- [ ] ability to referrence to other documents easily
+  - [ ] extend documents into TODOs
+  - [ ] extend into blog post
+  - [ ] auto ref link between documents
+- [ ] visualization of the documents
+- [x] file structure one blueprint per functionality (search, recommend and etc)
+- [ ] stable diffusion to change image
+- [ ] better db conn (with is not the best option)
+  - [x] base conx
+- [ ] versioning documents
+- [ ] ORM
+  - [x] introduction of ORM
+  - [ ] removal of ORM
+  - [ ] SQL injection prevention
+  - [ ] inverting dependencies using repository pattern
+- [ ] micro framework for web
+  - [ ] remove flask
+  - [ ] asgi compatibility
+- [ ] rate limiter
+- [ ] metric tracking
+  - [x] traffic and user
+  - [ ] cache hit rate
+  - [ ] google analytic?
+  - [ ] catfished requests
 - [ ] litestar migration *
   - to reconsider as litestar has >= py3.8 requirement
   - to consider python3.8
@@ -98,10 +98,13 @@ priority is ranked based on the `*` symbol.
 - [x] containerize
   - [ ] docker-compose
 - [x] poetry
-- [ ] auto ref link between documents
 - [ ] UI
   - [ ] right aligned headers
 - [x] logging
 - [x] pre-commit
   - [ ] isort (py3.8)
 - [ ] github build-test for merging
+- [ ] ansible playbook
+  - [ ] test
+  - [ ] deployment
+  - [ ] backup data

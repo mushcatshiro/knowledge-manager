@@ -22,6 +22,8 @@ def test_main_route_bookmarklet_list(test_app, monkeypatch):
     TODO
     ----
     - use database instead of monkeypatch
+    - test empty database/table not created/no instance returned
+      - might need to modify crud.py
     """
 
     def mock_query(*args, **kwargs):
@@ -35,6 +37,10 @@ def test_main_route_bookmarklet_list(test_app, monkeypatch):
         b'<a class="nav-link active" href="/bookmarklet-list">Reading List</a>'
         in response.data
     )
+
+
+def test_main_route_secured(test_app):
+    pass
 
 
 class MockCrudBase:

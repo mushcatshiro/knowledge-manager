@@ -100,7 +100,19 @@ def favicon():
     )
 
 
+@main.route("/secured", methods=["GET", "POST"])
+def secured():
+    return
+
+
+@main.route("/secured/<string:value>", methods=["GET"])
+def secured_with_value(value):
+    return
+
+
 @main.route("/robots.txt")
 def robots():
-    stmt = "User-agent: *\nallow: /blog\n allow: /about\n"
+    stmt =\
+        "User-agent: *\nallow: /blog\nallow: /blog/*\n allow: /about\n"\
+        "disallow: /secured\ndisallow: /secured/*\n"
     return stmt
