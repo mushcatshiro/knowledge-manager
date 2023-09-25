@@ -1,0 +1,5 @@
+[run]
+source=
+    blog/app/
+    blog/api/
+    blog/admin
