@@ -26,11 +26,8 @@ jobs:
       with:
         path: ./.venv
         key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-    - name: Create env file
-      run: |
-        cd web
-        echo "${{ secrets.INTEGRATION_ENV }}" > .env.test
     - name: Run integration tests
       run: |
         cd web
+        echo "${{ secrets.INTEGRATION_ENV }}" > .env.test
         ENVFILE=.env.test python -m poetry run pytest -v --cov --cov-config=.coveragerc test/test_integration/
