@@ -30,4 +30,4 @@ jobs:
       run: |
         cd web
         echo "${{ secrets.INTEGRATION_ENV }}" > .env.test
-        ENVFILE=.env.test python -m poetry run pytest -v --cov --cov-config=.coveragerc test/test_integration/
+        ENVFILE=.env.test poetry run pytest -v --cov --cov-config=.coveragerc test/test_integration/
