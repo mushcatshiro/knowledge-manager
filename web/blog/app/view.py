@@ -73,14 +73,22 @@ def blog_with_title(title):
 
 @main.route("/bookmarklet-list", methods=["GET"])
 def bookmarklet_list():
-    # page = request.args.get('page', 1, type=int)
-    query_string = "select * from bookmark order by timestamp desc"  # f"limit {100 * page} offset {100 * (page - 1)}"
+    page = request.args.get("page", 1, type=int)
+    bookmarks_query_string = (
+        "select * from bookmark order by timestamp desc "
+        f"limit {30 * page} offset {30 * (page - 1)}"
+    )
+    total_length_query_string = "select count(*) as count from bookmark"
 
     basecrud = CRUDBase(BookmarkModel, db)
     instances = basecrud.execute(
         operation="custom_query",
-        query=query_string,
+        query=bookmarks_query_string,
     )
+    total_length = basecrud.execute(
+        operation="custom_query",
+        query=total_length_query_string,
+    )[0]["count"]
     if not instances:
         raise Exception("Bookmark not created")
     return render_template(
@@ -88,6 +96,8 @@ def bookmarklet_list():
         bookmarks=instances,
         total=len(instances),
         bookmarklet_list=True,
+        has_prev=page > 1,
+        has_next=total_length > page * 30,
     )
 
 
@@ -112,7 +122,8 @@ def secured_with_value(value):
 
 @main.route("/robots.txt")
 def robots():
-    stmt =\
-        "User-agent: *\nallow: /blog\nallow: /blog/*\n allow: /about\n"\
+    stmt = (
+        "User-agent: *\nallow: /blog\nallow: /blog/*\n allow: /about\n"
         "disallow: /secured\ndisallow: /secured/*\n"
+    )
     return stmt
