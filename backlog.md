@@ -13,7 +13,7 @@ priority is ranked based on the `*` symbol.
 - [x] list view of saved reads
   - [x] base
   - [ ] search fn
-  - [ ] pagination
+  - [x] pagination
   - [ ] visualization
 - [ ] implement indexing function for search
 - [ ] health monitoring *
@@ -86,11 +86,8 @@ priority is ranked based on the `*` symbol.
 - [ ] metric tracking
   - [x] traffic and user
   - [ ] cache hit rate
-  - [ ] google analytic?
+  - [ ] google analytic
   - [ ] catfished requests
-- [ ] litestar migration *
-  - to reconsider as litestar has >= py3.8 requirement
-  - to consider python3.8
 - [ ] test
   - [x] pytest *
   - [x] pytest-coverage
@@ -102,7 +99,6 @@ priority is ranked based on the `*` symbol.
   - [ ] right aligned headers
 - [x] logging
 - [x] pre-commit
-  - [ ] isort (py3.8)
 - [ ] ansible playbook
   - [ ] test
   - [ ] deployment
@@ -111,3 +107,8 @@ priority is ranked based on the `*` symbol.
 - [ ] conf test generation
   - [ ] nginx
   - [ ] supervisord
+- [ ] python 3.8 appeal
+  - [ ] litestar
+  - [ ] pre-commit isort
+  - [ ] xprocess for redis cache testing
+- [ ] 100 list

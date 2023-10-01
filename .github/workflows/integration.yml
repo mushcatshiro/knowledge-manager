@@ -30,7 +30,6 @@ jobs:
     - name: Run integration tests
       run: |
         cd web
-        pwd
         echo "${{ secrets.INTEGRATION_ENV }}" > .env.test
         echo "${{ secrets.INTEGRATION_ENV }}" > .env
         poetry run pytest -v --cov --cov-config=.coveragerc test/test_integration/
