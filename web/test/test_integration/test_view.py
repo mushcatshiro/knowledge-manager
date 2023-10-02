@@ -25,11 +25,6 @@ def test_main_route_bookmarklet_list(test_app, monkeypatch):
     - test empty database/table not created/no instance returned
       - might need to modify crud.py
     """
-
-    def mock_query(*args, **kwargs):
-        return MockCrudBase().execute()
-
-    monkeypatch.setattr(CRUDBase, "execute", mock_query)
     client = test_app.test_client()
     response = client.get("/bookmarklet-list")
     assert response.status_code == 200
@@ -41,26 +36,3 @@ def test_main_route_bookmarklet_list(test_app, monkeypatch):
 
 def test_main_route_secured(test_app):
     pass
-
-
-class MockCrudBase:
-    def execute(self):
-        return [
-            MockBaseModel(),
-        ]
-
-
-class MockBaseModel:
-    def __init__(self):
-        self.id = 1
-        self.title = "test"
-        self.url = "http://test.com"
-        self.timestamp = "2020-01-01 00:00:00"
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "title": self.title,
-            "url": self.url,
-            "timestamp": self.timestamp,
-        }

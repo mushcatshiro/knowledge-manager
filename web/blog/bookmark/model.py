@@ -30,16 +30,18 @@ class BookmarkModel(Base):
             "timestamp": {"value": self.timestamp, "disabled": True},
         }
 
-    def to_json(self):
+    def to_json(self, test=False):
         # handle multiple query results
         # not required as session.execute returns a list of BaseModels
         # if isinstance(self, list):
         #     return [item.to_json() for item in self]
-        return {
-            "id": self.id,
+        json_data = {
             "title": self.title,
             "url": self.url,
             "img": self.img,
             "desc": self.desc,
-            "timestamp": self.format_timestamp(),
         }
+        if not test:
+            json_data["id"] = self.id
+            json_data["timestamp"] = self.format_timestamp()
+        return json_data

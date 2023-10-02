@@ -7,7 +7,7 @@ from sqlalchemy import insert
 
 from blog.bookmark import BookmarkModel
 from blog.core.crud import Base
-from blog.utils import set_env_var
+from blog.utils import set_env_var, create_fake_data
 
 
 def pytest_sessionstart(session):
@@ -19,29 +19,11 @@ def pytest_sessionstart(session):
 def db():
     engine = create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"), echo=True)
     Base.metadata.create_all(engine)
+    fake_data = create_fake_data(BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM")))
     with Session(engine) as session:
         session.execute(
             insert(BookmarkModel),
-            [
-                {
-                    "title": "test",
-                    "url": "http://test.com",
-                    "img": "http://test.com/img",
-                    "desc": "test",
-                },
-                {
-                    "title": "test2",
-                    "url": "http://test2.com",
-                    "img": "http://test2.com/img",
-                    "desc": "test2",
-                },
-                {
-                    "title": "test3",
-                    "url": "http://test3.com",
-                    "img": "http://test3.com/img",
-                    "desc": "test3",
-                },
-            ],
+            fake_data,
         )
         session.commit()
     yield engine

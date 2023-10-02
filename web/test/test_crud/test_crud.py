@@ -1,28 +1,26 @@
+import os
+
 from blog.core.crud import CRUDBase
 from blog.bookmark import BookmarkModel
-
-import pytest
+from blog.utils import create_fake_data
 
 
 def test_create(db):
+    expected_id = int(os.getenv("FAKE_DATA_NUM")) + 1
+    fake_data = create_fake_data(BookmarkModel, num=1)
+
     basecrud = CRUDBase(BookmarkModel, db)
     instance = basecrud.execute(
         operation="create",
-        title="test4",
-        url="http://test4.com",
-        img="http://test4.com/img",
-        desc="test4",
+        **fake_data[0],
     )
-    assert instance["id"] == 4
+    assert instance["id"] == expected_id
     # query the inserted object
-    instance = basecrud.execute(operation="get", id=4)
-    assert instance["id"] == 4
+    instance = basecrud.execute(operation="get", id=expected_id)
+    assert instance["id"] == expected_id
     instance = basecrud.execute(
         operation="create",
-        title="test4",
-        url="http://test4.com",
-        img="http://test4.com/img",
-        desc="test4",
+        **fake_data[0],
     )
     assert instance is None
 
@@ -59,7 +57,7 @@ def test_custom_query(db):
     instance = basecrud.execute(
         operation="custom_query", query="select * from bookmark"
     )
-    assert len(instance) >= 3
+    assert len(instance) >= os.getenv("FAKE_DATA_NUM")
 
     # test pagination
     instance = basecrud.execute(
@@ -72,10 +70,11 @@ def test_custom_query(db):
     instance = basecrud.execute(
         operation="custom_query", query="select * from bookmark limit 2 offset 2"
     )
-    assert len(instance) >= 1
+    assert len(instance) == 2
     assert instance[0]["id"] == 3
+    assert instance[1]["id"] == 4
 
     instance = basecrud.execute(
         operation="custom_query", query="select count(*) count from bookmark"
     )
-    assert instance[0]["count"] >= 3
+    assert instance[0]["count"] >= os.getenv("FAKE_DATA_NUM")
