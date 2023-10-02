@@ -44,6 +44,10 @@ ENVFILE=.env.test pytest -q test\test_crud\test_crud.py
 ENVFILE=.env.test pytest
 # show coverage
 ENVFILE=.env.test pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
+
+# start local instance
+export FLASK_MODE=testing
+flask run
 ```
 
 > `ENVFILE=.env.test` is needed until hack is fixed
