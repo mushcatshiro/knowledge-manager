@@ -5,6 +5,16 @@
 opinion or the view of the owner of this site and should not be constructed as
 such.</p>
 <p>There are {{ total }} entries in total</p>
+<div class="row">
+<div class="col-1 d-flex justify-content-center align-self-center">
+  <a
+    href="{% if has_prev %}{{ url_for('main.bookmarklet_list', page=prev_num) }}{% else %}#{% endif %}"
+    {% if not has_prev %} style="pointer-events: none; color: darkgray"{% endif %}
+  >
+  &laquo;
+  </a>
+</div>
+<div class="col-10">
 <ul>
 {% for li in bookmarks %}
   <li>
@@ -13,14 +23,14 @@ such.</p>
     <span>{{ li.timestamp }}</span>
   </li>
 {% endfor %}
-</ul><li{% if not has_prev %} class="disabled"{% endif %}>
-  <a href="{% if has_prev %}{{ url_for('main.bookmarklet_list', page=prev_num) }}{% else %}#{% endif %}">
-    &laquo;
-  </a>
-</li></ul>
-<ul><li{% if not has_next %} class="disabled"{% endif %}>
-  <a href="{% if has_next %}{{ url_for('main.bookmarklet_list', page=next_num) }}{% else %}#{% endif %}">
-    &raquo;
-  </a>
-</li></ul>
+</div>
+<div class="col-1 d-flex justify-content-center align-self-center">
+<a
+  href="{% if has_next %}{{ url_for('main.bookmarklet_list', page=next_num) }}{% else %}#{% endif %}"
+  {% if not has_next %} style="pointer-events: none; color: darkgray"{% endif %}
+>
+  &raquo;
+</a>
+</div>
+</div>
 {% endblock %}

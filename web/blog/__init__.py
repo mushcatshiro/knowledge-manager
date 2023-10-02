@@ -44,6 +44,29 @@ def create_app(config_name):
 
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
+
+    if os.environ.get("FLASK_MODE") == "testing":
+        from blog.core.crud import Base
+        from sqlalchemy import create_engine
+
+        from blog.utils import create_fake_data
+        from blog.bookmark import BookmarkModel
+        from blog.core.crud import CRUDBase
+
+        test_db_engine = create_engine(
+            os.environ.get("SQLALCHEMY_DATABASE_URI"), echo=True
+        )
+        # drop all tables
+        Base.metadata.drop_all(test_db_engine)
+        Base.metadata.create_all(test_db_engine)
+
+        fake_data = create_fake_data(
+            BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM", 10))
+        )
+        basecrud = CRUDBase(BookmarkModel, test_db_engine)
+        for data in fake_data:
+            basecrud.execute(operation="create", **data)
+
     return app
 
 

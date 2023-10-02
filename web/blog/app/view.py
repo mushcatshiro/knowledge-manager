@@ -94,10 +94,12 @@ def bookmarklet_list():
     return render_template(
         "bookmarklet.html",
         bookmarks=instances,
-        total=len(instances),
+        total=total_length,
         bookmarklet_list=True,
         has_prev=page > 1,
         has_next=total_length > page * 30,
+        prev_num=page - 1 if page > 1 else None,
+        next_num=page + 1 if total_length > page * 30 else None,
     )
 
 
