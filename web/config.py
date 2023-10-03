@@ -31,6 +31,7 @@ class Config:
     SESSION_TYPE = os.environ.get("SESSION_TYPE")
     SESSION_FILE_THRESHOLD = int(os.environ.get("SESSION_FILE_THRESHOLD"))
     SITE_BASE_URL = os.environ.get("SITE_BASE_URL")
+    PAGINATION_LIMIT = int(os.environ.get("PAGINATION_LIMIT"))
 
     @staticmethod
     def init_app(app):
