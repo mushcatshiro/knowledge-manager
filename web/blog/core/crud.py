@@ -2,13 +2,9 @@ import logging
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text, select
-from sqlalchemy.orm import declarative_base
 
 
 logger = logging.getLogger(__name__)
-
-
-Base = declarative_base()
 
 
 class CRUDBase:
@@ -179,4 +175,5 @@ class CRUDBase:
             # refresh the instance to get the latest data
             # or make sure BookmarksModel is bound to some session
             # resp = [session.refresh(r) for r in resp]
-            return resp
+            else:
+                return resp

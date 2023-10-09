@@ -2,7 +2,7 @@ from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime
 
-from blog.core.crud import Base
+from blog import Base
 
 
 class BookmarkModel(Base):

@@ -8,6 +8,7 @@ from flask.globals import request_ctx
 from flask_cors import CORS
 from flask_session import Session
 from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base
 
 from config import config
 
@@ -15,6 +16,8 @@ from config import config
 cors = CORS()
 db = create_engine(os.environ.get("SQLALCHEMY_DATABASE_URI"))
 sess = Session()
+
+Base = declarative_base()
 
 
 def create_app(config_name):
@@ -46,7 +49,6 @@ def create_app(config_name):
     register_request_handlers(app, config_name)
 
     if os.environ.get("FLASK_MODE") == "testing":
-        from blog.core.crud import Base
         from sqlalchemy import create_engine
 
         from blog.utils import create_fake_data

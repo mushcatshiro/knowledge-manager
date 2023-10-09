@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import insert
 
 from blog.bookmark import BookmarkModel
-from blog.core.crud import Base
+from blog.negotium import NegotiumModel
+from blog import Base
 from blog.utils import set_env_var, create_fake_data
 
 
@@ -19,11 +20,21 @@ def pytest_sessionstart(session):
 def db():
     engine = create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"), echo=True)
     Base.metadata.create_all(engine)
-    fake_data = create_fake_data(BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM")))
+    bookmark_fake_data = create_fake_data(
+        BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM"))
+    )
+    negotium_fake_data = create_fake_data(
+        NegotiumModel, num=int(os.getenv("FAKE_DATA_NUM")) // 4, max_int=10
+    )
     with Session(engine) as session:
         session.execute(
             insert(BookmarkModel),
-            fake_data,
+            bookmark_fake_data,
+        )
+        session.commit()
+        session.execute(
+            insert(NegotiumModel),
+            negotium_fake_data,
         )
         session.commit()
     yield engine
