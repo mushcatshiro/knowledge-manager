@@ -11,6 +11,7 @@ from flask import (
     current_app,
 )
 import markdown
+from werkzeug.utils import secure_filename
 
 from blog import db, CustomException
 from blog.auth import verify_token
@@ -92,6 +93,22 @@ def save():
             wf.write(request.form["content"])
         return redirect(url_for("main.blog"))
     raise Exception("Invalid token")
+
+
+@admin.route("/blog/upload", methods=["GET", "POST"])
+def blog_upload():
+    if request.method == "POST":
+        if "file" not in request.files:
+            raise Exception("No file part")
+        payload = request.files["file"]
+        if payload.filename == "":
+            raise Exception("No selected file")
+        files = request.files.getlist("file")
+        for file in files:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(current_app.config["BLOG_PATH"], filename))
+        return redirect(url_for("main.blog"))
+    return render_template("upload.html")
 
 
 @admin.route("/preview", methods=["POST"])
