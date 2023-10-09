@@ -2,7 +2,7 @@ import os
 import time
 
 
-from blog.core.crud import CRUDBase, Base
+from blog.core.crud import CRUDBase
 
 
 def cpu_util():
@@ -58,11 +58,11 @@ def server_healthcheck(to_db, db):
     return health
 
 
-class ServerHealthModel(Base):
-    __tablename__ = "bookmark"
-    # id = Column(Integer, primary_key=True)
-    # cpu = Column()
-    # temp = Column()
-    # memory = Column()
-    # disk = Column()
-    # timestamp = Column(DateTime, default=datetime.utcnow)
+# class ServerHealthModel(Base):
+#     __tablename__ = "bookmark"
+# id = Column(Integer, primary_key=True)
+# cpu = Column()
+# temp = Column()
+# memory = Column()
+# disk = Column()
+# timestamp = Column(DateTime, default=datetime.utcnow)

@@ -6,7 +6,7 @@ from enum import IntEnum
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from blog.core.crud import Base
+from blog import Base
 
 
 class State(IntEnum):
