@@ -99,10 +99,10 @@ def save():
 def blog_upload():
     if request.method == "POST":
         if "file" not in request.files:
-            raise Exception("No file part")
+            raise CustomException(400, "No file part", "Invalid request")
         payload = request.files["file"]
         if payload.filename == "":
-            raise Exception("No selected file")
+            raise CustomException(400, "No file name", "Invalid request")
         files = request.files.getlist("file")
         for file in files:
             filename = secure_filename(file.filename)

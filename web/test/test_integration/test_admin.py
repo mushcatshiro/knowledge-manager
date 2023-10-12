@@ -1,6 +1,8 @@
+import io
 import os
 
 from flask import session
+import pytest
 
 
 def test_admin_route_before_request_handler(test_app, auth_token, monkeypatch):
@@ -54,3 +56,65 @@ def test_admin_route_before_request_handler(test_app, auth_token, monkeypatch):
         monkeypatch.setattr("blog.admin.view.verify_token", lambda x: False)
         response = client.get("/admin/fsrs/setup/cards")
         assert response.status_code == 401
+
+
+def test_upload_with_monkeypatch(test_app, auth_token, monkeypatch):
+    client = test_app.test_client(use_cookies=True)
+    monkeypatch.setattr("werkzeug.datastructures.FileStorage.save", lambda x, y: None)
+
+    with client:
+        response = client.post(
+            "/admin/login", data={"token": auth_token}, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        data = {"file": (io.BytesIO(b"abcdef"), "test.md"), "token": auth_token}
+        response = client.post(
+            "/admin/blog/upload",
+            data=data,
+            content_type="multipart/form-data",
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+
+        data_no_file = {"token": auth_token}
+        response = client.post(
+            "/admin/blog/upload", data=data_no_file, content_type="multipart/form-data"
+        )
+        assert response.status_code == 400
+
+        data_multi_file = {
+            "file": [
+                (io.BytesIO(b"abcdef"), "test1.md"),
+                (io.BytesIO(b"abcdef"), "test2.md"),
+            ],
+            "token": auth_token,
+        }
+        response = client.post(
+            "/admin/blog/upload",
+            data=data_multi_file,
+            content_type="multipart/form-data",
+            follow_redirects=True,
+        )
+
+
+@pytest.mark.usefixtures("cleanup_file")
+def test_upload_without_monkeypatch(test_app, auth_token):
+    client = test_app.test_client(use_cookies=True)
+
+    with client:
+        response = client.post(
+            "/admin/login", data={"token": auth_token}, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        data = {"file": (io.BytesIO(b"abcdef"), "test.md"), "token": auth_token}
+        response = client.post(
+            "/admin/blog/upload",
+            data=data,
+            content_type="multipart/form-data",
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        with open(os.path.join(os.getenv("BLOG_PATH"), "test.md"), "r") as rf:
+            assert rf.read() == "abcdef"
