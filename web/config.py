@@ -19,7 +19,7 @@ class RequestFormatter(logging.Formatter):
 
 
 class Config:
-    PROJECTNAME = os.environ.get("PROJECTNAME")
+    PROJECT_NAME = os.environ.get("PROJECT_NAME")
     DSN = os.environ.get("DSN")
     SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI")
     BLOG_PATH = os.environ.get("BLOG_PATH")
@@ -66,12 +66,12 @@ class LocalDeploymentConfig(Config):
         app.logger.handlers.clear()
         app.logger.setLevel(logging.INFO)
         formatter = RequestFormatter(
-            "[%(asctime)s] %(request_ip)s payload: %(context)s ",
+            "[%(asctime)s] %(request_ip)s ",
             "%(levelname)s in %(module)s: %(message)s",
         )
 
         logfile_handler = handlers.RotatingFileHandler(
-            os.path.join(basedir, f"{cls.PROJECTNAME}-PROD.log"),
+            os.path.join(basedir, f"{cls.PROJECT_NAME}-PROD.log"),
             maxBytes=102400,
             backupCount=10,
             encoding="UTF-8",
