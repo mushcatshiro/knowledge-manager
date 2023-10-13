@@ -71,7 +71,7 @@ class LocalDeploymentConfig(Config):
         )
 
         logfile_handler = handlers.RotatingFileHandler(
-            os.path.join(basedir, f"{cls.PROJECT_NAME}-PROD.log"),
+            os.path.join(basedir, f"{cls.PROJECTNAME}-PROD.log"),
             maxBytes=102400,
             backupCount=10,
             encoding="UTF-8",
