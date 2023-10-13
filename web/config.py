@@ -57,7 +57,26 @@ class TestingConfig(Config):
 
 
 class LocalDeploymentConfig(Config):
-    pass
+    @classmethod
+    def init_app(cls, app):
+        Config.init_app(app)
+
+        app.logger.handlers.clear()
+        app.logger.setLevel(logging.INFO)
+        formatter = RequestFormatter(
+            "[%(asctime)s] %(request_ip)s payload: %(context)s ",
+            "%(levelname)s in %(module)s: %(message)s",
+        )
+
+        logfile_handler = logging.RotatingFileHandler(
+            os.path.join(basedir, f"{cls.PROJECT_NAME}-PROD.log"),
+            maxBytes=102400,
+            backupCount=10,
+            encoding="UTF-8",
+        )
+        logfile_handler.setFormatter(formatter)
+        logfile_handler.setLevel(logging.INFO)
+        app.logger.addHandler(logfile_handler)
 
 
 class CloudDeploymentConfig(Config):
