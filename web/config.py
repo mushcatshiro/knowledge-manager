@@ -61,6 +61,8 @@ class LocalDeploymentConfig(Config):
     def init_app(cls, app):
         Config.init_app(app)
 
+        from logging import handlers
+
         app.logger.handlers.clear()
         app.logger.setLevel(logging.INFO)
         formatter = RequestFormatter(
@@ -68,7 +70,7 @@ class LocalDeploymentConfig(Config):
             "%(levelname)s in %(module)s: %(message)s",
         )
 
-        logfile_handler = logging.RotatingFileHandler(
+        logfile_handler = handlers.RotatingFileHandler(
             os.path.join(basedir, f"{cls.PROJECT_NAME}-PROD.log"),
             maxBytes=102400,
             backupCount=10,
