@@ -199,7 +199,7 @@ def create_schedule():
 
 
 @admin.route("/schedule/edit/<int:id>", methods=["GET", "POST"])
-def create_schedule(id):
+def edit_schedule(id):
     """
     no hard delete, just update delete flag
     """
