@@ -47,6 +47,7 @@ priority is ranked based on the `*` symbol.
     - [ ] database model views
     - [ ] static file handling for blog and blog images (upload etc)
   - [ ] request for bookmarklet js
+- [ ] main-admin integration (main pages editable when logged in)
 - [ ] site is down update (external)
 - [ ] minimize javascript
   - [ ] code highlight
@@ -77,7 +78,7 @@ priority is ranked based on the `*` symbol.
 - [ ] ORM
   - [x] introduction of ORM
   - [ ] removal of ORM
-  - [ ] SQL injection prevention
+  - [ ] SQL injection prevention (prep statement for custom query) *
   - [ ] inverting dependencies using repository pattern
 - [ ] micro framework for web
   - [ ] remove flask
@@ -95,8 +96,6 @@ priority is ranked based on the `*` symbol.
 - [x] containerize
   - [ ] docker-compose
 - [x] poetry
-- [ ] UI
-  - [ ] right aligned headers
 - [x] logging
 - [x] pre-commit
 - [ ] ansible playbook
@@ -112,3 +111,6 @@ priority is ranked based on the `*` symbol.
   - [ ] pre-commit isort
   - [ ] xprocess for redis cache testing
 - [ ] 100 list
+
+## bug reports
+- weird next url for admin login

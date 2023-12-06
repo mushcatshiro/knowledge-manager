@@ -34,6 +34,8 @@ def before_request_handler():
         pass
     elif not session.get("token"):
         # TODO with token and yet going to login route?
+        if "," in request.url:
+            request.url = request.url.split(",", 1)[1]
         return redirect(f"/admin/login?next={quote_plus(request.url)}")
     elif not verify_token(session.get("token")):
         session.pop("token")
@@ -180,3 +182,25 @@ def bookmarkletjs():
         "bookmarkletjs.html",
         script=script.join("") if request.args.get("min") else script.join("\n"),
     )
+
+
+@admin.route("/schedule")
+def schedule():
+    """
+    default get overdue + look ahead 14 days + critical items
+    option to use date picker to move around with default?
+    """
+    pass
+
+
+@admin.route("/schedule/create", methods=["GET", "POST"])
+def create_schedule():
+    pass
+
+
+@admin.route("/schedule/edit/<int:id>", methods=["GET", "POST"])
+def create_schedule(id):
+    """
+    no hard delete, just update delete flag
+    """
+    pass
