@@ -66,8 +66,7 @@ class LocalDeploymentConfig(Config):
         app.logger.handlers.clear()
         app.logger.setLevel(logging.INFO)
         formatter = RequestFormatter(
-            "[%(asctime)s] %(request_ip)s ",
-            "%(levelname)s in %(module)s: %(message)s",
+            "[%(asctime)s] %(request_ip)s %(levelname)s in %(module)s: %(message)s",
         )
 
         logfile_handler = handlers.RotatingFileHandler(
