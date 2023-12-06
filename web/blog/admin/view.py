@@ -1,5 +1,5 @@
 import os
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, parse_qs
 
 from flask import (
     Blueprint,
@@ -33,10 +33,7 @@ def before_request_handler():
     if request.path == "/admin/login":
         pass
     elif not session.get("token"):
-        # TODO with token and yet going to login route?
-        if "," in request.url:
-            request.url = request.url.split(",", 1)[1]
-        return redirect(f"/admin/login?next={quote_plus(request.url)}")
+        return redirect(url_for("admin.login", next=quote_plus(request.url)))
     elif not verify_token(session.get("token")):
         session.pop("token")
         raise CustomException(401, "Invalid token", "Unauthorized access")
