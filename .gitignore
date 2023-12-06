@@ -12,3 +12,4 @@ templates/*
 *.db
 flask_session/
 .coverage
+*.log*
