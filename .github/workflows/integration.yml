@@ -1,0 +1,35 @@
+name: Integration-Tests
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+        fetch-depth: 0
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        python -m poetry config virtualenvs.in-project true
+        python -m poetry install --with test
+    - name: Cache venv
+      uses: actions/cache@v2
+      with:
+        path: ./.venv
+        key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+    - name: Run integration tests
+      run: |
+        cd web
+        echo "${{ secrets.INTEGRATION_ENV }}" > .env.test
+        echo "${{ secrets.INTEGRATION_ENV }}" > .env
+        poetry run pytest -v --cov --cov-config=.coveragerc test/test_integration/

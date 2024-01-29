@@ -42,7 +42,16 @@ pytest --capture=no test\test_crud\test_crud.py
 pytest -q test\test_crud\test_crud.py
 # to run all test
 pytest
+# show coverage
+pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
+pytest -v --cov --cov-config=.coveragerc --cov-report html test/test_integration/
+
+# start local instance
+export FLASK_MODE=testing
+flask run
 ```
+
+> `ENVFILE=.env.test` is needed until hack is fixed
 
 ## Acknowledgements
 

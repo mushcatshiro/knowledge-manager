@@ -1,7 +1,12 @@
 from datetime import datetime, timedelta
 import copy
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 from enum import IntEnum
+
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
+
+from blog import Base
 
 
 class State(IntEnum):
@@ -16,6 +21,24 @@ class Rating(IntEnum):
     Hard = 2
     Good = 3
     Easy = 4
+
+    @classmethod
+    def convert(cls, rating: str) -> "Rating":
+        if rating in cls.__members__:
+            return cls.__members__[rating]
+        raise ValueError
+
+
+class ReviewLogModel(Base):  # pylint: disable=too-few-public-methods
+    __tablename__ = "review_logs"
+    rid = Column(Integer, primary_key=True, index=True)
+    rating: int = Column(Integer)
+    elapsed_days: int = Column(Integer)
+    scheduled_days: int = Column(Integer)
+    review: datetime = Column(DateTime)
+    state: int = Column(Integer)
+    id = Column(Integer, ForeignKey("cards.id"))
+    card = relationship("CardModel", back_populates="review_logs")
 
 
 class ReviewLog:
@@ -40,6 +63,76 @@ class ReviewLog:
         self.state = state
 
 
+class CardModel(Base):  # pylint: disable=too-few-public-methods
+    """
+    Card model
+    TODO
+    ----
+    - chinese support
+    - image support
+    - audio support
+    - video support
+    - latex support
+    - markdown support
+    """
+
+    __tablename__ = "cards"
+    id = Column(Integer, primary_key=True, index=True)
+    due: datetime = Column(DateTime, default=datetime.utcnow)
+    stability: float = Column(Integer, default=0)
+    difficulty: float = Column(Integer, default=0)
+    elapsed_days: int = Column(Integer, default=0)
+    scheduled_days: int = Column(Integer, default=0)
+    reps: int = Column(Integer, default=0)
+    lapses: int = Column(Integer, default=0)
+    state: State = Column(Integer, default=State.New)
+    last_review: datetime = Column(DateTime, nullable=True)
+    title = Column(String, index=True)
+    question = Column(String)
+    answer = Column(String)
+    review_logs = relationship("ReviewLogModel", back_populates="card")
+
+    def __repr__(self) -> str:
+        return f"<id {self.id} title {self.title}>"
+
+    def get_fsrs_details(self):
+        return {
+            "due": self.due,
+            "stability": self.stability,
+            "difficulty": self.difficulty,
+            "elapsed_days": self.elapsed_days,
+            "scheduled_days": self.scheduled_days,
+            "reps": self.reps,
+            "lapses": self.lapses,
+            "state": self.state,
+            "last_review": self.last_review,
+        }
+
+    def update_fsrs_details(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def render(self) -> str:
+        raise NotImplementedError
+
+    def to_dict(self) -> Dict:
+        return {
+            "id": self.id,
+            "due": self.due,
+            "stability": self.stability,
+            "difficulty": self.difficulty,
+            "elapsed_days": self.elapsed_days,
+            "scheduled_days": self.scheduled_days,
+            "reps": self.reps,
+            "lapses": self.lapses,
+            "state": self.state,
+            "last_review": self.last_review,
+            "title": self.title,
+            "question": self.question,
+            "answer": self.answer,
+        }
+
+
 class Card:
     due: datetime
     stability: float
@@ -51,22 +144,39 @@ class Card:
     state: State
     last_review: datetime
 
-    def __init__(self) -> None:
-        self.due = datetime.utcnow()
-        self.stability = 0
-        self.difficulty = 0
-        self.elapsed_days = 0
-        self.scheduled_days = 0
-        self.reps = 0
-        self.lapses = 0
-        self.state = State.New
+    def __init__(
+        self,
+        due=None,
+        stability=0,
+        difficulty=0,
+        elapsed_days=0,
+        scheduled_days=0,
+        reps=0,
+        lapses=0,
+        state=None,
+        last_review=None,
+    ) -> None:
+        """
+        TODO
+        ----
+        self.last_review should be set to None if state is New and maybe also
+        when state is relearning.
+        """
+        self.due = due if due else datetime.utcnow()
+        self.stability = stability
+        self.difficulty = difficulty
+        self.elapsed_days = elapsed_days
+        self.scheduled_days = scheduled_days
+        self.reps = reps
+        self.lapses = lapses
+        self.state = state if state else State.New
+        self.last_review = last_review if last_review else datetime.utcnow()
 
     def get_retrievability(self, now: datetime) -> Optional[float]:
         if self.state == State.Review:
             elapsed_days = max(0, (now - self.last_review).days)
             return (1 + elapsed_days / (9 * self.stability)) ** -1
-        else:
-            return None
+        return None
 
 
 class SchedulingInfo:
@@ -97,7 +207,7 @@ class SchedulingCards:
             self.good.state = State.Learning
             self.easy.state = State.Review
             self.again.lapses += 1
-        elif state == State.Learning or state == State.Relearning:
+        elif state in (State.Learning, State.Relearning):
             self.again.state = state
             self.hard.state = state
             self.good.state = State.Review
@@ -128,7 +238,7 @@ class SchedulingCards:
         self.good.due = now + timedelta(days=good_interval)
         self.easy.due = now + timedelta(days=easy_interval)
 
-    def record_log(self, card: Card, now: datetime) -> dict[int, SchedulingInfo]:
+    def record_log(self, card: Card, now: datetime) -> Dict[int, SchedulingInfo]:
         return {
             Rating.Again: SchedulingInfo(
                 self.again,
