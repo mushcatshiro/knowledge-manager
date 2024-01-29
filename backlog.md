@@ -9,18 +9,26 @@ priority is ranked based on the `*` symbol.
   - [x] remove argparse import in bookmarklet.py
   - [x] move to web
   - [ ] open graph protocol
-  - [ ] minimize js on save?
-  - [ ] crawl innerHTML
-    - [ ] make optional
+- [ ] zhihu scrap
+- [x] list view of saved reads
+  - [x] base
+  - [ ] search fn
+  - [x] pagination
+  - [ ] visualization
+    - [ ] generated image TTL
 - [ ] implement indexing function for search
 - [ ] health monitoring *
   - [x] application
   - [x] server monitoring
+  - [ ] make request task queue async
+    - [ ] timestamp checkpoint
+    - [ ] cron ping internal api
 - [ ] web blog feature list
   - [ ] html render
     - [ ] target under 1ms
     - [ ] custom markdown-esque renderer *
     - [ ] remove dependency `highlight.js` with codehilite/pygments
+    - [ ] blog post image
   - [ ] simple search box
     - [x] ~~search hints~~
     - [ ] imitate CLI `executable *args **kwargs`
@@ -28,66 +36,91 @@ priority is ranked based on the `*` symbol.
   - [ ] peek function (imagine further searching up on blog that describes sql optimization on how to optimize on psql after getting the return link)
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
-  - [ ] admin edit page
-    - [x] passcode for auth
-    - [x] taking quick notes
-      - [ ] converting notes to proper documents
-    - [ ] ~~on demand siyuan notes instance~~
-    - [ ] calendar and daily management
-    - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
-  - [ ] site is down update (external)
-  - [ ] minimize javascript
-    - [ ] code highlight
-    - [ ] bootstrap
-  - [ ] blog preload function calls
-    - [ ] read index to memory
-    - [ ] check static folder
-  - [ ] implement cache
-    - [ ] preload to cache
-    - [ ] update cache if content changes
-    - [ ] in-memory
-    - [ ] redis
-  - [ ] ANKI adoption
-    - [ ] NLP subsystem to generate appropriate questions
-    - [ ] distinguish question posed during understanding the document
-    - [ ] backlog size control and batching
-    - [ ] [alternative FSRS](https://github.com/open-spaced-repetition/free-spaced-repetition-scheduler)
-  - [ ] ability to referrence to other documents easily
-    - [ ] extend documents into TODOs
-    - [ ] extend into blog post
-  - [ ] visualization of the documents
-  - [x] file structure one blueprint per functionality (search, recommend and etc)
-  - [ ] stable diffusion to change image
-  - [ ] Intersection Observer
-  - [ ] better db conn (with is not the best option)
-    - [x] base conx
-  - [ ] gcp storage mount?
-  - [ ] versioning documents
-  - [ ] ORM
-    - [x] introduction of ORM
-    - [ ] removal of ORM
-    - [ ] SQL injection prevention
-    - [ ] inverting dependencies using repository pattern
-  - [ ] micro framework for web
-    - [ ] remove flask
-    - [ ] asgi compatibility
-  - [ ] rate limiter
-  - [ ] metric tracking
-    - [x] traffic and user
-    - [ ] cache hit rate
-    - [ ] google analytic?
-- [ ] litestar migration *
-  - to reconsider as litestar has >= py3.8 requirement
-  - to consider python3.8
+  - [ ] comments
+    - [ ] OAuth2
+- [ ] admin
+  - [x] passcode for auth
+  - [x] taking quick notes
+    - [ ] converting notes to proper documents
+  - [ ] ~~on demand siyuan notes instance~~
+  - [ ] calendar and daily management
+  - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
+  - [ ] flask-admin
+    - [ ] database model views
+    - [ ] static file handling for blog and blog images (upload etc)
+  - [ ] request for bookmarklet js
+- [ ] main-admin integration (main pages editable when logged in)
+- [ ] site is down update (external)
+- [ ] minimize javascript
+  - [ ] code highlight
+  - [ ] bootstrap
+- [ ] blog preload function calls
+  - [ ] read index to memory
+  - [ ] check static folder
+- [ ] implement cache
+  - [ ] preload to cache
+  - [ ] update cache if content changes
+  - [ ] in-memory
+  - [ ] redis
+- [ ] ANKI adoption
+  - [ ] NLP subsystem to generate appropriate questions
+  - [ ] distinguish question posed during understanding the document
+  - [ ] backlog size control and batching
+  - [x] [alternative FSRS](https://github.com/open-spaced-repetition/free-spaced-repetition-scheduler)
+- [ ] ability to referrence to other documents easily
+  - [ ] extend documents into TODOs
+  - [ ] extend into blog post
+  - [ ] auto ref link between documents
+- [ ] visualization of the documents
+- [x] file structure one blueprint per functionality (search, recommend and etc)
+- [ ] stable diffusion to change image
+- [ ] better db conn (with is not the best option)
+  - [x] base conx
+- [ ] versioning documents
+- [ ] ORM
+  - [x] introduction of ORM
+  - [ ] removal of ORM
+  - [ ] SQL injection prevention (prep statement for custom query) *
+  - [ ] inverting dependencies using repository pattern
+- [ ] micro framework for web
+  - [ ] remove flask
+  - [ ] asgi compatibility
+- [ ] rate limiter
+- [ ] metric tracking
+  - [x] traffic and user
+  - [ ] cache hit rate
+  - [ ] google analytic
+  - [ ] catfished requests
 - [ ] test
   - [x] pytest *
-  - [ ] pytest-coverage
-- [ ] containerize
+  - [x] pytest-coverage
+  - [x] integration test (test_app)
+- [x] containerize
+  - [ ] docker-compose
 - [x] poetry
 - [ ] OCR support?
 - [ ] auto ref link between documents
 - [ ] UI
   - [ ] right aligned headers
-- [ ] logging
-- [ ] pre-commit
-- [ ] github build-test for merging
+- [x] logging
+- [x] pre-commit
+- [ ] ansible playbook
+  - [ ] test
+  - [ ] deployment
+  - [ ] backup data
+- [x] github build-test for merging
+- [ ] conf test generation
+  - [ ] nginx
+  - [ ] supervisord
+- [ ] python 3.8 appeal
+  - [ ] litestar
+  - [ ] pre-commit isort
+  - [ ] xprocess for redis cache testing
+- [ ] 100 list
+- [ ] read-only post
+  - [ ] protected static folder
+- [ ] database table for posts (abs path etc)
+- [ ] progressive web application
+
+## bug reports
+- weird next url for admin login

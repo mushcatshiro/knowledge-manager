@@ -26,5 +26,5 @@ def cmd_factory(cmd: str):
 
 def process_request(enquiry: str) -> str:
     cmd, *args = enquiry.split(" ")
-    func = cmd_factory(cmd)
+    func = cmd_factory(cmd, *args)
     return func(enquiry)

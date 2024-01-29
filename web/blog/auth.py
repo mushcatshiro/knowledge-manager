@@ -6,11 +6,9 @@ auth = Blueprint("auth", __name__)
 
 def verify_token(token):
     try:
-        decoded_jwt = jwt.decode(
-            token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
-        )
+        _ = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
         return True
-    except:
+    except Exception:
         return False
 
 
@@ -27,8 +25,7 @@ def authenticate():
             algorithm="HS256",
         )
         return jsonify({"status": "success", "token": encoded_jwt})
-    else:
-        return jsonify({"status": "failed", "token": None})
+    return jsonify({"status": "failed", "token": None})
 
 
 @auth.route("/token", methods=["POST"])

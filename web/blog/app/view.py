@@ -1,17 +1,18 @@
+import os
+
 from flask import (
     Blueprint,
     render_template,
     current_app,
     request,
     send_from_directory,
-    redirect,
-    url_for,
 )
-import os
 import markdown
 
-from blog.auth import verify_token
+from blog import db
+from blog.bookmark import BookmarkModel
 from blog.core import process_request
+from blog.core.crud import CRUDBase
 
 main = Blueprint("main", __name__)
 
@@ -50,12 +51,11 @@ def blog():
     - date of blog
     - better filter i.e. non .md files
     """
-    blog_path = current_app.config["BLOG_PATH"]
-    blog_list = os.listdir(blog_path)
+    blog_list = os.listdir(current_app.config["BLOG_PATH"])
     output = []
-    for i in range(len(blog_list)):
-        if blog_list[i].endswith(".md"):
-            output.append(blog_list[i].replace(".md", ""))
+    for idx, _ in enumerate(blog_list):
+        if blog_list[idx].endswith(".md"):
+            output.append(blog_list[idx].replace(".md", ""))
     return render_template("blog.html", blog_list=output, blog=True)
 
 
@@ -65,51 +65,41 @@ def blog_with_title(title):
     if not os.path.exists(blog_path):
         content = f"Blog {title} not found!"
     else:
-        with open(blog_path, "r", encoding="utf-8") as f:
-            content = f.read()
+        with open(blog_path, "r", encoding="utf-8") as rf:
+            content = rf.read()
             content = md.convert(content)
     return render_template("blog.html", content=content, blog=True)
 
 
-@main.route("/admin")
-def admin():
-    pass
+@main.route("/bookmarklet-list", methods=["GET"])
+def bookmarklet_list():
+    page = request.args.get("page", 1, type=int)
+    bookmarks_query_string = (
+        "select * from bookmark order by timestamp desc "
+        f"limit {30 * page} offset {30 * (page - 1)}"
+    )
+    total_length_query_string = "select count(*) as count from bookmark"
 
-
-@main.route("/draft", methods=["GET", "POST"])
-def draft():
-    content = ""
-    title = ""
-    if request.method == "POST":
-        content = request.form["content"]
-        title = request.form["title"]
-    return render_template("draft.html", content=content, title=title, draft=True)
-
-
-@main.route("/save", methods=["POST"])
-def save():
-    if verify_token(request.form["token"]):
-        blog_root = current_app.config["BLOG_PATH"]
-        blog_title = request.form["title"]
-        with open(
-            os.path.join(blog_root, f"{blog_title}.md"), "w", encoding="utf-8"
-        ) as f:
-            f.write(request.form["content"])
-        return redirect(url_for("main.blog"))
-    else:
-        raise Exception("Invalid token")
-
-
-@main.route("/preview", methods=["POST"])
-def preview():
-    content = request.form["content"]
-    title = request.form["title"]
-    converted_content = md.convert(content)
+    basecrud = CRUDBase(BookmarkModel, db)
+    instances = basecrud.execute(
+        operation="custom_query",
+        query=bookmarks_query_string,
+    )
+    total_length = basecrud.execute(
+        operation="custom_query",
+        query=total_length_query_string,
+    )[0]["count"]
+    if not instances:
+        raise Exception("Bookmark not created")
     return render_template(
-        "preview.html",
-        content=content,
-        title=title,
-        converted_content=converted_content,
+        "bookmarklet.html",
+        bookmarks=instances,
+        total=total_length,
+        bookmarklet_list=True,
+        has_prev=page > 1,
+        has_next=total_length > page * 30,
+        prev_num=page - 1 if page > 1 else None,
+        next_num=page + 1 if total_length > page * 30 else None,
     )
 
 
@@ -120,3 +110,22 @@ def favicon():
         "favicon.ico",
         mimetype="image/vnd.microsoft.icon",
     )
+
+
+@main.route("/secured", methods=["GET", "POST"])
+def secured():
+    return
+
+
+@main.route("/secured/<string:value>", methods=["GET"])
+def secured_with_value(value):
+    return
+
+
+@main.route("/robots.txt")
+def robots():
+    stmt = (
+        "User-agent: *\nallow: /blog\nallow: /blog/*\n allow: /about\n"
+        "disallow: /secured\ndisallow: /secured/*\n"
+    )
+    return stmt

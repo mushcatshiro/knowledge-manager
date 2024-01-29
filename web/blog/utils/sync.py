@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from threading import Lock
 
 
-class RWLock(object):
+class RWLock:
     """RWLock class; this is meant to allow an object to be read from by
     multiple threads, but only written to by a single thread at a time. See:
     https://en.wikipedia.org/wiki/Readers%E2%80%93writer_lock
@@ -20,23 +20,22 @@ class RWLock(object):
     def __init__(self):
 
         self.w_lock = Lock()
-        self.num_r_lock = Lock()
+        self.num_r_lock: Lock = Lock()
         self.num_r = 0
 
     def r_acquire(self):
-        self.num_r_lock.acquire()
-        self.num_r += 1
-        if self.num_r == 1:
-            self.w_lock.acquire()
-        self.num_r_lock.release()
+        with self.num_r_lock:
+            self.num_r += 1
+            if self.num_r == 1:
+                with self.w_lock:
+                    pass
 
     def r_release(self):
         assert self.num_r > 0
-        self.num_r_lock.acquire()
-        self.num_r -= 1
-        if self.num_r == 0:
-            self.w_lock.release()
-        self.num_r_lock.release()
+        with self.num_r_lock:
+            self.num_r -= 1
+            if self.num_r == 0:
+                self.w_lock.release()
 
     @contextmanager
     def r_locked(self):
@@ -48,7 +47,8 @@ class RWLock(object):
             self.r_release()
 
     def w_acquire(self):
-        self.w_lock.acquire()
+        with self.w_lock:
+            pass
 
     def w_release(self):
         self.w_lock.release()

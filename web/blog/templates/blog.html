@@ -22,5 +22,13 @@
   for (var i = 0; i < length; i++) {
     elm[i].className = elm[i].className + " table";
   };
+  var elm = document.getElementsByTagName("blockquote");
+  var length = bqs.length;
+  for (var i = 0; i < length; i++) {
+    elm[i].style.background = "#f9f9f9"
+    elm[i].style.margin = "1.5em 10px"
+    elm[i].style.padding = "0.5em 10px"
+    elm[i].style.borderLeft= "10px solid #ccc"
+  }
 </script>
 {% endblock %}

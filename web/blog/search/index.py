@@ -16,7 +16,7 @@ class IndexObj:
     def __init__(self):
         pass
 
-    def get_top_N_items(self):
+    def get_top_n_items(self):
         pass
 
     def index(self):

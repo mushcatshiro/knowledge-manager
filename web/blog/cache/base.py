@@ -1,6 +1,6 @@
 class BaseCache:
     def __init__(self, timeout):
-        self.timeout = timeout
+        self.default_timeout = timeout
 
     def get(self, key):
         return None
@@ -28,8 +28,24 @@ class BaseCache:
                 set_keys.append(k)
         return set_keys
 
-    def has(self):
+    def has(self, key):
         raise NotImplementedError
 
     def clear(self):
         return True
+
+    def _normalize_timeout(self, timeout):
+        if timeout is None:
+            timeout = self.default_timeout
+        return timeout
+
+    def inc(self, key, delta=1):
+        value = (self.get(key) or 0) + delta
+        return value if self.set(key, value) else None
+
+    def dec(self, key, delta=1):
+        value = (self.get(key) or 0) - delta
+        return value if self.set(key, value) else None
+
+    def get_dict(self, *keys):
+        return dict(zip(keys, self.get_many(*keys)))
