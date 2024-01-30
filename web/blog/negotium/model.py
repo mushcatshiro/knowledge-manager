@@ -11,8 +11,8 @@ class NegotiumModel(Base):
     title = Column(String, nullable=False)
     content = Column(String, nullable=True)
     timestamp = Column(DateTime, default=datetime.utcnow)
-    deadline = Column(DateTime, nullable=False)
-    priority = Column(Integer, nullable=False)
+    deadline = Column(DateTime, nullable=True)
+    priority = Column(Integer, nullable=True)
     completed = Column(Boolean, default=False)
     pid = Column(Integer, nullable=True, index=True)
 
