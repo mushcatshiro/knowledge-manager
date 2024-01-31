@@ -28,6 +28,7 @@ if config.config_file_name is not None:
 
 from blog.bookmark import BookmarkModel
 from blog.negotium import NegotiumModel
+from blog.blogpost import BlogPostModel
 
 target_metadata = [BookmarkModel.metadata]
 

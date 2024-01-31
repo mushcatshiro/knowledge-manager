@@ -1,5 +1,7 @@
 import random
+from datetime import datetime
 
+from sqlalchemy import DateTime
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 
@@ -49,6 +51,12 @@ def create_fake_data(model, num=10, max_int=64, max_str=12, str_chars="abcdefghi
                 return random.randint(1, self.max_int)
             elif t == str:
                 return "".join(random.choices(self.str_chars, k=self.max_str))
+            elif t == bool:
+                return random.choice([True, False])
+            elif t == DateTime or t == datetime:
+                return datetime.utcnow()
+            else:
+                raise ValueError(f"Type {t} not supported")
 
     counter = Counter(count=num, max_int=max_int, max_str=max_str, str_chars=str_chars)
 
