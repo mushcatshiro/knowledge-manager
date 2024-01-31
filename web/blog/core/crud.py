@@ -156,7 +156,7 @@ class CRUDBase:
         instance = session.execute(text(query)).mappings().all()
         return instance
 
-    def execute(self, operation, query=None, **kwargs) -> dict:
+    def safe_execute(self, operation, query=None, **kwargs) -> dict:
         """
         TODO
         ----
@@ -177,3 +177,11 @@ class CRUDBase:
             # resp = [session.refresh(r) for r in resp]
             else:
                 return resp
+
+    def execute(self, operation, query=None, **kwargs):
+        if not hasattr(self, operation):
+            raise Exception(f"operation {operation} not found")
+        fn = getattr(self, operation)
+        with Session(self.engine) as session:
+            resp = fn(session, self.model, query, **kwargs)
+        return resp

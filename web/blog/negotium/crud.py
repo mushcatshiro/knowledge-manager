@@ -20,7 +20,7 @@ class NegotiumCRUD(CRUDBase):
             "SELECT * FROM cte"
         )
 
-        instances = self.execute(
+        instances = self.safe_execute(
             "custom_query",
             query=stmt,
         )

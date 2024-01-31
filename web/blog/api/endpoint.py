@@ -23,7 +23,7 @@ def bookmark():
     if verify_token(payload["token"]):
         payload.pop("token")
         basecrud = CRUDBase(BookmarkModel, db)
-        instance: BookmarkModel = basecrud.execute(operation="create", **payload)
+        instance: BookmarkModel = basecrud.safe_execute(operation="create", **payload)
         if not instance:
             raise CustomException(400, "Bookmark not created", "Bad request")
         return jsonify({"status": "success", "payload": instance})

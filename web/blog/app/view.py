@@ -81,11 +81,11 @@ def bookmarklet_list():
     total_length_query_string = "select count(*) as count from bookmark"
 
     basecrud = CRUDBase(BookmarkModel, db)
-    instances = basecrud.execute(
+    instances = basecrud.safe_execute(
         operation="custom_query",
         query=bookmarks_query_string,
     )
-    total_length = basecrud.execute(
+    total_length = basecrud.safe_execute(
         operation="custom_query",
         query=total_length_query_string,
     )[0]["count"]

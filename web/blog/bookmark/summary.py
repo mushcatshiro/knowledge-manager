@@ -26,7 +26,7 @@ def summarize_annual_bookmarklet():
     # sql_statement = "SELECT timestamp FROM bookmark"
     sql_statement = "SELECT * FROM bookmark ORDER BY timestamp DESC"
     c = CRUDBase(BookmarkModel, db)
-    instances = c.execute(operation="custom_query", query=sql_statement)
+    instances = c.safe_execute(operation="custom_query", query=sql_statement)
     dow_instances = map(
         lambda x: int(
             datetime.datetime.strptime(x["timestamp"], "%Y-%m-%d %H:%M:%S.%f").strftime(

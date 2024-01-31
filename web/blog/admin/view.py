@@ -126,7 +126,7 @@ def preview():
 @admin.route("/edit/<string:modelname>", methods=["POST"])
 def edit(modelname):
     basecrud = CRUDBase(modelname, db)
-    instance = basecrud.execute(
+    instance = basecrud.safe_execute(
         operation="update",
         id=request.form["id"],
         title=request.form["title"],

@@ -48,6 +48,7 @@ def create_app(config_name):
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
 
+    # TODO move this to config, fix multiple .env files (prod/test/devl) issue
     if os.environ.get("FLASK_MODE") == "testing":
         from sqlalchemy import create_engine
 
@@ -67,7 +68,7 @@ def create_app(config_name):
         )
         basecrud = CRUDBase(BookmarkModel, test_db_engine)
         for data in fake_data:
-            basecrud.execute(operation="create", **data)
+            basecrud.safe_execute(operation="create", **data)
 
     return app
 
