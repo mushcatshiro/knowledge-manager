@@ -1,7 +1,7 @@
 from blog.negotium import NegotiumCRUD, NegotiumModel, negotium_tree_search
 
 
-def test_query_negotium_chain(db):
+def test_query_negotium_chain(negotium_db):
     """
     Test the query for the negotium chain
 
@@ -21,10 +21,10 @@ def test_query_negotium_chain(db):
         [9, 4],
         [10, 4],
     ]
-    basecrud = NegotiumCRUD(NegotiumModel, db)
+    basecrud = NegotiumCRUD(NegotiumModel, negotium_db)
     for i, j in chain_test:
-        basecrud.execute("update", id=i, pid=j)
-    id_pairs = basecrud.execute(
+        basecrud.safe_execute("update", id=i, pid=j)
+    id_pairs = basecrud.safe_execute(
         operation="custom_query",
         query="select id, pid from negotium order by id asc",
     )

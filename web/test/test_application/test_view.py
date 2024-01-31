@@ -3,7 +3,7 @@ import os
 from blog.core.crud import CRUDBase
 
 
-def test_main_route_blog(test_app, monkeypatch, db):
+def test_main_route_blog(test_app, monkeypatch, bookmark_db):
     def mock_blog_list(*args, **kwargs):
         return ["test1", "test2", "test3"]
 
