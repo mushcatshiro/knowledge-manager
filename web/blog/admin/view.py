@@ -33,7 +33,7 @@ def before_request_handler():
     if request.path == "/admin/login":
         pass
     elif not session.get("token"):
-        return redirect(url_for("admin.login", next=quote_plus(request.url)))
+        return redirect(url_for("admin.login", next=request.url))
     elif not verify_token(session.get("token")):
         session.pop("token")
         raise CustomException(401, "Invalid token", "Unauthorized access")

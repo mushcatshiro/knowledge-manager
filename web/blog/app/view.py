@@ -76,7 +76,7 @@ def bookmarklet_list():
     page = request.args.get("page", 1, type=int)
     bookmarks_query_string = (
         "select * from bookmark order by timestamp desc "
-        f"limit {30 * page} offset {30 * (page - 1)}"
+        f"limit {current_app.config['PAGINATION_LIMIT']* page} offset {current_app.config['PAGINATION_LIMIT'] * (page - 1)}"
     )
     total_length_query_string = "select count(*) as count from bookmark"
 
@@ -97,9 +97,11 @@ def bookmarklet_list():
         total=total_length,
         bookmarklet_list=True,
         has_prev=page > 1,
-        has_next=total_length > page * 30,
+        has_next=total_length > page * current_app.config["PAGINATION_LIMIT"],
         prev_num=page - 1 if page > 1 else None,
-        next_num=page + 1 if total_length > page * 30 else None,
+        next_num=page + 1
+        if total_length > page * current_app.config["PAGINATION_LIMIT"]
+        else None,
     )
 
 

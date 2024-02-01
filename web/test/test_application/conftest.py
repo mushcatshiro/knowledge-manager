@@ -1,5 +1,10 @@
 import os
+
+from blog.utils import create_fake_data
+
 import pytest
+from sqlalchemy.orm import Session
+from sqlalchemy import insert
 
 
 @pytest.fixture(scope="session")
@@ -30,3 +35,18 @@ def cleanup_file():
         os.remove(fpath)
     else:
         print(f"The file {fpath} does not exist, something is wrong")
+
+
+@pytest.fixture
+def bookmark_db(db):
+    from blog.bookmark import BookmarkModel
+
+    fake_data = create_fake_data(BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM")))
+
+    with Session(db) as session:
+        session.execute(
+            insert(BookmarkModel),
+            fake_data,
+        )
+        session.commit()
+    yield db
