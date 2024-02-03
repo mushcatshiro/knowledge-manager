@@ -12,8 +12,9 @@ from flask import (
 )
 import markdown
 from werkzeug.utils import secure_filename
+from sqlalchemy import create_engine
 
-from blog import db, CustomException
+from blog import CustomException
 from blog.auth import verify_token
 from blog.core.crud import CRUDBase
 
@@ -125,6 +126,7 @@ def preview():
 
 @admin.route("/edit/<string:modelname>", methods=["POST"])
 def edit(modelname):
+    db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     basecrud = CRUDBase(modelname, db)
     instance = basecrud.safe_execute(
         operation="update",

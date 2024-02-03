@@ -99,9 +99,6 @@ priority is ranked based on the `*` symbol.
   - [ ] docker-compose
 - [x] poetry
 - [ ] OCR support?
-- [ ] auto ref link between documents
-- [ ] UI
-  - [ ] right aligned headers
 - [x] logging
 - [x] pre-commit
 - [ ] ansible playbook
@@ -117,8 +114,8 @@ priority is ranked based on the `*` symbol.
   - [ ] pre-commit isort
   - [ ] xprocess for redis cache testing
 - [ ] 100 list
-- [ ] read-only post
-  - [ ] protected static folder
+- [x] read-only post
+- [ ] protected static folder
 - [ ] database table for posts (abs path etc)
 - [ ] progressive web application
 

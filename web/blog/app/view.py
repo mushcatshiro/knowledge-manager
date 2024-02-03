@@ -10,8 +10,8 @@ from flask import (
     send_from_directory,
 )
 import markdown
+from sqlalchemy import create_engine
 
-from blog import db
 from blog.bookmark import BookmarkModel
 from blog import db
 from blog.bookmark import BookmarkModel
@@ -84,6 +84,7 @@ def blog_with_title(title):
 
 @main.route("/bookmarklet-list", methods=["GET"])
 def bookmarklet_list():
+    db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     page = request.args.get("page", 1, type=int)
     bookmarks_query_string = (
         "select * from bookmark order by timestamp desc "

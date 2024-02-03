@@ -5,6 +5,7 @@ from .blogpost import (
     read_blog_post_list,
     update_blog_post,
     delete_blog_post,
+    blogpost_name_helper,
 )
 from .crud import BlogPostCrud
 
@@ -16,4 +17,5 @@ __all__ = [
     "update_blog_post",
     "delete_blog_post",
     "BlogPostCrud",
+    "blogpost_name_helper",
 ]

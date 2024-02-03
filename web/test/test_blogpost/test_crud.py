@@ -39,10 +39,10 @@ def test_update(blogpost_db):
         )[0]["count"]
         == 2
     )
-    # dne entry
+    # dne entry -> might want to create instead
     with pytest.raises(ValueError):
         basecrud.execute("update_blog_post", title="test title -2")
-    # deleted entry
+    # deleted entry -> might want to set deleted to 0 instead and update
     with pytest.raises(FileNotFoundError):
         basecrud.execute("update_blog_post", title="test title -1")
 

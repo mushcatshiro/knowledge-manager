@@ -25,10 +25,10 @@ such.</p>
 {% endfor %}
 </div>
 <div class="col-1 d-flex justify-content-center align-self-center">
-<a
-  href="{% if has_next %}{{ url_for('main.bookmarklet_list', page=next_num) }}{% else %}#{% endif %}"
-  {% if not has_next %} style="pointer-events: none; color: darkgray"{% endif %}
->
+  <a
+    href="{% if has_next %}{{ url_for('main.bookmarklet_list', page=next_num) }}{% else %}#{% endif %}"
+    {% if not has_next %} style="pointer-events: none; color: darkgray"{% endif %}
+  >
   &raquo;
 </a>
 </div>

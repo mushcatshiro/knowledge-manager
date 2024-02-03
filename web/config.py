@@ -4,10 +4,6 @@ import os
 from flask import request
 from blog.utils.envvars import set_env_var
 
-set_env_var()
-
-if os.environ.get("FLASK_MODE") == "testing":
-    set_env_var(".env.test")
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -56,7 +52,7 @@ class TestingConfig(Config):
         app.logger.addHandler(log_stream_handler)
 
 
-class LocalDeploymentConfig(Config):
+class DeploymentConfig(Config):
     @classmethod
     def init_app(cls, app):
         Config.init_app(app)
@@ -85,8 +81,8 @@ class CloudDeploymentConfig(Config):
 
 
 config = {
-    "default": LocalDeploymentConfig,
+    "default": TestingConfig,
     "testing": TestingConfig,
-    "production": LocalDeploymentConfig,
+    "production": DeploymentConfig,
     "cloud": CloudDeploymentConfig,
 }

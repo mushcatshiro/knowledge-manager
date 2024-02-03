@@ -5,11 +5,12 @@ from flask import session
 import pytest
 
 
-def test_admin_route_before_request_handler(test_app, auth_token, monkeypatch):
+def test_admin_route_before_request_handler(session_setup, auth_token, monkeypatch):
     """
     - w/o w/ token + login/non login
     - direct logout
     """
+    _, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
 
     response = client.get("/admin/fsrs/setup/cards")
@@ -58,7 +59,8 @@ def test_admin_route_before_request_handler(test_app, auth_token, monkeypatch):
         assert response.status_code == 401
 
 
-def test_upload_with_monkeypatch(test_app, auth_token, monkeypatch):
+def test_upload_with_monkeypatch(session_setup, auth_token, monkeypatch):
+    _, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
     monkeypatch.setattr("werkzeug.datastructures.FileStorage.save", lambda x, y: None)
 
@@ -99,7 +101,8 @@ def test_upload_with_monkeypatch(test_app, auth_token, monkeypatch):
 
 
 @pytest.mark.usefixtures("cleanup_file")
-def test_upload_without_monkeypatch(test_app, auth_token):
+def test_upload_without_monkeypatch(session_setup, auth_token):
+    _, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
 
     with client:

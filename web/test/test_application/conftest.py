@@ -1,27 +1,13 @@
 import os
 
-from blog.utils import create_fake_data
-
 import pytest
 from sqlalchemy.orm import Session
-from sqlalchemy import insert
+from sqlalchemy import insert, delete
 
 
 @pytest.fixture(scope="session")
-def test_app():
-    from blog import create_app
-
-    app = create_app("default")
-    ctx = app.app_context()
-    ctx.push()
-
-    yield app
-
-    ctx.pop()
-
-
-@pytest.fixture(scope="session")
-def auth_token(test_app):
+def auth_token(session_setup):
+    _, test_app = session_setup
     client = test_app.test_client()
     response = client.post("/auth/authenticate", json={"auth": os.getenv("AUTH")})
     return response.json["token"]
@@ -38,15 +24,48 @@ def cleanup_file():
 
 
 @pytest.fixture
-def bookmark_db(db):
+def bookmark_db(session_setup):
+    engine, _ = session_setup
     from blog.bookmark import BookmarkModel
+    from blog.utils import create_fake_data
 
     fake_data = create_fake_data(BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM")))
 
-    with Session(db) as session:
+    with Session(engine) as session:
+        # drop to ensure exactly the number of fake data is inserted
+        # depending on execution sequence test\test_application\test_api.py inserts data
+        session.execute(delete(BookmarkModel))
+        session.commit()
         session.execute(
             insert(BookmarkModel),
             fake_data,
         )
         session.commit()
-    yield db
+    yield engine
+
+    with Session(engine) as session:
+        session.execute(delete(BookmarkModel))
+        session.commit()
+
+
+@pytest.fixture
+def bookmarks_db(session_setup):
+    engine, _ = session_setup
+    from blog.bookmark import BookmarkModel
+    from blog.utils import create_fake_data
+
+    fake_data = create_fake_data(
+        BookmarkModel, num=int(os.getenv("FAKE_DATA_LARGE_NUM"))
+    )
+
+    with Session(engine) as session:
+        session.execute(
+            insert(BookmarkModel),
+            fake_data,
+        )
+        session.commit()
+    yield engine
+
+    with Session(engine) as session:
+        session.execute(delete(BookmarkModel))
+        session.commit()

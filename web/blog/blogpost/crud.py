@@ -13,7 +13,7 @@ class BlogPostCrud(CRUDBase):
     def __init__(self, model: BlogPostModel, engine):
         super().__init__(model, engine)
 
-    def create_blog_post(self, session, model, query, **kwargs):
+    def create_blog_post(self, session, query, **kwargs):
         # check if title exist
         instance = (
             session.execute(
@@ -33,7 +33,7 @@ class BlogPostCrud(CRUDBase):
         session.commit()
         return instance.to_json()
 
-    def read_blog_post(self, session, model, query, title):
+    def read_blog_post(self, session, query, title):
         instance = (
             session.execute(
                 select(self.model)
@@ -50,7 +50,7 @@ class BlogPostCrud(CRUDBase):
 
         return instance.to_json()
 
-    def read_blog_post_list(self, session, model, query, **kwargs):
+    def read_blog_post_list(self, session, query, **kwargs):
         """
         TODO
         - pagination
@@ -66,17 +66,17 @@ class BlogPostCrud(CRUDBase):
         )
         return instances
 
-    def update_blog_post(self, session, model, query, title):
+    def update_blog_post(self, session, query, title):
         # get current version
-        instance = self.read_blog_post(session, model, query, title)
+        instance = self.read_blog_post(session, query, title)
         instance = self.create_blog_post(
-            session, model, query, version=instance["version"] + 1, title=title
+            session, query, version=instance["version"] + 1, title=title
         )
         return instance
 
-    def delete_blog_post(self, session, model, query, title: str):
+    def delete_blog_post(self, session, query, title: str):
         try:
-            instance = self.read_blog_post(session, model, query, title)
+            instance = self.read_blog_post(session, query, title)
         except FileNotFoundError:
             # already deleted
             return True

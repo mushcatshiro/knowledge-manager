@@ -7,21 +7,26 @@ from flask import Flask, g, current_app, request, render_template
 from flask.globals import request_ctx
 from flask_cors import CORS
 from flask_session import Session
-from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 
-from config import config
+from blog.utils import set_env_var
 
 
 cors = CORS()
-db = create_engine(os.environ.get("SQLALCHEMY_DATABASE_URI"))
 sess = Session()
 
 Base = declarative_base()
 
 
 def create_app(config_name):
-    app = Flask(__name__)
+    if config_name == "default" or config_name == "testing":
+        set_env_var(".env.test")
+    else:
+        set_env_var()
+
+    from config import config
+
+    app: Flask = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
@@ -51,28 +56,6 @@ def create_app(config_name):
 
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
-
-    # TODO move this to config, fix multiple .env files (prod/test/devl) issue
-    if os.environ.get("FLASK_MODE") == "testing":
-        from sqlalchemy import create_engine
-
-        from blog.utils import create_fake_data
-        from blog.bookmark import BookmarkModel
-        from blog.core.crud import CRUDBase
-
-        test_db_engine = create_engine(
-            os.environ.get("SQLALCHEMY_DATABASE_URI"), echo=True
-        )
-        # drop all tables
-        Base.metadata.drop_all(test_db_engine)
-        Base.metadata.create_all(test_db_engine)
-
-        fake_data = create_fake_data(
-            BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM", 10))
-        )
-        basecrud = CRUDBase(BookmarkModel, test_db_engine)
-        for data in fake_data:
-            basecrud.safe_execute(operation="create", **data)
 
     return app
 
