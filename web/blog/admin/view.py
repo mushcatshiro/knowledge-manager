@@ -1,5 +1,5 @@
 import os
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, parse_qs
 
 from flask import (
     Blueprint,
@@ -11,8 +11,10 @@ from flask import (
     current_app,
 )
 import markdown
+from werkzeug.utils import secure_filename
+from sqlalchemy import create_engine
 
-from blog import db, CustomException
+from blog import CustomException
 from blog.auth import verify_token
 from blog.core.crud import CRUDBase
 
@@ -29,8 +31,13 @@ def before_request_handler():
     ---
     - check token expiry
     """
-    if not session.get("token") and request.endpoint != "admin.login":
-        return redirect(f"/admin/login?next={quote_plus(request.url)}")
+    if request.path == "/admin/login":
+        pass
+    elif not session.get("token"):
+        return redirect(url_for("admin.login", next=request.url))
+    elif not verify_token(session.get("token")):
+        session.pop("token")
+        raise CustomException(401, "Invalid token", "Unauthorized access")
 
 
 @admin.route("/login", methods=["GET", "POST"])
@@ -40,8 +47,14 @@ def login():
             session["token"] = request.form["token"]
             next_url = request.args.get("next", "/")
             return redirect(next_url)
-        raise CustomException(400, "Invalid token", "Invalid token")
+        raise CustomException(401, "Invalid token", "Unauthorized access")
     return render_template("login.html")
+
+
+@admin.route("/logout", methods=["GET"])
+def logout():
+    session.pop("token")
+    return redirect(url_for("main.index"))
 
 
 @admin.route("/fsrs/setup/cards", methods=["GET", "POST"])
@@ -82,6 +95,22 @@ def save():
     raise Exception("Invalid token")
 
 
+@admin.route("/blog/upload", methods=["GET", "POST"])
+def blog_upload():
+    if request.method == "POST":
+        if "file" not in request.files:
+            raise CustomException(400, "No file part", "Invalid request")
+        payload = request.files["file"]
+        if payload.filename == "":
+            raise CustomException(400, "No file name", "Invalid request")
+        files = request.files.getlist("file")
+        for file in files:
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(current_app.config["BLOG_PATH"], filename))
+        return redirect(url_for("main.blog"))
+    return render_template("upload.html")
+
+
 @admin.route("/preview", methods=["POST"])
 def preview():
     content = request.form["content"]
@@ -97,8 +126,9 @@ def preview():
 
 @admin.route("/edit/<string:modelname>", methods=["POST"])
 def edit(modelname):
+    db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     basecrud = CRUDBase(modelname, db)
-    instance = basecrud.execute(
+    instance = basecrud.safe_execute(
         operation="update",
         id=request.form["id"],
         title=request.form["title"],
@@ -107,3 +137,74 @@ def edit(modelname):
         desc=request.form["desc"],
     )
     return instance
+
+
+@admin.route("/bookmarkletjs", methods=["GET"])
+def bookmarkletjs():
+    script = [
+        "javascript:(() => {",
+        f'const requestURL = "{current_app.config["SITE_BASE_URL"]}/api/bookmark";',
+        "const pageTitle = document.title;",
+        "const pageURL = window.location.href;",
+        'let metaImage = "";',
+        'let metaDescription = "";',
+        f'let token = "{session.get("token")}";',
+        "function getMetaValue(propName) {",
+        'const x = document.getElementsByTagName("meta");',
+        "for (let i = 0; i < x.length; i++) {",
+        "const y = x[i];",
+        "let metaName;",
+        "if (y.attributes.property !== undefined) {",
+        "metaName = y.attributes.property.value;}",
+        "if (y.attributes.name !== undefined) {",
+        "metaName = y.attributes.name.value;}",
+        "if (metaName === undefined) {continue;}",
+        "if (metaName === propName) {return y.attributes.content.value;}}",
+        "return undefined;}",
+        '{let desc = getMetaValue("og:description");',
+        "if (desc !== undefined) {metaDescription = desc;}",
+        'else {desc = getMetaValue("description");',
+        "if (desc !== undefined) {metaDescription = desc;}}}",
+        '{const img = getMetaValue("og:image");',
+        "if (img !== undefined) {metaImage = img;}}",
+        'console.log("BOOKMARKET PRESSED:", pageTitle, pageURL, metaDescription, metaImage);',
+        "const url = new URL(requestURL);",
+        "const searchParams = url.searchParams;",
+        'searchParams.set("title", pageTitle);',
+        'searchParams.set("url", pageURL);',
+        'searchParams.set("desc", metaDescription);',
+        'searchParams.set("img", metaImage);',
+        'searchParams.set("token", token);',
+        "window.location.href = url; })();",
+    ]
+    return render_template(
+        "bookmarkletjs.html",
+        script=script.join("") if request.args.get("min") else script.join("\n"),
+    )
+
+
+@admin.route("/schedule")
+def schedule():
+    """
+    default get overdue + look ahead 14 days + critical items
+    option to use date picker to move around with default?
+    """
+    pass
+
+
+@admin.route("/schedule/create", methods=["GET", "POST"])
+def create_schedule():
+    pass
+
+
+@admin.route("/schedule/edit/<int:id>", methods=["GET", "POST"])
+def edit_schedule(id):
+    """
+    no hard delete, just update delete flag
+    """
+    pass
+
+
+@admin.route("/negotium/preview")
+def negotium_preview():
+    return render_template("negotium.html")

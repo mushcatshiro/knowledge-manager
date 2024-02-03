@@ -12,3 +12,5 @@ templates/*
 *.db
 flask_session/
 .coverage
+*.log*
+.DS_store

@@ -7,18 +7,26 @@ from flask import Flask, g, current_app, request, render_template
 from flask.globals import request_ctx
 from flask_cors import CORS
 from flask_session import Session
-from sqlalchemy import create_engine
+from sqlalchemy.orm import declarative_base
 
-from config import config
+from blog.utils import set_env_var
 
 
 cors = CORS()
-db = create_engine(os.environ.get("SQLALCHEMY_DATABASE_URI"))
 sess = Session()
+
+Base = declarative_base()
 
 
 def create_app(config_name):
-    app = Flask(__name__)
+    if config_name == "default" or config_name == "testing":
+        set_env_var(".env.test")
+    else:
+        set_env_var()
+
+    from config import config
+
+    app: Flask = Flask(__name__)
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 
@@ -44,6 +52,7 @@ def create_app(config_name):
 
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
+
     return app
 
 
@@ -81,8 +90,12 @@ def register_request_handlers(app, config_name="default"):
             "user_agent": ctx.request.user_agent.string,
             "app_name": ctx.app.name,
             "date": str(datetime.date.today()),
-            "request": f"{ctx.request.method} {ctx.request.url} {ctx.request.environ.get('SERVER_PROTOCOL')}",
-            "url_args": {k: ctx.request.args[k] for k in ctx.request.args},
+            "request": "{} {} {}".format(
+                ctx.request.method,
+                ctx.request.url,
+                ctx.request.environ.get("SERVER_PROTOCOL"),
+            ),
+            "url_args": dict([(k, ctx.request.args[k]) for k in ctx.request.args]),
             "content_length": response.content_length,
             "blueprint": ctx.request.blueprint,
             "view_args": ctx.request.view_args,
@@ -129,7 +142,7 @@ def error_handler(error):
             error_msg=error.description,
             error_name=error.name,
         ),
-        400,
+        error.code,
     )
 
 

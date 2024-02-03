@@ -2,13 +2,9 @@ import logging
 
 from sqlalchemy.orm import Session
 from sqlalchemy import text, select
-from sqlalchemy.orm import declarative_base
 
 
 logger = logging.getLogger(__name__)
-
-
-Base = declarative_base()
 
 
 class CRUDBase:
@@ -16,7 +12,7 @@ class CRUDBase:
         self.model = model
         self.engine = engine
 
-    def get(self, session, model, query, **kwargs):
+    def get(self, session, query, **kwargs):
         """
         Get an instance of a model with the given id
         Args:
@@ -33,13 +29,13 @@ class CRUDBase:
         """
         del query
         instance = (
-            session.execute(select(model).where(model.id == kwargs.get("id")))
+            session.execute(select(self.model).where(self.model.id == kwargs.get("id")))
             .scalars()
             .first()
         )
         return instance.to_json()
 
-    def get_all(self, session, model, query, **kwargs):
+    def get_all(self, session, query, **kwargs):
         """
         Get all instance of a model
         Args:
@@ -58,10 +54,10 @@ class CRUDBase:
         del query
         del kwargs
         # query all instances
-        instance = session.execute(select(model)).mappings().all()
+        instance = session.execute(select(self.model)).mappings().all()
         return instance
 
-    def create(self, session, model, query, **kwargs):
+    def create(self, session, query, **kwargs):
         """
         Create an instance of a model with the given kwargs
         Args:
@@ -77,18 +73,18 @@ class CRUDBase:
         instance: Model
         """
         del query
-        instance = model(**kwargs)
+        instance = self.model(**kwargs)
         session.add(instance)
         session.commit()
         return instance.to_json()
 
-    def _bulk_insert(self, session, model, query, **kwargs):
+    def _bulk_insert(self, session, query, **kwargs):
         """
         temporary unexposed method for testing
         """
         pass
 
-    def update(self, session, model, query, **kwargs):
+    def update(self, session, query, **kwargs):
         """
         Update an instance of a model with the given id one entry at a time
         Args:
@@ -109,7 +105,7 @@ class CRUDBase:
         """
         del query
         instance = (
-            session.execute(select(model).where(model.id == kwargs.get("id")))
+            session.execute(select(self.model).where(self.model.id == kwargs.get("id")))
             .scalars()
             .first()
         )
@@ -120,7 +116,7 @@ class CRUDBase:
         session.commit()
         return instance.to_json()
 
-    def delete(self, session, model, query, **kwargs):
+    def delete(self, session, query, **kwargs):
         """
         Delete an instance of a model with the given id
         Args:
@@ -140,18 +136,17 @@ class CRUDBase:
         should never delete an instance, just set a flag
         """
         del query
-        instance = self.get(session, model, kwargs.get("id"))
+        instance = self.get(session, self.model, kwargs.get("id"))
         if not instance:
             raise Exception(f"instance with {id} not found")
         session.delete(instance)
         session.commit()
         return instance.to_json()
 
-    def custom_query(self, session: Session, model, query: str, **kwargs):
+    def custom_query(self, session: Session, query: str, **kwargs):
         """
         Execute a custom raw sql query
         """
-        del model
         del kwargs
         # TODO below is faster but can be more coherent
         # instances = session.execute(text(query))
@@ -160,7 +155,7 @@ class CRUDBase:
         instance = session.execute(text(query)).mappings().all()
         return instance
 
-    def execute(self, operation, query=None, **kwargs) -> dict:
+    def safe_execute(self, operation, query=None, **kwargs) -> dict:
         """
         TODO
         ----
@@ -171,7 +166,7 @@ class CRUDBase:
         fn = getattr(self, operation)
         with Session(self.engine) as session:
             try:
-                resp = fn(session, self.model, query, **kwargs)
+                resp = fn(session, query, **kwargs)
             except Exception as error:
                 session.rollback()
                 logger.error(error)
@@ -179,4 +174,13 @@ class CRUDBase:
             # refresh the instance to get the latest data
             # or make sure BookmarksModel is bound to some session
             # resp = [session.refresh(r) for r in resp]
-            return resp
+            else:
+                return resp
+
+    def execute(self, operation, query=None, **kwargs):
+        if not hasattr(self, operation):
+            raise Exception(f"operation {operation} not found")
+        fn = getattr(self, operation)
+        with Session(self.engine) as session:
+            resp = fn(session, query, **kwargs)
+        return resp

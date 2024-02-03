@@ -1,12 +1,15 @@
 import datetime as dt
+from threading import Thread
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
+from sqlalchemy import create_engine
 
 from blog.bookmark import BookmarkModel
 from blog.auth import verify_token
 from blog.core.crud import CRUDBase
 from blog.utils.healthcheck import server_healthcheck
-from blog import db
+from blog import CustomException
+
 
 api = Blueprint("api", __name__)
 
@@ -20,13 +23,14 @@ def bookmark():
     """
     payload = request.args.to_dict()
     if verify_token(payload["token"]):
+        db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
         payload.pop("token")
         basecrud = CRUDBase(BookmarkModel, db)
-        instance: BookmarkModel = basecrud.execute(operation="create", **payload)
+        instance: BookmarkModel = basecrud.safe_execute(operation="create", **payload)
         if not instance:
-            raise Exception("Bookmark not created")
+            raise CustomException(400, "Bookmark not created", "Bad request")
         return jsonify({"status": "success", "payload": instance})
-    raise Exception("Invalid token")
+    raise CustomException(401, "Invalid token", "Unauthorized access")
 
 
 @api.route("/healthcheck", methods=["GET"])
@@ -40,17 +44,9 @@ def healthcheck():
     """
     if not verify_token(request.args.get("token")):
         raise Exception("Invalid token")
-    payload = {
-        "timestamp": dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "status": None,
-        "message": None,
-    }
-    try:
-        health = server_healthcheck()
-    except Exception as error:
-        payload["status"] = "error"
-        payload["message"] = str(error)
-    else:
-        payload["status"] = "success"
-        payload.update(health)
-    return jsonify(payload)
+    if request.args.get("user") == "cron":
+        Thread(target=server_healthcheck, kwargs={"to_db": True}).start()
+        return jsonify(
+            {"message": f"triggered server healthcheck at {dt.datetime.now()}"}
+        )
+    return server_healthcheck(False, None)

@@ -2,6 +2,9 @@ import os
 import time
 
 
+from blog.core.crud import CRUDBase
+
+
 def cpu_util():
     with os.popen("cat /proc/stat", "r") as f:
         stat1 = f.readline().split(" ")[2:]
@@ -28,11 +31,12 @@ def disk_usage():
         return f.readline()
 
 
-def server_healthcheck():
+def server_healthcheck(to_db, db):
     """
     TODO
     ----
     - windows support (can refer to psutil)
+    - save to database
     """
     total_1, idle_1 = cpu_util()
     time.sleep(1)
@@ -40,9 +44,25 @@ def server_healthcheck():
     total = int(total_2 - total_1)
     usage = int(int(total_2 - total_1) - int(idle_2 - idle_1))
     usage_rate = str(int(float(usage * 100 / total))) + "%"
-    return {
+
+    health = {
         "cpu": usage_rate,
         "temp": cpu_temp(),
         "mem": mem_usage(),
         "disk": disk_usage(),
     }
+
+    if to_db:
+        basecrud = CRUDBase(ServerHealthModel, db)
+        instance = basecrud.execite("create", **health)
+    return health
+
+
+# class ServerHealthModel(Base):
+#     __tablename__ = "bookmark"
+# id = Column(Integer, primary_key=True)
+# cpu = Column()
+# temp = Column()
+# memory = Column()
+# disk = Column()
+# timestamp = Column(DateTime, default=datetime.utcnow)

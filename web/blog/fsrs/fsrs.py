@@ -3,14 +3,7 @@ import datetime as dt
 import math
 from typing import Dict
 
-from .model import (
-    State,
-    Rating,
-    Card,
-    SchedulingInfo,
-    SchedulingCards,
-    Parameters
-)
+from .model import State, Rating, Card, SchedulingInfo, SchedulingCards, Parameters
 
 
 class FSRS:

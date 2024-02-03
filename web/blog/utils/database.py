@@ -75,7 +75,7 @@ def initialize_cloud(dsn):
         )
         """,
         "INSERT",
-        None
+        None,
     )
     pgc.run()
 

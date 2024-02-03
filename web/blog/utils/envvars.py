@@ -8,6 +8,9 @@ def set_env_var(fname=".env") -> None:
         config = rf.readlines()
 
     for pair in config:
-        k, v = pair.split("=", 1)
-        if v is not None and v != "":
-            os.environ[k.upper()] = v.strip()
+        try:
+            k, v = pair.split("=", 1)
+            if v is not None and v != "":
+                os.environ[k.upper()] = v.strip()
+        except ValueError:
+            pass

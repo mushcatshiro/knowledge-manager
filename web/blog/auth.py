@@ -6,9 +6,7 @@ auth = Blueprint("auth", __name__)
 
 def verify_token(token):
     try:
-        _ = jwt.decode(
-            token, current_app.config["SECRET_KEY"], algorithms=["HS256"]
-        )
+        _ = jwt.decode(token, current_app.config["SECRET_KEY"], algorithms=["HS256"])
         return True
     except Exception:
         return False

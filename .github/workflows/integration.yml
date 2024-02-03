@@ -15,6 +15,7 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
+        fetch-depth: 0
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -26,11 +27,9 @@ jobs:
       with:
         path: ./.venv
         key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-    - name: Create env file
-      run: |
-        cd web
-        echo "${{ secrets.INTEGRATION_ENV }}" > .env.test
     - name: Run integration tests
       run: |
         cd web
-        ENVFILE=.env.test python -m poetry run pytest -v --cov=blog/app/ test/test_integration/
+        echo "${{ secrets.INTEGRATION_ENV }}" > .env.test
+        echo "${{ secrets.INTEGRATION_ENV }}" > .env
+        poetry run pytest -v --cov --cov-config=.coveragerc test

@@ -25,9 +25,12 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-from blog.core.crud import Base
 
-target_metadata = Base.metadata
+from blog.bookmark import BookmarkModel
+from blog.negotium import NegotiumModel
+from blog.blogpost import BlogPostModel
+
+target_metadata = [BookmarkModel.metadata]
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

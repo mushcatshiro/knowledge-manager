@@ -37,13 +37,18 @@ test
 ```bash
 cd web
 # to print `print()` statement and run specific tests
-ENVFILE=.env.test pytest --capture=no test\test_crud\test_crud.py
+pytest --capture=no test\test_crud\test_crud.py
 # to run test in quiet mode
-ENVFILE=.env.test pytest -q test\test_crud\test_crud.py
+pytest -q test\test_crud\test_crud.py
 # to run all test
-ENVFILE=.env.test pytest
+pytest
 # show coverage
-ENVFILE=.env.test pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
+pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
+pytest -v --cov --cov-config=.coveragerc --cov-report html test/test_integration/
+
+# start local instance
+export FLASK_MODE=testing
+flask run
 ```
 
 > `ENVFILE=.env.test` is needed until hack is fixed
