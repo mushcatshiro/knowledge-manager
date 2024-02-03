@@ -40,3 +40,14 @@ def blogpost_db(session_setup):
     with Session(engine) as session:
         session.execute(delete(BlogPostModel))
         session.commit()
+
+
+@pytest.fixture
+def cleanup_blog():
+    delete_list = []
+    yield delete_list
+    for i in delete_list:
+        try:
+            os.remove(os.path.join(os.environ.get("BLOG_PATH"), i))
+        except Exception as e:
+            print(e)
