@@ -50,10 +50,6 @@ def create_app(config_name):
 
     app.register_blueprint(admin, url_prefix="/admin")
 
-    from blog.admin import admin
-
-    app.register_blueprint(admin, url_prefix="/admin")
-
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
 
