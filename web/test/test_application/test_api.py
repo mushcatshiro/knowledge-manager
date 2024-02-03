@@ -1,12 +1,13 @@
 import random
 
 
-def test_api_bookmark(test_app, auth_token):  # noqa db to ensure fixture is called
+def test_api_bookmark(session_setup, auth_token):  # noqa db to ensure fixture is called
     """
     TODO
     ----
     obviously its not consistent for an api's error response to be html
     """
+    _, test_app = session_setup
     client = test_app.test_client()
     s1 = str(random.random())[2:]
     response = client.get(
