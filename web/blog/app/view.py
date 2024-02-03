@@ -13,10 +13,7 @@ import markdown
 from sqlalchemy import create_engine
 
 from blog.bookmark import BookmarkModel
-from blog import db
-from blog.bookmark import BookmarkModel
 from blog.core import process_request
-from blog.core.crud import CRUDBase
 from blog.core.crud import CRUDBase
 
 main = Blueprint("main", __name__)
