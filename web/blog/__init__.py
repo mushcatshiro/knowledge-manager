@@ -45,6 +45,10 @@ def create_app(config_name):
 
     app.register_blueprint(admin, url_prefix="/admin")
 
+    from blog.admin import admin
+
+    app.register_blueprint(admin, url_prefix="/admin")
+
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
 
@@ -107,8 +111,12 @@ def register_request_handlers(app, config_name="default"):
             "user_agent": ctx.request.user_agent.string,
             "app_name": ctx.app.name,
             "date": str(datetime.date.today()),
-            "request": f"{ctx.request.method} {ctx.request.url} {ctx.request.environ.get('SERVER_PROTOCOL')}",
-            "url_args": {k: ctx.request.args[k] for k in ctx.request.args},
+            "request": "{} {} {}".format(
+                ctx.request.method,
+                ctx.request.url,
+                ctx.request.environ.get("SERVER_PROTOCOL"),
+            ),
+            "url_args": dict([(k, ctx.request.args[k]) for k in ctx.request.args]),
             "content_length": response.content_length,
             "blueprint": ctx.request.blueprint,
             "view_args": ctx.request.view_args,

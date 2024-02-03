@@ -1,5 +1,7 @@
 import os
 
+import os
+
 from flask import (
     Blueprint,
     render_template,
@@ -11,7 +13,10 @@ import markdown
 
 from blog import db
 from blog.bookmark import BookmarkModel
+from blog import db
+from blog.bookmark import BookmarkModel
 from blog.core import process_request
+from blog.core.crud import CRUDBase
 from blog.core.crud import CRUDBase
 
 main = Blueprint("main", __name__)
@@ -52,7 +57,11 @@ def blog():
     - better filter i.e. non .md files
     """
     blog_list = os.listdir(current_app.config["BLOG_PATH"])
+    blog_list = os.listdir(current_app.config["BLOG_PATH"])
     output = []
+    for idx, _ in enumerate(blog_list):
+        if blog_list[idx].endswith(".md"):
+            output.append(blog_list[idx].replace(".md", ""))
     for idx, _ in enumerate(blog_list):
         if blog_list[idx].endswith(".md"):
             output.append(blog_list[idx].replace(".md", ""))
@@ -65,6 +74,8 @@ def blog_with_title(title):
     if not os.path.exists(blog_path):
         content = f"Blog {title} not found!"
     else:
+        with open(blog_path, "r", encoding="utf-8") as rf:
+            content = rf.read()
         with open(blog_path, "r", encoding="utf-8") as rf:
             content = rf.read()
             content = md.convert(content)
