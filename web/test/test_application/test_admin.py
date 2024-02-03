@@ -119,5 +119,5 @@ def test_upload_without_monkeypatch(session_setup, auth_token):
             follow_redirects=True,
         )
         assert response.status_code == 200
-        with open(os.path.join(os.getenv("BLOG_PATH"), "test.md"), "r") as rf:
+        with open(os.path.join(test_app.config["BLOG_PATH"], "test.md"), "r") as rf:
             assert rf.read() == "abcdef"

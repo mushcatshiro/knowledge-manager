@@ -12,10 +12,10 @@ def session_setup():
     ctx = app.app_context()
     ctx.push()
 
-    engine = create_engine(os.getenv("SQLALCHEMY_DATABASE_URI"), echo=False)
+    engine = create_engine(app.config["SQLALCHEMY_DATABASE_URI"], echo=False)
     Base.metadata.create_all(engine)
 
     yield (engine, app)
 
-    os.remove(os.getenv("SQLALCHEMY_DATABASE_NAME"))
+    os.remove(app.config["SQLALCHEMY_DATABASE_NAME"])
     ctx.pop()

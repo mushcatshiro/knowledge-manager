@@ -17,29 +17,38 @@ def test_blog_post_name_helper():
     pass
 
 
-def test_create_blog_post(blogpost_db, monkeypatch, cleanup_blog):
+def test_create_blog_post(session_setup, blogpost_db, monkeypatch, cleanup_blog):
+    _, test_app = session_setup
     delete_list = cleanup_blog
-    blog_post_name = os.environ.get("TEST_BLOG_POST_NAME")
+    blog_post_name = test_app.config["TEST_BLOG_POST_NAME"]
 
     instance = create_blog_post(
-        BlogPostModel, blogpost_db, b"test", blog_post_name, os.environ.get("BLOG_PATH")
+        BlogPostModel,
+        blogpost_db,
+        b"test",
+        blog_post_name,
+        test_app.config["BLOG_PATH"],
     )
     blogname = blogpost_name_helper(
         instance["title"], instance["version"], instance["timestamp"]
     )
     delete_list.append(blogname)
     assert instance["version"] == 1
-    assert blogname in os.listdir(os.environ.get("BLOG_PATH"))
+    assert blogname in os.listdir(test_app.config["BLOG_PATH"])
 
     instance = create_blog_post(
-        BlogPostModel, blogpost_db, b"test", blog_post_name, os.environ.get("BLOG_PATH")
+        BlogPostModel,
+        blogpost_db,
+        b"test",
+        blog_post_name,
+        test_app.config["BLOG_PATH"],
     )
     blogname = blogpost_name_helper(
         instance["title"], instance["version"], instance["timestamp"]
     )
     delete_list.append(blogname)
     assert instance["version"] > 1
-    assert blogname in os.listdir(os.environ.get("BLOG_PATH"))
+    assert blogname in os.listdir(test_app.config["BLOG_PATH"])
 
 
 def test_read_blog_post(blogpost_db):

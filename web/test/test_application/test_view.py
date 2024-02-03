@@ -28,8 +28,8 @@ def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db):
       - might need to modify crud.py
     """
     _, test_app = session_setup
-    expected_length = int(os.getenv("FAKE_DATA_NUM"))
-    assert expected_length == int(os.getenv("PAGINATION_LIMIT"))
+    expected_length = test_app.config["FAKE_DATA_NUM"]
+    assert expected_length == test_app.config["PAGINATION_LIMIT"]
 
     client = test_app.test_client()
     response = client.get("/bookmarklet-list")
@@ -42,7 +42,7 @@ def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db):
         b'style="pointer-events: none; color: darkgray"\n  >\n  &laquo;'
         in response.data
     )
-    assert len(response.data.decode("utf-8").split("<li>")) == int(expected_length) + 1
+    assert len(response.data.decode("utf-8").split("<li>")) == expected_length + 1
     assert (
         b'style="pointer-events: none; color: darkgray"\n  >\n  &raquo;'
         in response.data
@@ -51,8 +51,8 @@ def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db):
 
 def test_main_route_bookmarklet_list_multi_page(session_setup, bookmarks_db):
     _, test_app = session_setup
-    expected_length = int(os.getenv("FAKE_DATA_LARGE_NUM"))
-    assert expected_length > int(os.getenv("PAGINATION_LIMIT"))
+    expected_length = test_app.config["FAKE_DATA_LARGE_NUM"]
+    assert expected_length > test_app.config["PAGINATION_LIMIT"]
 
     client = test_app.test_client()
     response = client.get("/bookmarklet-list")
@@ -67,7 +67,7 @@ def test_main_route_bookmarklet_list_multi_page(session_setup, bookmarks_db):
     )
     assert (
         len(response.data.decode("utf-8").split("<li>"))
-        == int(os.getenv("PAGINATION_LIMIT")) + 1
+        == test_app.config["PAGINATION_LIMIT"] + 1
     )
     assert b'href="/bookmarklet-list?page=2"' in response.data
 

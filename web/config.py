@@ -36,6 +36,12 @@ class Config:
 
 
 class TestingConfig(Config):
+    TESTING = True
+    FAKE_DATA_NUM = int(os.environ.get("FAKE_DATA_NUM"))
+    FAKE_DATA_LARGE_NUM = int(os.environ.get("FAKE_DATA_LARGE_NUM"))
+    TEST_BLOG_POST_NAME = os.environ.get("TEST_BLOG_POST_NAME")
+    SQLALCHEMY_DATABASE_NAME = os.environ.get("SQLALCHEMY_DATABASE_NAME")
+
     @classmethod
     def init_app(cls, app):
         Config.init_app(app)
