@@ -1,5 +1,4 @@
 import os
-from urllib.parse import quote_plus, parse_qs
 
 from flask import (
     Blueprint,
@@ -92,7 +91,7 @@ def save():
         ) as wf:
             wf.write(request.form["content"])
         return redirect(url_for("main.blog"))
-    raise Exception("Invalid token")
+    raise CustomException(401, "Invalid token")
 
 
 @admin.route("/blog/upload", methods=["GET", "POST"])
@@ -179,7 +178,7 @@ def bookmarkletjs():
     ]
     return render_template(
         "bookmarkletjs.html",
-        script=script.join("") if request.args.get("min") else script.join("\n"),
+        script="".join(script) if request.args.get("min") else "\n".join(script),  # BUG test needed
     )
 
 
@@ -189,7 +188,6 @@ def schedule():
     default get overdue + look ahead 14 days + critical items
     option to use date picker to move around with default?
     """
-    pass
 
 
 @admin.route("/schedule/create", methods=["GET", "POST"])
@@ -197,12 +195,11 @@ def create_schedule():
     pass
 
 
-@admin.route("/schedule/edit/<int:id>", methods=["GET", "POST"])
-def edit_schedule(id):
+@admin.route("/schedule/edit/<int:sid>", methods=["GET", "POST"])
+def edit_schedule(sid):
     """
     no hard delete, just update delete flag
     """
-    pass
 
 
 @admin.route("/negotium/preview")

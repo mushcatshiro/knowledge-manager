@@ -1,6 +1,3 @@
-import os
-
-
 def test_main_route_blog(session_setup, monkeypatch):
     _, test_app = session_setup
 

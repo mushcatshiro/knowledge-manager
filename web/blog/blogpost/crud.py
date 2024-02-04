@@ -1,18 +1,16 @@
 import logging
 
+from sqlalchemy import select, func, update
+
 from blog.core.crud import CRUDBase
 from .model import BlogPostModel
-
-from sqlalchemy import select, func, update
 
 
 logger = logging.getLogger(__name__)
 
 
 class BlogPostCrud(CRUDBase):
-    def __init__(self, model: BlogPostModel, engine):
-        super().__init__(model, engine)
-
+    # TODO exceptions to be replaced by `CustomException`?
     def create_blog_post(self, session, query, **kwargs):
         # check if title exist
         instance = (

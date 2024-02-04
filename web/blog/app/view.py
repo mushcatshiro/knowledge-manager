@@ -1,7 +1,5 @@
 import os
 
-import os
-
 from flask import (
     Blueprint,
     render_template,
@@ -12,6 +10,7 @@ from flask import (
 import markdown
 from sqlalchemy import create_engine
 
+from blog import CustomException
 from blog.bookmark import BookmarkModel
 from blog.core import process_request
 from blog.core.crud import CRUDBase
@@ -85,7 +84,7 @@ def bookmarklet_list():
     page = request.args.get("page", 1, type=int)
     bookmarks_query_string = (
         "select * from bookmark order by timestamp desc "
-        f"limit {current_app.config['PAGINATION_LIMIT']* page} offset {current_app.config['PAGINATION_LIMIT'] * (page - 1)}"
+        f"limit {current_app.config['PAGINATION_LIMIT'] * page} offset {current_app.config['PAGINATION_LIMIT'] * (page - 1)}"
     )
     total_length_query_string = "select count(*) as count from bookmark"
 
@@ -99,7 +98,7 @@ def bookmarklet_list():
         query=total_length_query_string,
     )[0]["count"]
     if not instances:
-        raise Exception("Bookmark not created")
+        raise CustomException(400, "No entry found", "No bookmark not created")
     return render_template(
         "bookmarklet.html",
         bookmarks=instances,

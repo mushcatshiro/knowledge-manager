@@ -1,6 +1,7 @@
 import os
 import logging
 
+from blog import CustomException
 from .crud import BlogPostCrud
 
 
@@ -23,30 +24,30 @@ def create_blog_post(
     basecrud = BlogPostCrud(model, db)
     try:
         instance = basecrud.execute("create_blog_post", title=blog_post_name)
-    except FileExistsError as e:
+    except FileExistsError:
         instance = basecrud.execute("update_blog_post", title=blog_post_name)
     except Exception as e:
         logger.error(e)  # get more details
         return False
-    finally:
-        blog_post_fname = blogpost_name_helper(
-            title=blog_post_name,
-            version=instance["version"],
-            date=instance["timestamp"],
-        )
-        # save blog post to file system
-        abs_path = os.path.join(storage_path, blog_post_fname)
-        with open(abs_path, "wb") as wf:
-            wf.write(blog_post)
-        return instance
+
+    blog_post_fname = blogpost_name_helper(
+        title=blog_post_name,
+        version=instance["version"],
+        date=instance["timestamp"],
+    )
+    # save blog post to file system
+    abs_path = os.path.join(storage_path, blog_post_fname)
+    with open(abs_path, "wb") as wf:
+        wf.write(blog_post)
+    return instance
 
 
 def read_blog_post(model, db, blog_post_name: str):
     # handle dne and deleted separately
     basecrud = BlogPostCrud(model, db)
-    instance = basecrud.execite("read_blog_post", title=blog_post_name)
+    instance = basecrud.execute("read_blog_post", title=blog_post_name)
     if not instance:
-        raise Exception("Blog post not found")
+        raise CustomException(404, "Not found", "Blog post not found")
     # instance should be limited to necessary fields
     return instance
 

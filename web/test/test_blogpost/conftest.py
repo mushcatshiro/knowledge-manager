@@ -2,7 +2,7 @@ import os
 
 import pytest
 from sqlalchemy.orm import Session
-from sqlalchemy import insert, delete
+from sqlalchemy import delete
 
 
 @pytest.fixture
