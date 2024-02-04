@@ -45,7 +45,7 @@ def about():
 @main.route("/blog", methods=["GET"])
 def blog():
     """
-    TODO
+    **TODO
     ----
     - use database instead of os.listdir
     - deal with space in file name

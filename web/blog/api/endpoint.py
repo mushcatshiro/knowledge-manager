@@ -1,7 +1,7 @@
 import datetime as dt
 from threading import Thread
 
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request, current_app, redirect
 from sqlalchemy import create_engine
 
 from blog.bookmark import BookmarkModel
@@ -29,7 +29,7 @@ def bookmark():
         instance: BookmarkModel = basecrud.safe_execute(operation="create", **payload)
         if not instance:
             raise CustomException(400, "Bookmark not created", "Bad request")
-        return jsonify({"status": "success", "payload": instance})
+        return redirect(instance["url"])
     raise CustomException(401, "Invalid token", "Unauthorized access")
 
 

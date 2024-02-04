@@ -50,7 +50,7 @@ class BlogPostCrud(CRUDBase):
 
     def read_blog_post_list(self, session, query, **kwargs):
         """
-        TODO
+        **TODO
         - pagination
         """
         instances = (

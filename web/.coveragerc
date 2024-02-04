@@ -3,3 +3,7 @@ source=
     blog/app/
     blog/api/
     blog/admin
+    blog/blogpost
+    blog/bookmark
+    blog/core
+    blog/negotium
