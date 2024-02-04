@@ -1,5 +1,3 @@
-import os
-
 from blog.utils import create_fake_data
 
 import pytest

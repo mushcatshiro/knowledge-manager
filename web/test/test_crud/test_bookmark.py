@@ -1,5 +1,3 @@
-import os
-
 from blog.core.crud import CRUDBase
 from blog.bookmark import BookmarkModel
 from blog.utils import create_fake_data

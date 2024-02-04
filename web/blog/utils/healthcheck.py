@@ -54,7 +54,7 @@ def server_healthcheck(to_db, db):
 
     if to_db:
         basecrud = CRUDBase(ServerHealthModel, db)
-        instance = basecrud.execite("create", **health)
+        instance = basecrud.execute("create", **health)
     return health
 
 

@@ -19,7 +19,7 @@ Base = declarative_base()
 
 
 def create_app(config_name):
-    if config_name == "default" or config_name == "testing":
+    if config_name in ("default", "testing"):
         set_env_var(".env.test")
     else:
         set_env_var()
@@ -90,12 +90,8 @@ def register_request_handlers(app, config_name="default"):
             "user_agent": ctx.request.user_agent.string,
             "app_name": ctx.app.name,
             "date": str(datetime.date.today()),
-            "request": "{} {} {}".format(
-                ctx.request.method,
-                ctx.request.url,
-                ctx.request.environ.get("SERVER_PROTOCOL"),
-            ),
-            "url_args": dict([(k, ctx.request.args[k]) for k in ctx.request.args]),
+            "request": f"{ctx.request.method} {ctx.request.url} {ctx.request.environ.get('SERVER_PROTOCOL')}",
+            "url_args": {k: ctx.request.args[k] for k in ctx.request.args},
             "content_length": response.content_length,
             "blueprint": ctx.request.blueprint,
             "view_args": ctx.request.view_args,
