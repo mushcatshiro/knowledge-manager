@@ -17,7 +17,7 @@ def test_blog_post_name_helper():
     pass
 
 
-def test_create_blog_post(session_setup, blogpost_db, cleanup_blog):
+def test_create_blog_post(session_setup, blogpost_db, cleanup_blog, monkeypatch):
     _, test_app = session_setup
     delete_list = cleanup_blog
     blog_post_name = test_app.config["TEST_BLOG_POST_NAME"]
@@ -49,6 +49,21 @@ def test_create_blog_post(session_setup, blogpost_db, cleanup_blog):
     delete_list.append(blogname)
     assert instance["version"] > 1
     assert blogname in os.listdir(test_app.config["BLOG_PATH"])
+
+    def mock_create_blog_post(*args, **kwargs):
+        raise Exception
+
+    monkeypatch.setattr(
+        "blog.blogpost.BlogPostCrud.create_blog_post", mock_create_blog_post
+    )
+    instance = create_blog_post(
+        BlogPostModel,
+        blogpost_db,
+        b"test",
+        blog_post_name,
+        test_app.config["BLOG_PATH"],
+    )
+    assert instance is None
 
 
 def test_read_blog_post(blogpost_db):

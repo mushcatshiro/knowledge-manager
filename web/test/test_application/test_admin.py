@@ -2,7 +2,10 @@ import io
 import os
 
 from flask import session
-import pytest
+
+
+# TODO remove token in payload use session instead
+# TODO somehow there is a file created but not deleted
 
 
 def test_admin_route_before_request_handler(session_setup, auth_token, monkeypatch):
@@ -100,10 +103,10 @@ def test_upload_with_monkeypatch(session_setup, auth_token, monkeypatch):
         )
 
 
-@pytest.mark.usefixtures("cleanup_file")
-def test_upload_without_monkeypatch(session_setup, auth_token):
+def test_upload_without_monkeypatch(session_setup, auth_token, cleanup_file):
     _, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
+    delete_list = cleanup_file
 
     with client:
         response = client.post(
@@ -112,6 +115,7 @@ def test_upload_without_monkeypatch(session_setup, auth_token):
         assert response.status_code == 200
 
         data = {"file": (io.BytesIO(b"abcdef"), "test.md"), "token": auth_token}
+        delete_list.append("test.md")
         response = client.post(
             "/admin/blog/upload",
             data=data,
@@ -121,3 +125,50 @@ def test_upload_without_monkeypatch(session_setup, auth_token):
         assert response.status_code == 200
         with open(os.path.join(test_app.config["BLOG_PATH"], "test.md"), "r") as rf:
             assert rf.read() == "abcdef"
+
+    # test multiple files
+
+    with client:
+        response = client.post(
+            "/admin/login", data={"token": auth_token}, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        data = {
+            "file": [
+                (io.BytesIO(b"abcdef"), "test1.md"),
+                (io.BytesIO(b"abcdef"), "test2.md"),
+            ],
+            "token": auth_token,
+        }
+        delete_list.append("test1.md")
+        delete_list.append("test2.md")
+        response = client.post(
+            "/admin/blog/upload",
+            data=data,
+            content_type="multipart/form-data",
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        with open(os.path.join(test_app.config["BLOG_PATH"], "test1.md"), "r") as rf:
+            assert rf.read() == "abcdef"
+        with open(os.path.join(test_app.config["BLOG_PATH"], "test2.md"), "r") as rf:
+            assert rf.read() == "abcdef"
+
+
+def test_save_endpoint(session_setup, auth_token, cleanup_file):
+    _, test_app = session_setup
+    client = test_app.test_client(use_cookies=True)
+    delete_list = cleanup_file
+
+    with client:
+        response = client.post(
+            "/admin/login", data={"token": auth_token}, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        data = {"title": "test", "content": "abcdef", "token": auth_token}
+        delete_list.append("test.md")
+        response = client.post("/admin/save", data=data, follow_redirects=True)
+        assert response.status_code == 200
+        assert b"abcdef" in response.data
