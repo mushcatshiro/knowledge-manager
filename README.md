@@ -21,19 +21,16 @@ python bookmarklet.py
 
 > do refer to config.py to setup .env prior to running the following commands
 
-push local changes
-```bash
-python cli --opt push
-```
+starting web application locally
 
-starting web application
 ```bash
 cd web
 export FLASK_APP=app.py
-flask --app "app:create_app('default')" run
+flask run -p 8080
 ```
 
 test
+
 ```bash
 cd web
 # to print `print()` statement and run specific tests
@@ -45,13 +42,12 @@ pytest
 # show coverage
 pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
 pytest -v --cov --cov-config=.coveragerc --cov-report html test/test_integration/
-
-# start local instance
-export FLASK_MODE=testing
-flask run
 ```
 
-> `ENVFILE=.env.test` is needed until hack is fixed
+deployment
+
+```bash
+```
 
 ## Acknowledgements
 
