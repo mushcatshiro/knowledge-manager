@@ -1,5 +1,6 @@
 import os
 import logging
+from urllib.parse import unquote
 
 from blog import CustomException
 from .crud import BlogPostCrud
@@ -28,7 +29,7 @@ def create_blog_post(
         instance = basecrud.execute("update_blog_post", title=blog_post_name)
     except Exception as e:
         logger.error(e)  # get more details
-        return False
+        return None
 
     blog_post_fname = blogpost_name_helper(
         title=blog_post_name,
@@ -44,10 +45,17 @@ def create_blog_post(
 
 def read_blog_post(model, db, blog_post_name: str):
     # handle dne and deleted separately
+    # handle %20
+    blog_post_name = unquote(blog_post_name)
     basecrud = BlogPostCrud(model, db)
-    instance = basecrud.execute("read_blog_post", title=blog_post_name)
-    if not instance:
-        raise CustomException(404, "Not found", "Blog post not found")
+    try:
+        instance = basecrud.execute("read_blog_post", title=blog_post_name)
+    except ValueError:
+        raise CustomException(
+            404, "Not found", f"Blog post {blog_post_name} not found!"
+        )
+    except FileNotFoundError:
+        raise CustomException(410, "Gone", "Blog post deleted")
     # instance should be limited to necessary fields
     return instance
 

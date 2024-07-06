@@ -1,15 +1,23 @@
-def test_main_route_blog(session_setup):
-    _, test_app = session_setup
+from unittest import mock
 
+
+def test_main_route_blog(session_setup, blogpost_db, monkeypatch):
+    _, test_app = session_setup
     client = test_app.test_client()
+
     response = client.get("/blog")
     assert response.status_code == 200
     assert b'<a class="nav-link active" href="/blog">Blog</a>' in response.data
 
-    client = test_app.test_client()
     response = client.get("/blog/does-not-exist")
     assert response.status_code == 200
     assert b"Blog post does-not-exist not found!" in response.data
+
+    monkeypatch.setattr("builtins.open", mock.mock_open(read_data=b"mocked"))
+
+    response = client.get("/blog/test%20title%201")
+    assert response.status_code == 200
+    assert b"mocked" in response.data
 
 
 def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db):

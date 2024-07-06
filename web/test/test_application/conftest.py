@@ -13,12 +13,20 @@ def auth_token(session_setup):
 
 @pytest.fixture
 def cleanup_file(session_setup):
+    """
+    BUG
+    not able to consistently delete all file for test_admin.py
+    likely due to the timestamp
+    """
     _, test_app = session_setup
     delete_files = []
     yield delete_files
     for file in delete_files:
         fpath = os.path.join(test_app.config["BLOG_PATH"], file)
         if os.path.exists(fpath):
-            os.remove(fpath)
+            try:
+                os.remove(fpath)
+            except Exception as e:
+                print(f"Failed to remove {fpath} with error {e}")
         else:
             print(f"The file {fpath} does not exist, something is wrong")

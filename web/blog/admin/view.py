@@ -16,6 +16,12 @@ from sqlalchemy import create_engine
 from blog import CustomException
 from blog.auth import verify_token
 from blog.core.crud import CRUDBase
+from blog.blogpost import (
+    BlogPostModel,
+    create_blog_post,
+    update_blog_post,
+    delete_blog_post,
+)
 
 
 admin = Blueprint("admin", __name__)
@@ -83,15 +89,16 @@ def draft():
 
 @admin.route("/save", methods=["POST"])
 def save():
-    if verify_token(request.form["token"]):
-        blog_root = current_app.config["BLOG_PATH"]
-        blog_title = request.form["title"]
-        with open(
-            os.path.join(blog_root, f"{blog_title}.md"), "w", encoding="utf-8"
-        ) as wf:
-            wf.write(request.form["content"])
-        return redirect(url_for("main.blog"))
-    raise CustomException(401, "Invalid token")
+    if verify_token(request.form["token"]):  # TODO remove
+        intance = create_blog_post(
+            BlogPostModel,
+            create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
+            request.form["content"].encode("utf-8"),
+            request.form["title"],
+            current_app.config["BLOG_PATH"],
+        )
+        return redirect(url_for("main.blog_with_title", title=intance["title"]))
+    raise CustomException(401, "Invalid token", "Invalid token")  # TODO remove
 
 
 @admin.route("/blog/upload", methods=["GET", "POST"])
@@ -104,8 +111,25 @@ def blog_upload():
             raise CustomException(400, "No file name", "Invalid request")
         files = request.files.getlist("file")
         for file in files:
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(current_app.config["BLOG_PATH"], filename))
+            if (
+                file.filename.split(".")[-1]
+                not in current_app.config["ALLOWED_EXTENSIONS"]
+            ):
+                continue
+            # check file size
+            if file.content_length > current_app.config["MAX_CONTENT_LENGTH"]:
+                continue
+            if file.filename.endswith(".md"):
+                instance = create_blog_post(
+                    BlogPostModel,
+                    create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
+                    file.read(),
+                    file.filename.replace(".md", ""),
+                    current_app.config["BLOG_PATH"],
+                )
+            else:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(current_app.config["BLOG_PATH"], filename))
         return redirect(url_for("main.blog"))
     return render_template("upload.html")
 
@@ -178,7 +202,9 @@ def bookmarkletjs():
     ]
     return render_template(
         "bookmarkletjs.html",
-        script="".join(script) if request.args.get("min") else "\n".join(script),  # BUG test needed
+        script="".join(script)
+        if request.args.get("min")
+        else "\n".join(script),  # BUG test needed
     )
 
 

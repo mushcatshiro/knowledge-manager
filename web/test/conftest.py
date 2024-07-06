@@ -110,6 +110,18 @@ def blogpost_db(session_setup):
 
 
 @pytest.fixture
+def blogpost_db_cleanup(session_setup):
+    engine, _ = session_setup
+    from blog.blogpost import BlogPostModel
+
+    yield
+
+    with Session(engine) as session:
+        session.execute(delete(BlogPostModel))
+        session.commit()
+
+
+@pytest.fixture
 def negotium_db(session_setup):
     engine, test_app = session_setup
     from blog.negotium import NegotiumModel

@@ -1,11 +1,12 @@
 import io
 import os
 
+from blog.blogpost import blogpost_name_helper, read_blog_post, BlogPostModel
+
 from flask import session
 
 
 # TODO remove token in payload use session instead
-# TODO somehow there is a file created but not deleted
 
 
 def test_admin_route_before_request_handler(session_setup, auth_token, monkeypatch):
@@ -62,7 +63,9 @@ def test_admin_route_before_request_handler(session_setup, auth_token, monkeypat
         assert response.status_code == 401
 
 
-def test_upload_with_monkeypatch(session_setup, auth_token, monkeypatch):
+def test_upload_with_monkeypatch(
+    session_setup, auth_token, monkeypatch, blogpost_db_cleanup
+):
     _, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
     monkeypatch.setattr("werkzeug.datastructures.FileStorage.save", lambda x, y: None)
@@ -103,8 +106,10 @@ def test_upload_with_monkeypatch(session_setup, auth_token, monkeypatch):
         )
 
 
-def test_upload_without_monkeypatch(session_setup, auth_token, cleanup_file):
-    _, test_app = session_setup
+def test_upload_without_monkeypatch(
+    session_setup, auth_token, cleanup_file, blogpost_db_cleanup
+):
+    engine, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
     delete_list = cleanup_file
 
@@ -114,8 +119,10 @@ def test_upload_without_monkeypatch(session_setup, auth_token, cleanup_file):
         )
         assert response.status_code == 200
 
-        data = {"file": (io.BytesIO(b"abcdef"), "test.md"), "token": auth_token}
-        delete_list.append("test.md")
+        data = {
+            "file": (io.BytesIO(b"abcdef"), "test wo monkeypatch.md"),
+            "token": auth_token,
+        }
         response = client.post(
             "/admin/blog/upload",
             data=data,
@@ -123,8 +130,17 @@ def test_upload_without_monkeypatch(session_setup, auth_token, cleanup_file):
             follow_redirects=True,
         )
         assert response.status_code == 200
-        with open(os.path.join(test_app.config["BLOG_PATH"], "test.md"), "r") as rf:
+        assert b"test wo monkeypatch" in response.data
+        instance = read_blog_post(BlogPostModel, engine, "test wo monkeypatch")
+        fname = blogpost_name_helper(
+            title=instance["title"],
+            version=instance["version"],
+            date=instance["timestamp"],
+        )
+        with open(os.path.join(test_app.config["BLOG_PATH"], fname), "r") as rf:
             assert rf.read() == "abcdef"
+        print(fname)
+        delete_list.append(fname)
 
     # test multiple files
 
@@ -137,12 +153,10 @@ def test_upload_without_monkeypatch(session_setup, auth_token, cleanup_file):
         data = {
             "file": [
                 (io.BytesIO(b"abcdef"), "test1.md"),
-                (io.BytesIO(b"abcdef"), "test2.md"),
+                (io.BytesIO(b"ghijk"), "test2.md"),
             ],
             "token": auth_token,
         }
-        delete_list.append("test1.md")
-        delete_list.append("test2.md")
         response = client.post(
             "/admin/blog/upload",
             data=data,
@@ -150,14 +164,38 @@ def test_upload_without_monkeypatch(session_setup, auth_token, cleanup_file):
             follow_redirects=True,
         )
         assert response.status_code == 200
-        with open(os.path.join(test_app.config["BLOG_PATH"], "test1.md"), "r") as rf:
+        assert b"test1" in response.data
+        assert b"test2" in response.data
+        instance1 = read_blog_post(BlogPostModel, engine, "test1")
+        instance2 = read_blog_post(BlogPostModel, engine, "test2")
+        fname1 = blogpost_name_helper(
+            title=instance1["title"],
+            version=instance1["version"],
+            date=instance1["timestamp"],
+        )
+        fname2 = blogpost_name_helper(
+            title=instance2["title"],
+            version=instance2["version"],
+            date=instance2["timestamp"],
+        )
+
+        with open(os.path.join(test_app.config["BLOG_PATH"], fname1), "r") as rf:
             assert rf.read() == "abcdef"
-        with open(os.path.join(test_app.config["BLOG_PATH"], "test2.md"), "r") as rf:
-            assert rf.read() == "abcdef"
+        with open(os.path.join(test_app.config["BLOG_PATH"], fname2), "r") as rf:
+            assert rf.read() == "ghijk"
+        print(fname1, fname2)
+        delete_list.append(fname1)
+        delete_list.append(fname2)
+
+
+def test_upload_with_image(
+    session_setup, auth_token, cleanup_file, blogpost_db_cleanup
+):
+    pass
 
 
 def test_save_endpoint(session_setup, auth_token, cleanup_file):
-    _, test_app = session_setup
+    engine, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
     delete_list = cleanup_file
 
@@ -168,7 +206,14 @@ def test_save_endpoint(session_setup, auth_token, cleanup_file):
         assert response.status_code == 200
 
         data = {"title": "test", "content": "abcdef", "token": auth_token}
-        delete_list.append("test.md")
         response = client.post("/admin/save", data=data, follow_redirects=True)
         assert response.status_code == 200
         assert b"abcdef" in response.data
+        instance = read_blog_post(BlogPostModel, engine, "test")
+        fname = blogpost_name_helper(
+            title=instance["title"],
+            version=instance["version"],
+            date=instance["timestamp"],
+        )
+        print(fname)
+        delete_list.append(fname)
