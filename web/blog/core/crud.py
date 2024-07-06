@@ -49,7 +49,7 @@ class CRUDBase:
         Returns:
         --------
         instances: List[Model]
-        TODO
+        **TODO
         ----
         - add pagination
         """
@@ -132,9 +132,10 @@ class CRUDBase:
         --------
         instance: Model
 
-        TODO
+        **TODO
         ----
         should never delete an instance, just set a flag
+        add a new method to have a soft delete (check if model hasattr deleted) and a hard delete
         """
         del query
         instance = self.get(session, self.model, kwargs.get("id"))

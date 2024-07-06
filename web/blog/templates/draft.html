@@ -34,8 +34,8 @@
     >{{ content }}</textarea>
   </div>
   <div style="margin-top: 1rem;">
-    <button class="btn btn-secondary" type="submit" formaction="{{ url_for('main.preview') }}">Preview</button>
-    <button class="btn btn-success" type="submit" formaction="{{ url_for('main.save') }}">Save</button>
+    <button class="btn btn-secondary" type="submit" formaction="{{ url_for('admin.preview') }}">Preview</button>
+    <button class="btn btn-success" type="submit" formaction="{{ url_for('admin.save') }}">Save</button>
   </div>
 </form>
 {% endblock %}

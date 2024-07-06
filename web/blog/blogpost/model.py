@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.sql import func
 
 from blog import Base
 
@@ -10,8 +11,9 @@ class BlogPostModel(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     version = Column(Integer, nullable=False, default=1)
-    timestamp = Column(DateTime, default=datetime.utcnow)
+    timestamp = Column(DateTime(timezone=True), default=func.now())  # datetime.utcnow
     deleted = Column(Integer, default=0, nullable=False)
+    # private = Column(Integer, default=0, nullable=False) # TODO support private
 
     def __repr__(self) -> str:
         return f"<title {self.title}>"

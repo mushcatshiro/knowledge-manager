@@ -3,7 +3,6 @@ import logging
 from sqlalchemy import select, func, update
 
 from blog.core.crud import CRUDBase
-from .model import BlogPostModel
 
 
 logger = logging.getLogger(__name__)
@@ -50,12 +49,12 @@ class BlogPostCrud(CRUDBase):
 
     def read_blog_post_list(self, session, query, **kwargs):
         """
-        TODO
+        **TODO
         - pagination
         """
         instances = (
             session.execute(
-                select(self.model, func.max(self.model.version))
+                select(self.model.title, func.max(self.model.version))
                 .group_by(self.model.title)
                 .having(self.model.deleted == 0)
             )
