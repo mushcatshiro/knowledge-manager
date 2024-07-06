@@ -9,14 +9,15 @@ from sqlalchemy import insert, delete
 def auth_token(session_setup):
     _, test_app = session_setup
     client = test_app.test_client()
-    response = client.post("/auth/authenticate", json={"auth": os.getenv("AUTH")})
+    response = client.post("/auth/authenticate", json={"auth": test_app.config["AUTH"]})
     return response.json["token"]
 
 
 @pytest.fixture
-def cleanup_file():
+def cleanup_file(session_setup):
+    _, test_app = session_setup
     yield
-    fpath = os.path.join(os.getenv("BLOG_PATH"), "test.md")
+    fpath = os.path.join(test_app.config["BLOG_PATH"], "test.md")
     if os.path.exists(fpath):
         os.remove(fpath)
     else:
@@ -25,11 +26,13 @@ def cleanup_file():
 
 @pytest.fixture
 def bookmark_db(session_setup):
-    engine, _ = session_setup
+    engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
     from blog.utils import create_fake_data
 
-    fake_data = create_fake_data(BookmarkModel, num=int(os.getenv("FAKE_DATA_NUM")))
+    fake_data = create_fake_data(
+        BookmarkModel, num=int(test_app.config["FAKE_DATA_NUM"])
+    )
 
     with Session(engine) as session:
         # drop to ensure exactly the number of fake data is inserted
@@ -50,12 +53,12 @@ def bookmark_db(session_setup):
 
 @pytest.fixture
 def bookmarks_db(session_setup):
-    engine, _ = session_setup
+    engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
     from blog.utils import create_fake_data
 
     fake_data = create_fake_data(
-        BookmarkModel, num=int(os.getenv("FAKE_DATA_LARGE_NUM"))
+        BookmarkModel, num=int(test_app.config["FAKE_DATA_LARGE_NUM"])
     )
 
     with Session(engine) as session:

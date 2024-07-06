@@ -3,6 +3,8 @@ import logging
 from sqlalchemy.orm import Session
 from sqlalchemy import text, select
 
+from blog import CustomException
+
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +84,6 @@ class CRUDBase:
         """
         temporary unexposed method for testing
         """
-        pass
 
     def update(self, session, query, **kwargs):
         """
@@ -110,7 +111,7 @@ class CRUDBase:
             .first()
         )
         if not instance:
-            raise Exception(f"instance with {id} not found")
+            raise CustomException(404, "Not found", f"instance with {id} not found")
         for key, value in kwargs.items():
             setattr(instance, key, value)
         session.commit()
@@ -138,7 +139,7 @@ class CRUDBase:
         del query
         instance = self.get(session, self.model, kwargs.get("id"))
         if not instance:
-            raise Exception(f"instance with {id} not found")
+            raise CustomException(404, "Not found", f"instance with {id} not found")
         session.delete(instance)
         session.commit()
         return instance.to_json()
@@ -162,7 +163,7 @@ class CRUDBase:
         - always return result in dict
         """
         if not hasattr(self, operation):
-            raise Exception(f"operation {operation} not found")
+            raise CustomException(404, "Not found", f"operation {operation} not found")
         fn = getattr(self, operation)
         with Session(self.engine) as session:
             try:
@@ -174,12 +175,12 @@ class CRUDBase:
             # refresh the instance to get the latest data
             # or make sure BookmarksModel is bound to some session
             # resp = [session.refresh(r) for r in resp]
-            else:
-                return resp
+            return resp
 
     def execute(self, operation, query=None, **kwargs):
+        # TODO get rid of `query`?
         if not hasattr(self, operation):
-            raise Exception(f"operation {operation} not found")
+            raise CustomException(404, "Not found", f"operation {operation} not found")
         fn = getattr(self, operation)
         with Session(self.engine) as session:
             resp = fn(session, query, **kwargs)

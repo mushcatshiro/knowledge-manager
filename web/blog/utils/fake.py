@@ -49,14 +49,13 @@ def create_fake_data(model, num=10, max_int=64, max_str=12, str_chars="abcdefghi
         def rand(self, t):
             if t == int:
                 return random.randint(1, self.max_int)
-            elif t == str:
+            if t == str:
                 return "".join(random.choices(self.str_chars, k=self.max_str))
-            elif t == bool:
+            if t == bool:
                 return random.choice([True, False])
-            elif t == DateTime or t == datetime:
+            if t in (DateTime, datetime):
                 return datetime.utcnow()
-            else:
-                raise ValueError(f"Type {t} not supported")
+            raise ValueError(f"Type {t} not supported")
 
     counter = Counter(count=num, max_int=max_int, max_str=max_str, str_chars=str_chars)
 

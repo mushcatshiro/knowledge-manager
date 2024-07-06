@@ -30,6 +30,7 @@ def authenticate():
 
 @auth.route("/token", methods=["POST"])
 def token():
+    # TODO remove?
     if not verify_token(request.json["token"]):
         return jsonify({"status": "failed", "token": request.json["token"]})
     return jsonify({"status": "success", "token": request.json["token"]})

@@ -43,7 +43,7 @@ def healthcheck():
     - add a view to show historical trend
     """
     if not verify_token(request.args.get("token")):
-        raise Exception("Invalid token")
+        raise CustomException(400, "Unauthorized access", "Invalid token")
     if request.args.get("user") == "cron":
         Thread(target=server_healthcheck, kwargs={"to_db": True}).start()
         return jsonify(
