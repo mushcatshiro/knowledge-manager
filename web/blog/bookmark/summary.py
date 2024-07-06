@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 
 from .model import BookmarkModel
 from blog.core.crud import CRUDBase
-from blog import db
+from sqlalchemy import create_engine
+
+# from blog import db
 
 
 def summarize_annual_bookmarklet():
@@ -24,6 +26,7 @@ def summarize_annual_bookmarklet():
         6: "Saturday",
     }
     # sql_statement = "SELECT timestamp FROM bookmark"
+    db = create_engine("")
     sql_statement = "SELECT * FROM bookmark ORDER BY timestamp DESC"
     c = CRUDBase(BookmarkModel, db)
     instances = c.safe_execute(operation="custom_query", query=sql_statement)

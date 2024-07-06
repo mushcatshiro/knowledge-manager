@@ -28,6 +28,7 @@ class Config:
     SITE_BASE_URL = os.environ.get("SITE_BASE_URL")
     PAGINATION_LIMIT = int(os.environ.get("PAGINATION_LIMIT"))
     MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH")) * 1000 * 1000
+    ALLOWED_EXTENSIONS = os.environ.get("ALLOWED_EXTENSIONS").split(",")
 
     @staticmethod
     def init_app(app):
