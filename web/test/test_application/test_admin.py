@@ -63,52 +63,7 @@ def test_admin_route_before_request_handler(session_setup, auth_token, monkeypat
         assert response.status_code == 401
 
 
-def test_upload_with_monkeypatch(
-    session_setup, auth_token, monkeypatch, blogpost_db_cleanup
-):
-    _, test_app = session_setup
-    client = test_app.test_client(use_cookies=True)
-    monkeypatch.setattr("werkzeug.datastructures.FileStorage.save", lambda x, y: None)
-
-    with client:
-        response = client.post(
-            "/admin/login", data={"token": auth_token}, follow_redirects=True
-        )
-        assert response.status_code == 200
-
-        data = {"file": (io.BytesIO(b"abcdef"), "test.md"), "token": auth_token}
-        response = client.post(
-            "/admin/blog/upload",
-            data=data,
-            content_type="multipart/form-data",
-            follow_redirects=True,
-        )
-        assert response.status_code == 200
-
-        data_no_file = {"token": auth_token}
-        response = client.post(
-            "/admin/blog/upload", data=data_no_file, content_type="multipart/form-data"
-        )
-        assert response.status_code == 400
-
-        data_multi_file = {
-            "file": [
-                (io.BytesIO(b"abcdef"), "test1.md"),
-                (io.BytesIO(b"abcdef"), "test2.md"),
-            ],
-            "token": auth_token,
-        }
-        response = client.post(
-            "/admin/blog/upload",
-            data=data_multi_file,
-            content_type="multipart/form-data",
-            follow_redirects=True,
-        )
-
-
-def test_upload_without_monkeypatch(
-    session_setup, auth_token, cleanup_file, blogpost_db_cleanup
-):
+def test_upload(session_setup, auth_token, cleanup_file, blogpost_db_cleanup):
     engine, test_app = session_setup
     client = test_app.test_client(use_cookies=True)
     delete_list = cleanup_file
