@@ -1,0 +1,22 @@
+FROM python:3.7
+
+
+WORKDIR /app
+
+COPY poetry.lock pyproject.toml ./
+
+RUN apt update && apt install python3-dev gcc libc-dev libffi-dev -y
+
+RUN python -m pip install --upgrade pip setuptools wheel
+
+RUN pip install poetry && poetry config virtualenvs.in-project true && poetry install --with "test"
+
+COPY web web
+
+# copy blogfiles
+
+COPY run.sh ./
+
+EXPOSE 5000
+
+ENTRYPOINT [ "./run.sh" ]
