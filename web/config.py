@@ -29,6 +29,7 @@ class Config:
     PAGINATION_LIMIT = int(os.environ.get("PAGINATION_LIMIT"))
     MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH")) * 1000 * 1000
     ALLOWED_EXTENSIONS = os.environ.get("ALLOWED_EXTENSIONS").split(",")
+    IMAGE_URL_PREFIX = os.environ.get("IMAGE_URL_PREFIX")  # not directly used
 
     @staticmethod
     def init_app(app):

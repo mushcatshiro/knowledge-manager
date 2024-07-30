@@ -8,6 +8,7 @@ from .blogpost import (
     blogpost_name_helper,
 )
 from .crud import BlogPostCrud
+from .md_extension import ImageURLInlineProcessor, ImageURLlExtension
 
 __all__ = [
     "BlogPostModel",
@@ -18,4 +19,6 @@ __all__ = [
     "delete_blog_post",
     "BlogPostCrud",
     "blogpost_name_helper",
+    "ImageURLInlineProcessor",
+    "ImageURLlExtension",
 ]

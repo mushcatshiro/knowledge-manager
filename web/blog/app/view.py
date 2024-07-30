@@ -19,11 +19,12 @@ from blog.blogpost import (
     read_blog_post,
     read_blog_post_list,
     blogpost_name_helper,
+    ImageURLlExtension,
 )
 
 main = Blueprint("main", __name__)
 
-md = markdown.Markdown(extensions=["fenced_code", "tables"])
+md = markdown.Markdown(extensions=["fenced_code", "tables", ImageURLlExtension()])
 
 
 @main.route("/", methods=["GET", "POST"])
@@ -161,7 +162,11 @@ def secured_with_value(value):
 @main.route("/robots.txt")
 def robots():
     stmt = (
-        "User-agent: *\nallow: /blog\nallow: /blog/*\n allow: /about\n"
-        "disallow: /secured\ndisallow: /secured/*\n"
+        "User-agent: *\n"
+        "allow: /blog\n"
+        "allow: /blog/*\n"
+        "allow: /about\n"
+        "disallow: /secured\n"
+        "disallow: /secured/*\n"
     )
     return stmt
