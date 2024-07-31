@@ -10,10 +10,7 @@ from alembic import context
 config = context.config
 
 import os
-from blog.utils import set_env_var
 
-set_env_var()
-print(os.environ.get("SQLALCHEMY_DATABASE_URI"))
 config.set_main_option("sqlalchemy.url", os.environ.get("SQLALCHEMY_DATABASE_URI"))
 
 # Interpret the config file for Python logging.
