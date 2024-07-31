@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlsplit, urlunsplit
 
 from flask import (
     Blueprint,
@@ -19,8 +20,6 @@ from blog.core.crud import CRUDBase
 from blog.blogpost import (
     BlogPostModel,
     create_blog_post,
-    update_blog_post,
-    delete_blog_post,
 )
 
 
@@ -36,10 +35,18 @@ def before_request_handler():
     ---
     - check token expiry
     """
-    if request.path == "/admin/login":
+    if request.path == url_for("admin.login"):
         pass
     elif not session.get("token"):
-        return redirect(url_for("admin.login", next=request.url))
+        l_url = urlsplit(url_for("admin.login"))
+        c_url = urlsplit(request.url)
+        current_url = request.url
+
+        if (not l_url.scheme or l_url.scheme == c_url.scheme) and (
+            not l_url.netloc or l_url.netloc == c_url.netloc
+        ):
+            current_url = urlunsplit(("", "", c_url.path, c_url.query, ""))
+        return redirect(url_for("admin.login", next=current_url))
     elif not verify_token(session.get("token")):
         session.pop("token")
         raise CustomException(401, "Invalid token", "Unauthorized access")
@@ -50,7 +57,9 @@ def login():
     if request.method == "POST":
         if verify_token(request.form["token"]):
             session["token"] = request.form["token"]
-            next_url = request.args.get("next", "/")
+            next_url = request.args.get("next")
+            if next_url is None or not next_url.startswith("/"):
+                next_url = url_for("main.index")
             return redirect(next_url)
         raise CustomException(401, "Invalid token", "Unauthorized access")
     return render_template("login.html")
@@ -77,8 +86,19 @@ def fsrs_review():
     pass
 
 
+@admin.route("/editables", methods=["GET"])
+def editables():
+    """
+    TODO
+    update entry to private
+    or edit as draft
+    """
+    return render_template("editables.html")
+
+
 @admin.route("/draft", methods=["GET", "POST"])
 def draft():
+    """TODO support draft of existing documents <- merge with edit path"""
     content = ""
     title = ""
     if request.method == "POST":
@@ -103,6 +123,7 @@ def save():
 
 @admin.route("/blog/upload", methods=["GET", "POST"])
 def blog_upload():
+    # TODO check box for document to be private
     if request.method == "POST":
         if "file" not in request.files:
             raise CustomException(400, "No file part", "Invalid request")

@@ -19,17 +19,11 @@ def test_admin_route_before_request_handler(session_setup, auth_token, monkeypat
 
     response = client.get("/admin/fsrs/setup/cards")
     assert response.status_code == 302
-    assert (
-        response.location
-        == "/admin/login?next=http%3A%2F%2Flocalhost%2Fadmin%2Ffsrs%2Fsetup%2Fcards"
-    )
+    assert response.location == "/admin/login?next=%2Fadmin%2Ffsrs%2Fsetup%2Fcards"
 
     response = client.get("/admin/fsrs/setup/cards", data={"token": "invalid"})
     assert response.status_code == 302
-    assert (
-        response.location
-        == "/admin/login?next=http%3A%2F%2Flocalhost%2Fadmin%2Ffsrs%2Fsetup%2Fcards"
-    )
+    assert response.location == "/admin/login?next=%2Fadmin%2Ffsrs%2Fsetup%2Fcards"
 
     response = client.post("/admin/login", data={"token": "invalid"})
     assert response.status_code == 401
@@ -94,7 +88,6 @@ def test_upload(session_setup, auth_token, cleanup_file, blogpost_db_cleanup):
         )
         with open(os.path.join(test_app.config["BLOG_PATH"], fname), "r") as rf:
             assert rf.read() == "abcdef"
-        print(fname)
         delete_list.append(fname)
 
     # test multiple files
@@ -138,7 +131,6 @@ def test_upload(session_setup, auth_token, cleanup_file, blogpost_db_cleanup):
             assert rf.read() == "abcdef"
         with open(os.path.join(test_app.config["BLOG_PATH"], fname2), "r") as rf:
             assert rf.read() == "ghijk"
-        print(fname1, fname2)
         delete_list.append(fname1)
         delete_list.append(fname2)
 
@@ -170,5 +162,4 @@ def test_save_endpoint(session_setup, auth_token, cleanup_file):
             version=instance["version"],
             date=instance["timestamp"],
         )
-        print(fname)
         delete_list.append(fname)
