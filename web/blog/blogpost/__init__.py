@@ -9,6 +9,7 @@ from .blogpost import (
 )
 from .crud import BlogPostCrud
 from .md_extension import ImageURLInlineProcessor, ImageURLlExtension
+from .view import blogpost_blueprint
 
 __all__ = [
     "BlogPostModel",
@@ -21,4 +22,5 @@ __all__ = [
     "blogpost_name_helper",
     "ImageURLInlineProcessor",
     "ImageURLlExtension",
+    "blogpost_blueprint",
 ]

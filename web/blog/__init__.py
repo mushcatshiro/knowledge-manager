@@ -43,6 +43,10 @@ def create_app(config_name):
 
     app.register_blueprint(admin, url_prefix="/admin")
 
+    from blog.blogpost import blogpost_blueprint
+
+    app.register_blueprint(blogpost_blueprint, url_prefix="/blog")
+
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
 

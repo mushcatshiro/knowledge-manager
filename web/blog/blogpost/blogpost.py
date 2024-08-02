@@ -46,6 +46,7 @@ def create_blog_post(
 def read_blog_post(model, db, blog_post_name: str):
     # handle dne and deleted separately
     # handle %20
+    # TODO raise if user attempt to read private if not logged in
     blog_post_name = unquote(blog_post_name)
     basecrud = BlogPostCrud(model, db)
     try:
@@ -60,7 +61,7 @@ def read_blog_post(model, db, blog_post_name: str):
     return instance
 
 
-def read_blog_post_list(model, db, pagination):
+def read_blog_post_list(model, db, pagination, logged_in=False):
     basecrud = BlogPostCrud(model, db)
     instance = basecrud.execute("read_blog_post_list")
     return instance
