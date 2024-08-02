@@ -1,5 +1,9 @@
-from flask import Blueprint, jsonify, request, current_app
+from functools import wraps
+
+from flask import Blueprint, jsonify, request, current_app, session
 import jwt
+
+from blog import CustomException
 
 auth = Blueprint("auth", __name__)
 
@@ -10,6 +14,17 @@ def verify_token(token):
         return True
     except Exception:
         return False
+
+
+def protected(f):
+    @wraps(f)
+    def decorated_view(*args, **kwargs):
+        token = session.get("token")
+        if not token or not verify_token(token):
+            raise CustomException(401, "Invalid token", "Unauthorized access")
+        return f(*args, **kwargs)
+
+    return decorated_view
 
 
 @auth.route("/authenticate", methods=["POST"])
