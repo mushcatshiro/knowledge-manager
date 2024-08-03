@@ -65,7 +65,7 @@ def blog_with_title(title):
 
 @blogpost_blueprint.route("/draft", methods=["GET", "POST"])
 @protected
-def draft(title):
+def draft():
     content = ""
     title = ""
     if request.method == "POST":
