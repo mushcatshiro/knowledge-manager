@@ -20,7 +20,9 @@ def protected(f):
     @wraps(f)
     def decorated_view(*args, **kwargs):
         token = session.get("token")
-        if not token or not verify_token(token):
+        if not token:
+            raise CustomException(401, "Token not found", "Unauthorized access")
+        if not verify_token(token):
             raise CustomException(401, "Invalid token", "Unauthorized access")
         return f(*args, **kwargs)
 
