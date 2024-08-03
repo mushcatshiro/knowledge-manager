@@ -23,7 +23,7 @@
         <div class="collapse navbar-collapse" id="navbarToggler">
           <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
             {% if logged_in %}
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown ms-auto">
               <a class="nav-link dropdown-toggle {% if blog %}active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Blog</a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="{{ url_for('blogpost.blog_list') }}">List</a></li>
@@ -32,7 +32,7 @@
               </ul>
             </li>
             {% else %}
-            <li class="nav-item ms-auto"><a class="nav-link {% if blog %}active{% endif %}" href="{{ url_for('main.blog') }}">Blog</a></li>
+            <li class="nav-item ms-auto"><a class="nav-link {% if blog %}active{% endif %}" href="{{ url_for('blogpost.blog_list') }}">Blog</a></li>
             {% endif %}
             <li class="nav-item ms-auto"><a class="nav-link {% if bookmarklet_list %}active{% endif %}" href="{{ url_for('main.bookmarklet_list') }}">Reading List</a></li>
             <li class="nav-item ms-auto"><a class="nav-link {% if about %}active{% endif %}" href="{{ url_for('main.about') }}">About</a></li>

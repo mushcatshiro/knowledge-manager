@@ -4,7 +4,7 @@
 <h1>Blog Posts</h1>
 <ul>
 {% for li in blog_list %}
-    <li><a href="{{ url_for('main.blog_with_title', title=li) }}">{{ li }}</a></li>
+    <li><a href="{{ url_for('blogpost.blog_with_title', title=li) }}">{{ li }}</a></li>
 {% endfor %}
 </ul>
 {% endif %}

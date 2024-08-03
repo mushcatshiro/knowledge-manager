@@ -13,6 +13,18 @@
     >
   </div>
   <div class="form-group" style="margin-top: 1rem;">
+    <label for="update">Is Update?</label>
+    <input
+      type="text"
+      class="form-control"
+      id="update"
+      autocomplete="off"
+      name="update"
+      value="{% if update %}True{% else %}False{% endif %}"
+      readonly
+    >
+  </div>
+  <div class="form-group" style="margin-top: 1rem;">
     <label for="title">Title</label>
     <input
       type="text"

@@ -7,24 +7,14 @@ from flask import (
     request,
     send_from_directory,
 )
-import markdown
 from sqlalchemy import create_engine
 
 from blog import CustomException
 from blog.bookmark import BookmarkModel
 from blog.core import process_request
 from blog.core.crud import CRUDBase
-from blog.blogpost import (
-    BlogPostModel,
-    read_blog_post,
-    read_blog_post_list,
-    blogpost_name_helper,
-    ImageURLlExtension,
-)
 
 main = Blueprint("main", __name__)
-
-md = markdown.Markdown(extensions=["fenced_code", "tables", ImageURLlExtension()])
 
 
 @main.route("/", methods=["GET", "POST"])
@@ -47,62 +37,6 @@ def index():
 @main.route("/about", methods=["GET"])
 def about():
     return render_template("about.html", about=True)
-
-
-@main.route("/blog", methods=["GET"])
-def blog():
-    """
-    **TODO
-    ----
-    - use database instead of os.listdir
-    - deal with space in file name
-    - date of blog
-    - better filter i.e. non .md files
-    """
-    # blog_list = os.listdir(current_app.config["BLOG_PATH"])
-    # output = []
-    # for idx, _ in enumerate(blog_list):
-    #     if blog_list[idx].endswith(".md"):
-    #         output.append(blog_list[idx].replace(".md", ""))
-    # for idx, _ in enumerate(blog_list):
-    #     if blog_list[idx].endswith(".md"):
-    #         output.append(blog_list[idx].replace(".md", ""))
-    instances = read_blog_post_list(
-        BlogPostModel,
-        create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
-        current_app.config["PAGINATION_LIMIT"],
-    )
-    return render_template(
-        "blog.html", blog_list=[x["title"] for x in instances], blog=True
-    )
-
-
-@main.route("/blog/<string:title>", methods=["GET"])
-def blog_with_title(title):
-    # blog_path = os.path.join(current_app.config["BLOG_PATH"], title + ".md")
-    # if not os.path.exists(blog_path):
-    #     content = f"Blog {title} not found!"
-    # else:
-    try:
-        instance = read_blog_post(
-            BlogPostModel,
-            create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
-            title,
-        )
-        blog_path = os.path.join(
-            current_app.config["BLOG_PATH"],
-            blogpost_name_helper(
-                instance["title"], instance["version"], instance["timestamp"]
-            ),
-        )
-        # with open(blog_path, "r", encoding="utf-8") as rf:
-        #     content = rf.read()
-        with open(blog_path, "r", encoding="utf-8") as rf:
-            content = rf.read()
-            content = md.convert(content)
-        return render_template("blog.html", content=content, blog=True)
-    except CustomException as e:
-        return render_template("blog.html", content=e.name, blog=True)
 
 
 @main.route("/bookmarklet-list", methods=["GET"])

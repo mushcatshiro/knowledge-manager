@@ -22,6 +22,7 @@ from blog.blogpost import (
     read_blog_post_list,
     read_blog_post,
     update_blog_post,
+    blogpost_name_helper,
     ImageURLlExtension,
 )
 
@@ -44,7 +45,7 @@ def blog_list():
     )
     return render_template(
         "blog.html",
-        blog_list=blog_list,
+        blog_list=[x["title"] for x in blog_list],
         logged_in=logged_in,
     )
 
@@ -54,13 +55,25 @@ def blog_with_title(title):
     logged_in = False
     if verify_token(session.get("token")):
         logged_in = True
-    instance = read_blog_post(
-        BlogPostModel,
-        create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
-        title,
-        logged_in=logged_in,
-    )
-    return render_template("blog.html", instance=instance, logged_in=logged_in)
+    try:
+        instance = read_blog_post(
+            BlogPostModel,
+            create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
+            title,
+            logged_in=logged_in,
+        )
+        blog_path = os.path.join(
+            current_app.config["BLOG_PATH"],
+            blogpost_name_helper(
+                instance["title"], instance["version"], instance["timestamp"]
+            ),
+        )
+        with open(blog_path, "r", encoding="utf-8") as rf:
+            content = rf.read()
+            content = md.convert(content)
+    except CustomException as e:
+        content = e.name
+    return render_template("blog.html", content=content, blog=True, logged_in=logged_in)
 
 
 @blogpost_blueprint.route("/draft", methods=["GET", "POST"])
@@ -88,11 +101,16 @@ def draft_with_title(title):
         content = request.form["content"]
         title = request.form["title"]
     else:
-        content = read_blog_post(
+        instance = read_blog_post(
             BlogPostModel,
             create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
             title,
         )
+        with open(
+            os.path.join(current_app.config["BLOG_PATH"], instance["blog_post"]),
+            "rb",
+        ) as rf:
+            content = rf.read().decode("utf-8")
     return render_template(
         "draft.html",
         content=content,
@@ -121,7 +139,7 @@ def preview():
 @blogpost_blueprint.route("/save", methods=["POST"])
 @protected
 def save():
-    if request.form["update"]:
+    if request.form["update"] == "True":
         instance = update_blog_post(
             BlogPostModel,
             create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
