@@ -29,9 +29,7 @@ def bookmark_db(session_setup):
     engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
 
-    fake_data = create_fake_data(
-        BookmarkModel, num=int(test_app.config["FAKE_DATA_NUM"])
-    )
+    fake_data = create_fake_data(BookmarkModel, num=40)
 
     with Session(engine) as session:
         # drop to ensure exactly the number of fake data is inserted
@@ -55,9 +53,7 @@ def bookmarks_db(session_setup):
     engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
 
-    fake_data = create_fake_data(
-        BookmarkModel, num=int(test_app.config["FAKE_DATA_LARGE_NUM"])
-    )
+    fake_data = create_fake_data(BookmarkModel, num=80)
 
     with Session(engine) as session:
         session.execute(
@@ -126,9 +122,7 @@ def negotium_db(session_setup):
     engine, test_app = session_setup
     from blog.negotium import NegotiumModel
 
-    fake_data = create_fake_data(
-        NegotiumModel, num=test_app.config["FAKE_DATA_NUM"] // 4, max_int=10
-    )
+    fake_data = create_fake_data(NegotiumModel, num=10, max_int=10)
 
     with Session(engine) as session:
         session.execute(delete(NegotiumModel))

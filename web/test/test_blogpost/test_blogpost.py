@@ -20,7 +20,7 @@ def test_blog_post_name_helper():
 def test_create_blog_post(session_setup, blogpost_db, cleanup_blog, monkeypatch):
     _, test_app = session_setup
     delete_list = cleanup_blog
-    blog_post_name = test_app.config["TEST_BLOG_POST_NAME"]
+    blog_post_name = "testing"
 
     instance = create_blog_post(
         BlogPostModel,
