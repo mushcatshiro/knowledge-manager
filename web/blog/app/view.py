@@ -121,7 +121,7 @@ def bookmarklet_list():
         query=bookmarks_query_string,
     )
     if not instances:
-        raise CustomException(400, "No entry found", "No bookmark not created")
+        raise CustomException(400, "No entry found", "No bookmark created")
     total_length = basecrud.safe_execute(
         operation="custom_query",
         query=total_length_query_string,
