@@ -23,11 +23,12 @@ class BlogPostModel(Base):
 
     def get_editable(self):
         return {
-            "id": {"value": self.id, "disabled": True},
-            "title": {"value": self.title, "disabled": True},
-            "version": {"value": self.version, "disabled": True},
-            "timestamp": {"value": self.timestamp, "disabled": True},
-            "deleted": {"value": self.deleted, "disabled": False},
+            "id": {"value": self.id},
+            "title": {"value": self.title},
+            "version": {"value": self.version},
+            "timestamp": {"value": self.timestamp},
+            "deleted": {"value": self.deleted},
+            "private": {"value": self.private},
         }
 
     def to_json(self, test=False):

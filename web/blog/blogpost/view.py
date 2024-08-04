@@ -105,12 +105,16 @@ def draft_with_title(title):
             BlogPostModel,
             create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
             title,
+            logged_in=True,
         )
-        with open(
-            os.path.join(current_app.config["BLOG_PATH"], instance["blog_post"]),
-            "rb",
-        ) as rf:
-            content = rf.read().decode("utf-8")
+        blog_path = os.path.join(
+            current_app.config["BLOG_PATH"],
+            blogpost_name_helper(
+                instance["title"], instance["version"], instance["timestamp"]
+            ),
+        )
+        with open(blog_path, "r", encoding="utf-8") as rf:
+            content = rf.read()
     return render_template(
         "draft.html",
         content=content,
@@ -147,16 +151,15 @@ def save():
             request.form["title"],
             current_app.config["BLOG_PATH"],
         )
-        return redirect(url_for("blogpost.blog_with_title", title=intance["title"]))
     else:
-        intance = create_blog_post(
+        instance = create_blog_post(
             BlogPostModel,
             create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
             request.form["content"].encode("utf-8"),
             request.form["title"],
             current_app.config["BLOG_PATH"],
         )
-    return redirect(url_for("blogpost.blog_with_title", title=intance["title"]))
+    return redirect(url_for("blogpost.blog_with_title", title=instance["title"]))
 
 
 @blogpost_blueprint.route("/upload", methods=["GET", "POST"])
@@ -186,9 +189,32 @@ def blog_upload():
                     file.read(),
                     file.filename.replace(".md", ""),
                     current_app.config["BLOG_PATH"],
+                    private=True if request.form.get("private") == "1" else False,
                 )
             else:
                 filename = secure_filename(file.filename)
-                file.save(os.path.join(current_app.config["BLOG_PATH"], filename))
+                abs_path = os.path.join(current_app.config["BLOG_PATH"], filename)
+                file.save(abs_path)
+                os.chmod(abs_path, 0o644)
         return redirect(url_for("blogpost.blog_list"))
     return render_template("upload.html", logged_in=True)
+
+
+@blogpost_blueprint.route("/editables", methods=["GET"])
+def blog_model_editables():
+    pass
+
+
+@blogpost_blueprint.route("/edit/<int:idx>", methods=["POST"])
+def blog_model_edit_by_idx(idx):
+    pass
+
+
+@blogpost_blueprint.route("/export", methods=["GET", "POST"])
+@protected
+def blog_export():
+    if request.method == "POST":
+        # start thread to zip files
+        return redirect(url_for("blogpost.blog_list"))
+    # TODO list zip files
+    return render_template("export.html", logged_in=True)
