@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+{% for col, attr in instance.items() %}
+{% if "readonly" in attr %}
+<div class="form-group" style="margin-top: 1rem;">
+    <label for="{{ col }}">{{ col }}</label>
+    <input
+      type="text"
+      class="form-control"
+      autocomplete="off"
+      name="{{ col }}"
+      value="{{ attr['value'] }}"
+      readonly
+    >
+  </div>
+{% elif "checkbox" in attr %}
+<div class="form-check" style="margin-top: 1rem;">
+  <label class="form-check-label" for="flexCheckDefault">{{ col }}</label>
+  <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" name="{{ col }}">
+</div>
+{% else %}
+<div class="form-group" style="margin-top: 1rem;">
+    <label for="{{ col }}">{{ col }}</label>
+    <input
+      type="text"
+      class="form-control"
+      id="{{ col }}"
+      autocomplete="off"
+      name="{{ col }}"
+      value="{{ attr['value'] }}"
+    >
+  </div>
+{% endif %}
+{% endfor %}
+{% endblock %}

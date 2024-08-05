@@ -51,7 +51,7 @@ def create_blog_post(
     return instance
 
 
-def read_blog_post(model, db, blog_post_name: str, logged_in=False):
+def read_blog_post(model, db, blog_post_name: str, logged_in=False, get_editable=False):
     # handle dne and deleted separately
     # handle %20
     # TODO raise if user attempt to read private if not logged in
@@ -63,6 +63,7 @@ def read_blog_post(model, db, blog_post_name: str, logged_in=False):
             "read_blog_post",
             title=blog_post_name,
             logged_in=logged_in,
+            get_editable=get_editable,
         )
     except ValueError:
         raise CustomException(
@@ -95,6 +96,15 @@ def update_blog_post(
     # update blog post file
     with open(os.path.join(storage_path, blog_post_fname), "wb") as wf:
         wf.write(blog_post)
+    return instance
+
+
+def update_blog_post_model(model, db, blog_post_name: str, version: int, private: bool):
+    basecrud = BlogPostCrud(model, db)
+    version = int(version) + 1
+    instance = basecrud.execute(
+        "create_blog_post", title=blog_post_name, version=version, private=private
+    )
     return instance
 
 

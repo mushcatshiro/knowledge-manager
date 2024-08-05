@@ -22,6 +22,7 @@ from blog.blogpost import (
     read_blog_post_list,
     read_blog_post,
     update_blog_post,
+    update_blog_post_model,
     blogpost_name_helper,
     ImageURLlExtension,
 )
@@ -143,6 +144,7 @@ def preview():
 @blogpost_blueprint.route("/save", methods=["POST"])
 @protected
 def save():
+    # TODO handle update of title/filename and (un)private
     if request.form["update"] == "True":
         instance = update_blog_post(
             BlogPostModel,
@@ -200,14 +202,31 @@ def blog_upload():
     return render_template("upload.html", logged_in=True)
 
 
-@blogpost_blueprint.route("/editables", methods=["GET"])
-def blog_model_editables():
-    pass
+@blogpost_blueprint.route("/edit/<string:title>", methods=["GET", "POST"])
+@protected
+def blog_model_edit_by_title(title):
+    raise NotImplementedError("Not much use for BlogPostModel")
+    if request.method == "POST":
+        instance = update_blog_post_model(
+            BlogPostModel,
+            create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
+            blog_post_name=request.form["title"],
+            version=request.form["version"],
+            private=True if request.form.get("private") == "1" else False,
+        )
+        return redirect(url_for("blogpost.blog_list"))
+    instance = read_blog_post(
+        BlogPostModel,
+        create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
+        title,
+        logged_in=True,
+        get_editable=True,
+    )
+    import logging
 
-
-@blogpost_blueprint.route("/edit/<int:idx>", methods=["POST"])
-def blog_model_edit_by_idx(idx):
-    pass
+    logger = logging.getLogger(__name__)
+    logger.debug(instance)
+    return render_template("model_edit.html", instance=instance, logged_in=True)
 
 
 @blogpost_blueprint.route("/export", methods=["GET", "POST"])

@@ -32,7 +32,9 @@ class BlogPostCrud(CRUDBase):
         session.commit()
         return instance.to_json()
 
-    def read_blog_post(self, session, query, title, logged_in=False):
+    def read_blog_post(
+        self, session, query, title, logged_in=False, get_editable=False
+    ):
         instance = (
             session.execute(
                 select(self.model)
@@ -49,6 +51,8 @@ class BlogPostCrud(CRUDBase):
             raise ValueError("Blog post not found")
         if instance.deleted == 1:
             raise FileNotFoundError("Blog post deleted")
+        if get_editable:
+            return instance.get_editable()
 
         return instance.to_json()
 
