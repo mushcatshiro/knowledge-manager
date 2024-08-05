@@ -73,11 +73,11 @@ class BlogPostCrud(CRUDBase):
         )
         return instances
 
-    def update_blog_post(self, session, query, title):
+    def update_blog_post(self, session, query, title, **kwargs):
         # get current version
         instance = self.read_blog_post(session, query, title, logged_in=True)
         instance = self.create_blog_post(
-            session, query, version=instance["version"] + 1, title=title
+            session, query, version=instance["version"] + 1, title=title, **kwargs
         )
         return instance
 
