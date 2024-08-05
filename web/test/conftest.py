@@ -9,6 +9,9 @@ from sqlalchemy.orm import Session
 
 @pytest.fixture(scope="session")
 def session_setup():
+    from blog.utils import set_env_vars
+
+    set_env_vars()
     from blog import Base, create_app
 
     app = create_app("testing")
