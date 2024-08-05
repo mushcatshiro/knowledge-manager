@@ -25,11 +25,12 @@ def session_setup():
 
 
 @pytest.fixture
-def bookmark_db(session_setup):
+def bookmark_db_fixture(session_setup):
     engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
 
-    fake_data = create_fake_data(BookmarkModel, num=40)
+    FAKE_DATA_NUM = 40
+    fake_data = create_fake_data(BookmarkModel, num=FAKE_DATA_NUM)
 
     with Session(engine) as session:
         # drop to ensure exactly the number of fake data is inserted
@@ -41,7 +42,7 @@ def bookmark_db(session_setup):
             fake_data,
         )
         session.commit()
-    yield engine
+    yield engine, FAKE_DATA_NUM
 
     with Session(engine) as session:
         session.execute(delete(BookmarkModel))
@@ -49,11 +50,12 @@ def bookmark_db(session_setup):
 
 
 @pytest.fixture
-def bookmarks_db(session_setup):
+def bookmarks_db_fixture(session_setup):
     engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
 
-    fake_data = create_fake_data(BookmarkModel, num=80)
+    FAKE_DATA_LARGE_NUM = 80
+    fake_data = create_fake_data(BookmarkModel, num=FAKE_DATA_LARGE_NUM)
 
     with Session(engine) as session:
         session.execute(
@@ -61,7 +63,7 @@ def bookmarks_db(session_setup):
             fake_data,
         )
         session.commit()
-    yield engine
+    yield engine, FAKE_DATA_LARGE_NUM
 
     with Session(engine) as session:
         session.execute(delete(BookmarkModel))

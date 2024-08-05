@@ -20,7 +20,7 @@ def test_main_route_blog(session_setup, blogpost_db, monkeypatch):
     assert b"mocked" in response.data
 
 
-def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db):
+def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db_fixture):
     """
     TODO
     ----
@@ -29,7 +29,8 @@ def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db):
       - might need to modify crud.py
     """
     _, test_app = session_setup
-    expected_length = test_app.config["FAKE_DATA_NUM"]
+    _, FAKE_DATA_NUM = bookmark_db_fixture
+    expected_length = FAKE_DATA_NUM
     assert expected_length == test_app.config["PAGINATION_LIMIT"]
 
     client = test_app.test_client()
@@ -50,9 +51,10 @@ def test_main_route_bookmarklet_list_single_page(session_setup, bookmark_db):
     )
 
 
-def test_main_route_bookmarklet_list_multi_page(session_setup, bookmarks_db):
+def test_main_route_bookmarklet_list_multi_page(session_setup, bookmarks_db_fixture):
     _, test_app = session_setup
-    expected_length = test_app.config["FAKE_DATA_LARGE_NUM"]
+    _, FAKE_DATA_LARGE_NUM = bookmarks_db_fixture
+    expected_length = FAKE_DATA_LARGE_NUM
     assert expected_length > test_app.config["PAGINATION_LIMIT"]
 
     client = test_app.test_client()
