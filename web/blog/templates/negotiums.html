@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<h1 style="margin-top: 2rem;">Negotiums</h1>
+<h2>Priority Matrix</h2>
+{% for entry in priority_matrix %}
+<div class="card" style="width: 40%;margin: 2%">
+  <div class="card-body">
+    <h5 class="card-title">{{ entry['priority'] }}</h5>
+    <p class="card-text">{{ entry['cnt'] }}</p>
+  </div>
+</div>
+{% endfor %}
+
+<h2>Calendar View</h2>
+<p style="font-style: italic;">**default to lookahead 30 days</p>
+
+<h2>Root Negotiums</h2>
+{% for root in root_negotiums %}
+<div class="card" style="width: 20%;margin: 2%">
+  <div class="card-body">
+    <h5 class="card-title">{{ root['title'] }}</h5>
+    <p class="card-text">{{ root['content'] }}</p>
+    <a href="{{ url_for('negotium.chain_by_nid', nid=root['id']) }}" class="btn btn-primary">Negotium chain</a>
+  </div>
+</div>
+{% endfor %}
+{% endblock %}

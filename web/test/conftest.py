@@ -127,7 +127,8 @@ def negotium_db(session_setup):
     engine, test_app = session_setup
     from blog.negotium import NegotiumModel
 
-    fake_data = create_fake_data(NegotiumModel, num=10, max_int=10)
+    total = 10
+    fake_data = create_fake_data(NegotiumModel, num=total, max_int=total)
 
     with Session(engine) as session:
         session.execute(delete(NegotiumModel))
@@ -137,7 +138,7 @@ def negotium_db(session_setup):
             fake_data,
         )
         session.commit()
-    yield engine
+    yield engine, total
 
     with Session(engine) as session:
         session.execute(delete(NegotiumModel))

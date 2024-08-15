@@ -6,10 +6,12 @@ from flask import (
     current_app,
     request,
     send_from_directory,
+    session,
 )
 from sqlalchemy import create_engine
 
 from blog import CustomException
+from blog.auth import verify_token
 from blog.bookmark import BookmarkModel
 from blog.core import process_request
 from blog.core.crud import CRUDBase
@@ -28,10 +30,13 @@ def index():
     - alternative to return resp as a string/html string
       - or having multiple templates for different responses
     """
+    logged_in = False
+    if verify_token(session.get("token")):
+        logged_in = True
     if request.method == "POST":
         resp = process_request(request.form["query"])
-        return render_template("main.html", resp=resp)
-    return render_template("main.html")
+        return render_template("main.html", resp=resp, logged_in=logged_in)
+    return render_template("main.html", logged_in=logged_in)
 
 
 @main.route("/about", methods=["GET"])

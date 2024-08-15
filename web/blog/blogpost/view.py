@@ -15,7 +15,6 @@ from sqlalchemy import create_engine
 
 from blog import CustomException
 from blog.auth import verify_token, protected
-from blog.core.crud import CRUDBase
 from blog.blogpost import (
     BlogPostModel,
     create_blog_post,

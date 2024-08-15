@@ -47,6 +47,10 @@ def create_app(config_name):
 
     app.register_blueprint(blogpost_blueprint, url_prefix="/blog")
 
+    from blog.negotium import negotium_blueprint
+
+    app.register_blueprint(negotium_blueprint, url_prefix="/negotium")
+
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)
 

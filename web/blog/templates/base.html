@@ -31,6 +31,13 @@
                 <li><a class="dropdown-item" href="{{ url_for('blogpost.blog_upload') }}">Upload</a></li>
               </ul>
             </li>
+            <li class="nav-item dropdown ms-auto">
+              <a class="nav-link dropdown-toggle {% if negotium %}active{% endif %}" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">Negotium</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('negotium.index') }}">List</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('negotium.create_negotium') }}">Create</a></li>
+              </ul>
+            </li>
             {% else %}
             <li class="nav-item ms-auto"><a class="nav-link {% if blog %}active{% endif %}" href="{{ url_for('blogpost.blog_list') }}">Blog</a></li>
             {% endif %}
