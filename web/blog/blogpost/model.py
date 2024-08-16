@@ -12,8 +12,8 @@ class BlogPostModel(Base):
     title = Column(String, nullable=False)
     version = Column(Integer, nullable=False, default=1)
     timestamp = Column(DateTime(timezone=True), default=func.now())  # datetime.utcnow
-    deleted = Column(Integer, default=0, nullable=False)
-    private = Column(Integer, default=0, nullable=False)
+    deleted = Column(Integer, default=0)
+    private = Column(Integer, default=0)
 
     def __repr__(self) -> str:
         return f"<title {self.title}>"

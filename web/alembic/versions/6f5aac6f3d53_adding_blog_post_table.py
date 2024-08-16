@@ -26,7 +26,7 @@ def upgrade() -> None:
         sa.Column("title", sa.String(), nullable=False),
         sa.Column("version", sa.Integer(), nullable=False),
         sa.Column("timestamp", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("deleted", sa.Integer(), nullable=False),
+        sa.Column("deleted", sa.Integer()),
         sa.PrimaryKeyConstraint("id"),
     )
     # ### end Alembic commands ###
