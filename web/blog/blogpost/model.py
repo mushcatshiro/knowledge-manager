@@ -35,6 +35,8 @@ class BlogPostModel(Base):
         json_data = {
             "title": self.title,
             "version": self.version,
+            "timestamp": self.format_timestamp(),
+            "private": self.private,
         }
         if not test:
             json_data["id"] = self.id

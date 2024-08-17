@@ -82,12 +82,14 @@ def read_blog_post_list(model, db, pagination, logged_in=False):
 
 
 def update_blog_post(
-    model, db, blog_post: bytes, blog_post_name: str, storage_path: str
+    model, db, blog_post: bytes, blog_post_name: str, storage_path: str, private
 ):
     # return instance should help redirect to updated blog post
     # images?
     basecrud = BlogPostCrud(model, db)
-    instance = basecrud.execute("update_blog_post", title=blog_post_name)
+    instance = basecrud.execute(
+        "update_blog_post", title=blog_post_name, private=private
+    )
     blog_post_fname = blogpost_name_helper(
         title=blog_post_name,
         version=instance["version"],

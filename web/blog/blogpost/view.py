@@ -81,22 +81,28 @@ def blog_with_title(title):
 def draft():
     content = ""
     title = ""
+    private = "0"
+    update = False
     if request.method == "POST":
         content = request.form["content"]
         title = request.form["title"]
+        private = request.form["private"]
+        update = True if request.form["update"] == "True" else False
     return render_template(
         "draft.html",
         content=content,
         title=title,
         draft=True,
         logged_in=True,
-        update=False,
+        update=update,
+        private=private,
     )
 
 
 @blogpost_blueprint.route("/draft/<string:title>", methods=["GET", "POST"])
 @protected
 def draft_with_title(title):
+    # TODO consider merging
     if request.method == "POST":
         content = request.form["content"]
         title = request.form["title"]
@@ -122,6 +128,7 @@ def draft_with_title(title):
         draft=True,
         logged_in=True,
         update=True,
+        private=instance["private"],
     )
 
 
@@ -130,13 +137,17 @@ def draft_with_title(title):
 def preview():
     content = request.form["content"]
     title = request.form["title"]
+    private = request.form.get("private", 0)
     converted_content = md.convert(content)
+    update = True if request.form["update"] == "True" else False
     return render_template(
         "preview.html",
         content=content,
         title=title,
         converted_content=converted_content,
         logged_in=True,
+        private=private,
+        update=update,
     )
 
 
@@ -145,12 +156,14 @@ def preview():
 def save():
     # TODO handle update of title/filename and (un)private
     if request.form["update"] == "True":
+        private = request.form.get("private", 0)
         instance = update_blog_post(
             BlogPostModel,
             create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"]),
             request.form["content"].encode("utf-8"),
             request.form["title"],
             current_app.config["BLOG_PATH"],
+            private=private,
         )
     else:
         instance = create_blog_post(
@@ -190,7 +203,7 @@ def blog_upload():
                     file.read(),
                     file.filename.replace(".md", ""),
                     current_app.config["BLOG_PATH"],
-                    private=True if request.form.get("private") == "1" else False,
+                    private=request.form.get("private", 0),
                 )
             else:
                 filename = secure_filename(file.filename)
