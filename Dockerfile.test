@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM python:3.8-slim
 
 WORKDIR /app
 
@@ -10,7 +10,7 @@ RUN apt install nginx -y
 
 RUN python -m pip install --upgrade pip setuptools wheel
 
-RUN pip install poetry && poetry config virtualenvs.in-project true && poetry install --with "test"
+RUN pip install poetry && poetry config virtualenvs.in-project true && poetry install --with "devl"
 
 COPY web web
 
