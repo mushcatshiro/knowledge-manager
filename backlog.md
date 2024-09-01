@@ -33,12 +33,12 @@ priority is ranked based on the `*` symbol.
 - [ ] admin
   - [x] passcode for auth
   - [x] taking quick notes
-  - [ ] calendar and daily management
+  - [x] calendar and daily management
   - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
   - [ ] flask-admin
     - [ ] database model views
     - [ ] static file handling for blog and blog images (upload etc)
-  - [ ] request for bookmarklet js
+  - [x] request for bookmarklet js
 - [ ] site is down update (external)
 - [ ] blog preload function calls
   - [ ] read index to memory
@@ -60,7 +60,7 @@ priority is ranked based on the `*` symbol.
 - [ ] stable diffusion to change image
 - [ ] better db conn (with is not the best option)
   - [x] base conx
-- [ ] versioning documents
+- [x] versioning documents
 - [ ] ORM
   - [x] introduction of ORM
   - [ ] removal of ORM
@@ -90,9 +90,9 @@ priority is ranked based on the `*` symbol.
   - [ ] backup data
 - [x] github build-test for merging
 - [ ] conf test generation
-  - [ ] nginx
+  - [x] nginx
   - [ ] supervisord
-- [ ] python 3.8 appeal
+- [x] python 3.8 appeal
   - [ ] litestar
   - [ ] pre-commit isort
   - [ ] xprocess for redis cache testing
