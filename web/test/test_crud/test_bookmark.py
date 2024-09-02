@@ -1,6 +1,9 @@
 from blog.core.crud import CRUDBase
 from blog.bookmark import BookmarkModel
 from blog.utils import create_fake_data
+from blog import CustomException
+
+import pytest
 
 
 def test_create(session_setup, bookmark_db_fixture):
@@ -82,3 +85,25 @@ def test_custom_query(session_setup, bookmark_db_fixture):
         operation="custom_query", query="select count(*) count from bookmark"
     )
     assert instance[0]["count"] >= FAKE_DATA_NUM
+
+
+def test_crudbase_paginate(session_setup, bookmark_db_fixture, capsys):
+    """
+    TODO not able to test the exception
+    """
+    _, test_app = session_setup
+    bookmark_db, FAKE_DATA_NUM = bookmark_db_fixture
+    basecrud = CRUDBase(BookmarkModel, bookmark_db)
+    rv = basecrud.safe_execute("paginate", limit=3, offset=0)
+    assert rv["total"] == FAKE_DATA_NUM
+    assert len(rv["instances"]) == 3
+
+    class FakeModel:
+        content: str
+
+    basecrud = CRUDBase(FakeModel, bookmark_db)
+    rv = basecrud.safe_execute("paginate", limit=3, offset=0)
+    assert rv is None
+    # assert str(e) == "404 Not supported model FakeModel does not support pagination"
+    # print(capsys.readouterr().err)
+    # assert "404 Not supported model FakeModel does not support pagination" in capsys.readouterr().err
