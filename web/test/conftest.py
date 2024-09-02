@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 def session_setup():
     from blog.utils import set_env_var
 
-    set_env_var()
+    set_env_var(".env.test")
     from blog import Base, create_app
 
     app = create_app("testing")
@@ -22,6 +22,8 @@ def session_setup():
     Base.metadata.create_all(engine)
 
     yield (engine, app)
+
+    engine.dispose()
 
     os.remove(app.config["SQLALCHEMY_DATABASE_NAME"])
     ctx.pop()
