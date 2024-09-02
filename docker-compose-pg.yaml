@@ -10,5 +10,5 @@ services:
       - db:dbserver
   db:
     image: "postgres:15.3"
-    env_file: .env-postgres
+    env_file: .env.postgres
     restart: always

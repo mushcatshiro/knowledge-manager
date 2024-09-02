@@ -1,0 +1,21 @@
+FROM python:3.8-slim
+
+WORKDIR /app
+
+COPY poetry.lock pyproject.toml ./
+
+RUN apt update && apt install python3-dev gcc libc-dev libffi-dev -y
+
+RUN python -m pip install --upgrade pip setuptools wheel
+
+RUN pip install poetry && poetry config virtualenvs.in-project true && poetry install --with "devl"
+
+COPY web web
+
+COPY conf conf
+
+COPY run.sh ./
+
+EXPOSE 80
+
+ENTRYPOINT [ "./run.sh" ]

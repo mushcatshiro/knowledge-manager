@@ -41,6 +41,24 @@ def deploy(env: str, alembic_cfg) -> None:
     command.upgrade(config, "head")
 
 
+@click.command()
+@click.option("--mode", default="default")
+@click.option("--output-name", default=".env")
+def create_config(mode, output_name):
+    cfg_template = "{name}={value}\n"
+    cfg_out = ""
+    from config import config
+
+    cfg = config[mode]
+    for key in dir(cfg):
+        if key.isupper():
+            val = click.prompt(f"Please enter value for {key}", type=str)
+            cfg_out += cfg_template.format(name=key, value=val)
+    with open(output_name, "w") as f:
+        f.write(cfg_out)
+
+
 if __name__ == "__main__":
-    test()
+    # test()
     # deploy()
+    create_config()
