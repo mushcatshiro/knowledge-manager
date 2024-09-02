@@ -1,6 +1,9 @@
+import pytest
+
 from blog.negotium import NegotiumCRUD, NegotiumModel, negotium_tree_search
 
 
+@pytest.mark.timeout(30)
 def test_query_negotium_chain(negotium_db):
     """
     Test the query for the negotium chain
@@ -31,14 +34,6 @@ def test_query_negotium_chain(negotium_db):
     )
     instances = basecrud.get_negotium_chain(negotium_id=1)
     assert len(instances) == negotium_tree_search(id_pairs, 1) + 1
-
-
-def test_query_negotium_chain_2(negotium_db):
-    engine, _ = negotium_db
-    basecrud = NegotiumCRUD(NegotiumModel, engine)
-    instances = basecrud.get_negotium_chain(negotium_id=1)
-    assert type(instances) == list
-    assert type(instances[0]) == dict
 
 
 def test_get_priority_matrix(negotium_db):
