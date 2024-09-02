@@ -29,6 +29,12 @@ export FLASK_APP=app.py
 flask run -p 8080
 ```
 
+getting auth token
+
+```bash
+curl -X POST 'localhost:8080/auth/authenticate' -d '{"auth": "test"}' -H 'Content-Type: application/json
+```
+
 test
 
 ```bash
