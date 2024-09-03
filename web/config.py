@@ -22,13 +22,14 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY")
     SESSION_COOKIE_PATH = os.environ.get("SESSION_COOKIE_PATH")
     SESSION_COOKIE_SECURE = True
-    PERMANENT_SESSION_LIFETIME = int(os.environ.get("PERMANENT_SESSION_LIFETIME"))
+    PERMANENT_SESSION_LIFETIME = int(os.getenv("PERMANENT_SESSION_LIFETIME", 0))
     SESSION_TYPE = os.environ.get("SESSION_TYPE")
-    SESSION_FILE_THRESHOLD = int(os.environ.get("SESSION_FILE_THRESHOLD"))
+    SESSION_FILE_THRESHOLD = int(os.getenv("SESSION_FILE_THRESHOLD", 0))
     SITE_BASE_URL = os.environ.get("SITE_BASE_URL")
-    PAGINATION_LIMIT = int(os.environ.get("PAGINATION_LIMIT"))
-    MAX_CONTENT_LENGTH = int(os.environ.get("MAX_CONTENT_LENGTH")) * 1000 * 1000
-    ALLOWED_EXTENSIONS = os.environ.get("ALLOWED_EXTENSIONS").split(",")
+    PAGINATION_LIMIT = int(os.getenv("PAGINATION_LIMIT", 0))
+    MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", 0)) * 1000 * 1000
+    ALLOWED_EXTENSIONS = os.getenv("ALLOWED_EXTENSIONS", "").split(",")
+    IMAGE_URL_PREFIX = os.environ.get("IMAGE_URL_PREFIX")  # not directly used
 
     @staticmethod
     def init_app(app):
@@ -37,9 +38,6 @@ class Config:
 
 class TestingConfig(Config):
     TESTING = True
-    FAKE_DATA_NUM = int(os.environ.get("FAKE_DATA_NUM"))
-    FAKE_DATA_LARGE_NUM = int(os.environ.get("FAKE_DATA_LARGE_NUM"))
-    TEST_BLOG_POST_NAME = os.environ.get("TEST_BLOG_POST_NAME")
     SQLALCHEMY_DATABASE_NAME = os.environ.get("SQLALCHEMY_DATABASE_NAME")
 
     @classmethod

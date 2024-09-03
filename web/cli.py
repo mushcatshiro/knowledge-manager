@@ -1,38 +1,64 @@
-# import os
+import click
 
-# import click
-
-# from utils import set_env_var
-# from utils.database import initialize_cloud, push
-# from search import *
-
-
-# @click.command()
-# @click.option("--fname", default=".env")
-# @click.option("--opt")
-# def main(fname, opt):
-#     set_env_var(fname)
-
-#     if opt == "initialize_cloud":
-#         initialize_cloud(os.environ.get("DSN"))
-#     elif opt == "push":
-#         push(os.environ.get("ABSDIR"), os.environ.get("DSN"))
-#     elif opt == "test":
-#         pass
-#     # elif opt == "query":
-#     #     ret = query(
-#     #         os.environ.get("DSN")
-#     #     )
-#     #     click.echo(ret)
-#     else:
-#         click.echo(f"opt: {opt} does not exists")
-
-
-# if __name__ == "__main__":
-#     main()
-
-from blog.bookmark.summary import summarize_annual_bookmarklet
 from blog.utils.envvars import set_env_var
 
-set_env_var()
-summarize_annual_bookmarklet()
+
+"""
+TODO
+implement `migrate` and `revision` commands for alembic
+test
+"""
+
+
+@click.command()
+@click.option("--env", default=".env", help="Name of the environment file.")
+def test(env: str) -> None:
+    """Initialize the environment variables."""
+    set_env_var(env)
+
+    import pytest
+    import sys
+
+    print("Running tests...")
+    sys.exit(pytest.main(["-qq"]))
+
+
+@click.command()
+@click.option("--env", default=".env", help="Name of the environment file.")
+@click.option(
+    "--alembic-cfg",
+    default="alembic.ini",
+    help="Name of the alembic configuration file.",
+)
+def deploy(env: str, alembic_cfg) -> None:
+    """Initialize the environment variables."""
+    set_env_var(env)
+
+    from alembic import command
+    from alembic.config import Config
+
+    config = Config(alembic_cfg)
+    command.upgrade(config, "head")
+
+
+@click.command()
+@click.option("--mode", default="default")
+@click.option("--output-name", default=".env")
+def create_config(mode, output_name):
+    cfg_template = "{name}={value}\n"
+    cfg_out = ""
+    from config import config
+
+    cfg = config[mode]
+    for key in dir(cfg):
+        if key.isupper():
+            val = click.prompt(f"Please enter value for {key}", type=str)
+            cfg_out += cfg_template.format(name=key, value=val)
+    with open(output_name, "w") as f:
+        f.write(cfg_out)
+
+
+if __name__ == "__main__":
+    # test()
+    # deploy()
+    create_config()

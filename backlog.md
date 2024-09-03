@@ -3,8 +3,6 @@
 priority is ranked based on the `*` symbol.
 
 ## web
-- [ ] accomplishing everything in single file and less than 200 lines (not important)
-- [ ] minimize use of packages
 - [x] bookmarklet (.py)
   - [x] remove argparse import in bookmarklet.py
   - [x] move to web
@@ -15,7 +13,6 @@ priority is ranked based on the `*` symbol.
   - [ ] search fn
   - [x] pagination
   - [ ] visualization
-    - [ ] generated image TTL
 - [ ] implement indexing function for search
 - [ ] health monitoring *
   - [x] application
@@ -24,16 +21,11 @@ priority is ranked based on the `*` symbol.
     - [ ] timestamp checkpoint
     - [ ] cron ping internal api
 - [ ] web blog feature list
-  - [ ] html render
-    - [ ] target under 1ms
-    - [ ] custom markdown-esque renderer *
-    - [ ] remove dependency `highlight.js` with codehilite/pygments
-    - [ ] blog post image
   - [ ] simple search box
     - [x] ~~search hints~~
     - [ ] imitate CLI `executable *args **kwargs`
   - [ ] ~~search result in modal~~
-  - [ ] peek function (imagine further searching up on blog that describes sql optimization on how to optimize on psql after getting the return link)
+  - [ ] peek function
     - [ ] NLP for question answering
   - [ ] updating desc for better search results
   - [ ] comments
@@ -41,25 +33,18 @@ priority is ranked based on the `*` symbol.
 - [ ] admin
   - [x] passcode for auth
   - [x] taking quick notes
-    - [ ] converting notes to proper documents
-  - [ ] ~~on demand siyuan notes instance~~
-  - [ ] calendar and daily management
+  - [x] calendar and daily management
   - [ ] [timeline](https://www.amcharts.com/demos-v4/timeline-v4/)
   - [ ] flask-admin
     - [ ] database model views
     - [ ] static file handling for blog and blog images (upload etc)
-  - [ ] request for bookmarklet js
-- [ ] main-admin integration (main pages editable when logged in)
+  - [x] request for bookmarklet js
 - [ ] site is down update (external)
-- [ ] minimize javascript
-  - [ ] code highlight
-  - [ ] bootstrap
 - [ ] blog preload function calls
   - [ ] read index to memory
   - [ ] check static folder
 - [ ] implement cache
   - [ ] preload to cache
-  - [ ] update cache if content changes
   - [ ] in-memory
   - [ ] redis
 - [ ] ANKI adoption
@@ -71,12 +56,11 @@ priority is ranked based on the `*` symbol.
   - [ ] extend documents into TODOs
   - [ ] extend into blog post
   - [ ] auto ref link between documents
-- [ ] visualization of the documents
 - [x] file structure one blueprint per functionality (search, recommend and etc)
 - [ ] stable diffusion to change image
 - [ ] better db conn (with is not the best option)
   - [x] base conx
-- [ ] versioning documents
+- [x] versioning documents
 - [ ] ORM
   - [x] introduction of ORM
   - [ ] removal of ORM
@@ -96,9 +80,8 @@ priority is ranked based on the `*` symbol.
   - [x] pytest-coverage
   - [x] integration test (test_app)
 - [x] containerize
-  - [ ] docker-compose
+  - [x] docker-compose
 - [x] poetry
-- [ ] OCR support?
 - [x] logging
 - [x] pre-commit
 - [ ] ansible playbook
@@ -107,16 +90,13 @@ priority is ranked based on the `*` symbol.
   - [ ] backup data
 - [x] github build-test for merging
 - [ ] conf test generation
-  - [ ] nginx
+  - [x] nginx
   - [ ] supervisord
-- [ ] python 3.8 appeal
+- [x] python 3.8 appeal
   - [ ] litestar
   - [ ] pre-commit isort
   - [ ] xprocess for redis cache testing
 - [ ] 100 list
-- [x] read-only post
-- [ ] protected static folder
-- [ ] database table for posts (abs path etc)
 - [ ] progressive web application
 
 ## bug reports

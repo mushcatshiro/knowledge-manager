@@ -27,7 +27,7 @@ def bookmark():
         payload.pop("token")
         basecrud = CRUDBase(BookmarkModel, db)
         instance: BookmarkModel = basecrud.safe_execute(operation="create", **payload)
-        if not instance:
+        if instance is None:
             raise CustomException(400, "Bookmark not created", "Bad request")
         return redirect(instance["url"])
     raise CustomException(401, "Invalid token", "Unauthorized access")

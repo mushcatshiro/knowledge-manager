@@ -12,8 +12,8 @@ class BlogPostModel(Base):
     title = Column(String, nullable=False)
     version = Column(Integer, nullable=False, default=1)
     timestamp = Column(DateTime(timezone=True), default=func.now())  # datetime.utcnow
-    deleted = Column(Integer, default=0, nullable=False)
-    # private = Column(Integer, default=0, nullable=False) # TODO support private
+    deleted = Column(Integer, default=0)
+    private = Column(Integer, default=0)
 
     def __repr__(self) -> str:
         return f"<title {self.title}>"
@@ -23,17 +23,20 @@ class BlogPostModel(Base):
 
     def get_editable(self):
         return {
-            "id": {"value": self.id, "disabled": True},
-            "title": {"value": self.title, "disabled": True},
-            "version": {"value": self.version, "disabled": True},
-            "timestamp": {"value": self.timestamp, "disabled": True},
-            "deleted": {"value": self.deleted, "disabled": False},
+            "id": {"value": self.id, "readonly": True},
+            "title": {"value": self.title},
+            "version": {"value": self.version, "readonly": True},
+            "timestamp": {"value": self.timestamp},
+            "deleted": {"value": self.deleted},
+            "private": {"value": self.private, "checkbox": True},
         }
 
     def to_json(self, test=False):
         json_data = {
             "title": self.title,
             "version": self.version,
+            "timestamp": self.format_timestamp(),
+            "private": self.private,
         }
         if not test:
             json_data["id"] = self.id

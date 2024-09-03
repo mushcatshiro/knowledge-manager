@@ -9,6 +9,9 @@ from sqlalchemy.orm import Session
 
 @pytest.fixture(scope="session")
 def session_setup():
+    from blog.utils import set_env_var
+
+    set_env_var(".env.test")
     from blog import Base, create_app
 
     app = create_app("testing")
@@ -20,18 +23,19 @@ def session_setup():
 
     yield (engine, app)
 
+    engine.dispose()
+
     os.remove(app.config["SQLALCHEMY_DATABASE_NAME"])
     ctx.pop()
 
 
 @pytest.fixture
-def bookmark_db(session_setup):
+def bookmark_db_fixture(session_setup):
     engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
 
-    fake_data = create_fake_data(
-        BookmarkModel, num=int(test_app.config["FAKE_DATA_NUM"])
-    )
+    FAKE_DATA_NUM = 40
+    fake_data = create_fake_data(BookmarkModel, num=FAKE_DATA_NUM)
 
     with Session(engine) as session:
         # drop to ensure exactly the number of fake data is inserted
@@ -43,7 +47,7 @@ def bookmark_db(session_setup):
             fake_data,
         )
         session.commit()
-    yield engine
+    yield engine, FAKE_DATA_NUM
 
     with Session(engine) as session:
         session.execute(delete(BookmarkModel))
@@ -51,13 +55,12 @@ def bookmark_db(session_setup):
 
 
 @pytest.fixture
-def bookmarks_db(session_setup):
+def bookmarks_db_fixture(session_setup):
     engine, test_app = session_setup
     from blog.bookmark import BookmarkModel
 
-    fake_data = create_fake_data(
-        BookmarkModel, num=int(test_app.config["FAKE_DATA_LARGE_NUM"])
-    )
+    FAKE_DATA_LARGE_NUM = 80
+    fake_data = create_fake_data(BookmarkModel, num=FAKE_DATA_LARGE_NUM)
 
     with Session(engine) as session:
         session.execute(
@@ -65,7 +68,7 @@ def bookmarks_db(session_setup):
             fake_data,
         )
         session.commit()
-    yield engine
+    yield engine, FAKE_DATA_LARGE_NUM
 
     with Session(engine) as session:
         session.execute(delete(BookmarkModel))
@@ -126,9 +129,8 @@ def negotium_db(session_setup):
     engine, test_app = session_setup
     from blog.negotium import NegotiumModel
 
-    fake_data = create_fake_data(
-        NegotiumModel, num=test_app.config["FAKE_DATA_NUM"] // 4, max_int=10
-    )
+    total = 10
+    fake_data = create_fake_data(NegotiumModel, num=total, max_int=total)
 
     with Session(engine) as session:
         session.execute(delete(NegotiumModel))
@@ -138,7 +140,7 @@ def negotium_db(session_setup):
             fake_data,
         )
         session.commit()
-    yield engine
+    yield engine, total
 
     with Session(engine) as session:
         session.execute(delete(NegotiumModel))

@@ -1,1 +1,8 @@
-.env
+**/.pytest_cache
+**/.coveragerc
+**/gha/
+**/flask_session/
+__pycache__/
+**/*.log*
+**/*.db
+**/.env*

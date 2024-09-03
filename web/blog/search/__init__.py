@@ -1,5 +1,4 @@
-from .index import IndexObj
-from .search import Search, SearchServer
+from .index import Index, IndexExt, Document
 
 
-__all__ = ["IndexObj", "Search", "SearchServer"]
+__all__ = ["Index", "IndexExt", "Document"]

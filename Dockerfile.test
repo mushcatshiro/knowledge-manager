@@ -1,15 +1,23 @@
-FROM python:3.7-alpine
+FROM python:3.8-slim
 
 WORKDIR /app
 
-COPY poetry.lock pyproject.toml /app/
+COPY poetry.lock pyproject.toml ./
 
-RUN apk update && apk add python3-dev gcc libc-dev libffi-dev
+RUN apt update && apt install python3-dev gcc libc-dev libffi-dev -y
 
-RUN pip install poetry && poetry config virtualenvs.in-project true && poetry install --with "test"
+RUN apt install nginx -y
 
-COPY web/ /app/web
+RUN python -m pip install --upgrade pip setuptools wheel
 
-COPY test.sh /app
+RUN pip install poetry && poetry config virtualenvs.in-project true && poetry install --with "devl"
 
-ENTRYPOINT [ "./test.sh" ]
+COPY web web
+
+COPY conf conf
+
+COPY run.sh ./
+
+EXPOSE 80
+
+ENTRYPOINT [ "./run.sh" ]

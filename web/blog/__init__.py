@@ -9,8 +9,6 @@ from flask_cors import CORS
 from flask_session import Session
 from sqlalchemy.orm import declarative_base
 
-from blog.utils import set_env_var
-
 
 cors = CORS()
 sess = Session()
@@ -19,11 +17,6 @@ Base = declarative_base()
 
 
 def create_app(config_name):
-    if config_name in ("default", "testing"):
-        set_env_var(".env.test")
-    else:
-        set_env_var()
-
     from config import config
 
     app: Flask = Flask(__name__)
@@ -49,6 +42,14 @@ def create_app(config_name):
     from blog.admin import admin
 
     app.register_blueprint(admin, url_prefix="/admin")
+
+    from blog.blogpost import blogpost_blueprint
+
+    app.register_blueprint(blogpost_blueprint, url_prefix="/blog")
+
+    from blog.negotium import negotium_blueprint
+
+    app.register_blueprint(negotium_blueprint, url_prefix="/negotium")
 
     app.register_error_handler(Exception, error_handler)
     register_request_handlers(app, config_name)

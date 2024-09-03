@@ -1,14 +1,21 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="POST" style="margin-top: 5rem">
+<form method="POST" style="margin-top: 5rem" enctype="multipart/form-data">
 <div class="form-group">
-  <label for="filename">Title</label>
-  <input type="text" class="form-control" id="filename" name="filename" autocomplete="off">
+  <label for="filename">Description</label>
+  <input type="text" class="form-control" id="description" name="description" autocomplete="off">
 </div>
-<div class="form-group">
+<div class="form-check" style="margin-top: 1rem;">
+  <input class="form-check-input" type="checkbox" value="1" id="flexCheckDefault" name="private">
+  <label class="form-check-label" for="flexCheckDefault">Private</label>
+</div>
+<div class="form-group" style="margin-top: 1rem;">
   <label for="formFileMultiple" class="form-label">File(s)</label>
-  <input class="form-control" type="file" id="formFileMultiple" multiple>
+  <input class="form-control" type="file" name="file" id="formFileMultiple" multiple>
+</div>
+<div style="margin-top: 1rem;">
+  <button class="btn btn-success" type="submit" formaction="{{ url_for('blogpost.blog_upload') }}">Upload</button>
 </div>
 </form>
 {% endblock %}

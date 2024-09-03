@@ -1,7 +1,7 @@
 import os
 
 
-def set_env_var(fname=".env") -> None:
+def set_env_var(fname: str = ".env") -> None:
     if not os.path.exists(fname):
         raise FileNotFoundError
     with open(fname, "r", encoding="utf-8") as rf:

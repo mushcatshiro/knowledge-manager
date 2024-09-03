@@ -1,7 +1,7 @@
 import logging
 
 from sqlalchemy.orm import Session
-from sqlalchemy import text, select
+from sqlalchemy import text, select, func
 
 from blog import CustomException
 
@@ -144,6 +144,28 @@ class CRUDBase:
         session.delete(instance)
         session.commit()
         return instance.to_json()
+
+    def paginate(self, session: Session, query, **kwargs):
+        if not hasattr(self.model, "id") or not hasattr(self.model, "timestamp"):
+            raise CustomException(
+                404, "Not supported", f"model {self.model} does not support pagination"
+            )
+        stmt = func.count(self.model.id)
+        total_cnt = session.execute(select(stmt)).scalar()
+        instances = (
+            session.execute(
+                select(self.model)
+                .order_by(self.model.timestamp.desc())
+                .limit(kwargs["limit"])
+                .offset(kwargs["offset"])
+            )
+            .mappings()
+            .all()
+        )
+        return {
+            "instances": instances,
+            "total": total_cnt,
+        }
 
     def custom_query(self, session: Session, query: str, **kwargs):
         """

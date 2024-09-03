@@ -4,7 +4,13 @@
 <h1>Blog Posts</h1>
 <ul>
 {% for li in blog_list %}
-    <li><a href="{{ url_for('main.blog_with_title', title=li) }}">{{ li }}</a></li>
+    <li>
+      <a href="{{ url_for('blogpost.blog_with_title', title=li) }}">{{ li }}</a>
+      {% if logged_in %}
+      <a href="{{ url_for('blogpost.draft_with_title', title=li) }}">edit as draft</a>
+      <a href="{{ url_for('blogpost.blog_model_edit_by_title', title=li) }}">edit model</a>
+      {% endif %}
+    </li>
 {% endfor %}
 </ul>
 {% endif %}
