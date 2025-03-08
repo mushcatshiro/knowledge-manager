@@ -38,6 +38,9 @@ class NegotiumModel(Base):
         }
         if not test:
             json_data["timestamp"] = self.format_timestamp()
+        else:
+            del json_data["is_overdue"], json_data["id"]
+            json_data["priority"] = REVERSED_PRIORITY.get(self.priority, 3)
 
         return json_data
 
@@ -48,3 +51,5 @@ PRIORITY = {
     1: "High",
     0: "Urgent",
 }
+
+REVERSED_PRIORITY = {v: k for k, v in PRIORITY.items()}

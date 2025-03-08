@@ -7,12 +7,11 @@ from flask import (
     redirect,
     url_for,
     current_app,
-    session,
 )
 from sqlalchemy import create_engine
 from blog import CustomException
-from blog.auth import verify_token, protected
-from blog.negotium import NegotiumCRUD, NegotiumModel
+from blog.auth import protected
+from blog.negotium import NegotiumCRUD, NegotiumModel, REVERSED_PRIORITY
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,15 +22,14 @@ negotium_blueprint = Blueprint("negotium", __name__)
 @negotium_blueprint.route("/", methods=["GET"])
 @protected
 def index():
-    # TODO provides priority matrix + calendar view + root negotiums?
-    # TODO consider separating `root_negotiums` out
     # TODO efficient search
+    priority = request.args.get("priority", default=0, type=int)
     db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     priority_matrix = NegotiumCRUD(NegotiumModel, db).safe_execute(
         "get_priority_matrix"
     )
     root_negotiums = NegotiumCRUD(NegotiumModel, db).safe_execute(
-        "get_all_root_negotiums"
+        "get_root_negotiums_by_priority", priority=priority, mode="pending"
     )
     db.dispose()
 
@@ -40,6 +38,7 @@ def index():
         logged_in=True,
         priority_matrix=priority_matrix,
         root_negotiums=root_negotiums,
+        priority=REVERSED_PRIORITY[priority],
     )
 
 
@@ -55,6 +54,21 @@ def chain_by_nid(nid):
         "negchain.html",
         logged_in=True,
         negotiums=negotiums,
+    )
+
+
+@negotium_blueprint.route("/chain2/<int:nid>", methods=["GET"])
+@protected
+def chain_by_nid_v2(nid):
+    # TODO provides a chain of negotiums from the given nid
+    # TODO consider also provide parents
+    db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
+    negotiums = NegotiumCRUD(NegotiumModel, db).get_negotium_chain_v2(nid)
+    logger.debug(f"negotiums: {negotiums}")
+    return render_template(
+        "negchain2.html",
+        logged_in=True,
+        tree_data=negotiums,
     )
 
 
@@ -126,6 +140,10 @@ def edit_negotium(nid):
 @negotium_blueprint.route("/create/<int:pid>", methods=["GET", "POST"])
 @protected
 def create_negotium(pid=None):
+    """
+    TODO handle updating root i.e. existing chain's root is now a child of new
+    neg
+    """
     if request.method == "POST":
         fields = {
             "title": request.form.get("title"),
@@ -140,7 +158,7 @@ def create_negotium(pid=None):
             value = request.form.get(key)
             if key == "deadline" and value:
                 try:
-                    value = dt.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+                    value = dt.datetime.strptime(value, "%Y-%m-%d")
                 except ValueError:
                     raise CustomException(400, "Invalid deadline format", "Bad request")
                 else:

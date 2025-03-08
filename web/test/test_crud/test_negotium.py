@@ -38,16 +38,12 @@ def test_query_negotium_chain(negotium_db):
 
 def test_get_priority_matrix(negotium_db):
     """
-    Test the query for the priority matrix
-
-    TODO
-    ----
-    - remove hardcoded values
+    priority matrix always returns all 4 priority levels
     """
     engine, total = negotium_db
     basecrud = NegotiumCRUD(NegotiumModel, engine)
     priority_matrix = basecrud.safe_execute("get_priority_matrix")
-    assert len(priority_matrix) <= 3
+    assert len(priority_matrix) == 4
 
 
 def test_get_all_root_negotiums(negotium_db):
@@ -62,4 +58,25 @@ def test_get_all_root_negotiums(negotium_db):
     basecrud = NegotiumCRUD(NegotiumModel, engine)
     basecrud.safe_execute("update", id=1, pid=None)
     root_negotiums = basecrud.safe_execute("get_all_root_negotiums")
+    assert len(root_negotiums) == 1
+
+
+def test_get_root_negotiums_by_priority(negotium_db):
+    """
+    Test the query for the root negotiums
+    """
+    engine, total = negotium_db
+    basecrud = NegotiumCRUD(NegotiumModel, engine)
+    for i in range(total):
+        basecrud.safe_execute("update", id=i + 1, pid=None, priority=3)
+    basecrud.safe_execute("update", id=1, pid=None, priority=1, completed=False)
+    basecrud.safe_execute("update", id=2, pid=None, priority=1, completed=True)
+    basecrud.safe_execute("update", id=3, pid=None, priority=1, completed=True)
+    root_negotiums = basecrud.safe_execute(
+        "get_root_negotiums_by_priority", priority=1, mode="all"
+    )
+    assert len(root_negotiums) == 3
+    root_negotiums = basecrud.safe_execute(
+        "get_root_negotiums_by_priority", priority=1, mode="pending"
+    )
     assert len(root_negotiums) == 1
