@@ -9,9 +9,12 @@ from flask_cors import CORS
 from flask_session import Session
 from sqlalchemy.orm import declarative_base
 
+from blog.search import IndexExt
+
 
 cors = CORS()
 sess = Session()
+index_ext = IndexExt()
 
 Base = declarative_base()
 
@@ -26,6 +29,7 @@ def create_app(config_name):
     # TODO update CORS allowable resource
     cors.init_app(app)
     sess.init_app(app)
+    index_ext.init_app(app)
 
     from blog.app import main
 
