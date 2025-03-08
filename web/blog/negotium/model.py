@@ -1,6 +1,7 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy.sql import func
 
 from blog import Base
 
@@ -10,7 +11,7 @@ class NegotiumModel(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     content = Column(String, nullable=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)  # TODO deprecated, to update
+    timestamp = Column(DateTime, default=func.now())
     deadline = Column(DateTime, nullable=True)
     priority = Column(Integer, nullable=True)
     completed = Column(Boolean, default=False)
@@ -30,7 +31,7 @@ class NegotiumModel(Base):
             "timestamp": self.timestamp,
             "pid": self.pid,
             "is_overdue": False
-            if self.deadline is None or self.deadline < datetime.utcnow()
+            if self.deadline is None or self.deadline < datetime.now(timezone.utc)
             else True,
             "completed": self.completed,
             "priority": PRIORITY.get(self.priority, "Low"),

@@ -1,6 +1,6 @@
 from blog.core.crud import CRUDBase
 from sqlalchemy import select, func
-from datetime import datetime
+from datetime import datetime, timezone
 from blog.negotium.model import PRIORITY
 
 
@@ -40,7 +40,7 @@ class NegotiumCRUD(CRUDBase):
                 False
                 if instance["deadline"] is None
                 or not datetime.strptime(instance["deadline"], "%Y-%m-%d %H:%M:%S.%f")
-                < datetime.utcnow()
+                < datetime.now(timezone.utc)
                 else True
             )
             tmp["priority"] = PRIORITY.get(instance["priority"], "Low")
