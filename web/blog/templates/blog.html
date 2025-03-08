@@ -15,6 +15,8 @@
 </ul>
 {% endif %}
 {% if content %}
+ <button onclick="reset_image_size()">Show image original size</button>
+<button onclick="fit_image_size()">Fit image size</button>
 <div style="-webkit-user-select: none; -webkit-touch-callout: none; -moz-user-select: none; -ms-user-select: none; user-select: none;">
 {{ content|safe }}
 </div>
@@ -38,5 +40,23 @@
     elm[i].style.padding = "0.5em 10px"
     elm[i].style.borderLeft= "10px solid #ccc"
   }
+</script>
+<script>
+function reset_image_size() {
+  var elm = document.getElementsByTagName('img')
+  var length = elm.length;
+  for (var i = 0; i < length; i++) {
+    elm[i].style.maxWidth = "100%";
+    elm[i].style.height = "auto";
+  };
+}
+function fit_image_size(){
+  var elm = document.getElementsByTagName('img')
+  var length = elm.length;
+  for (var i = 0; i < length; i++) {
+    elm[i].style.maxWidth = "100%";
+    elm[i].style.height = "100%";
+  };
+}
 </script>
 {% endblock %}
