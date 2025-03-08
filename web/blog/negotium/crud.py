@@ -115,10 +115,16 @@ class NegotiumCRUD(CRUDBase):
         tracker = [False] * 4
         for instance in instances:
             tracker[instance[0]] = True
-            rv.append({"priority": PRIORITY.get(instance[0]), "cnt": instance[1]})
+            rv.append(
+                {
+                    "priority_name": PRIORITY.get(instance[0]),
+                    "cnt": instance[1],
+                    "priority": instance[0],
+                }
+            )
         for i, val in enumerate(tracker):
             if not val:
-                rv.append({"priority": PRIORITY.get(i), "cnt": 0})
+                rv.append({"priority_name": PRIORITY.get(i), "cnt": 0, "priority": i})
         return rv
 
 
