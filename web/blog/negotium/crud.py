@@ -39,8 +39,8 @@ class NegotiumCRUD(CRUDBase):
             tmp["is_overdue"] = (
                 False
                 if instance["deadline"] is None
-                or not datetime.strptime(instance["deadline"], "%Y-%m-%d %H:%M:%S.%f")
-                < datetime.now(timezone.utc)
+                or not datetime.strptime(instance["deadline"], "%Y-%m-%d")
+                < datetime.now()
                 else True
             )
             tmp["priority"] = PRIORITY.get(instance["priority"], "Low")
