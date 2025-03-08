@@ -2,19 +2,22 @@
 {% block content %}
 <h1 style="margin-top: 2rem;">Negotiums</h1>
 <h2>Priority Table</h2>
-<table>
-  <tr>
-    <th>Priority</th>
-    <th>Negotium Count(s)</th>
-  </tr>
-  {% for entry in priority_matrix %}
-  <tr>
-    <td>{{ entry['priority'] }}</td>
-    <td><a href="{{ url_for('negotium.index', priority=) }}">{{ entry['cnt'] }}</a></td>
-  </tr>
-  {% endfor %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">Priority</th>
+      <th scope="col">Negotium Count(s)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for entry in priority_matrix %}
+    <tr>
+      <th scope="row">{{ entry['priority_name'] }}</td>
+      <td><a href="{{ url_for('negotium.index', priority=entry['priority']) }}">{{ entry['cnt'] }}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
-</div>
 
 <h2>Root Negotiums of {{ priority }} Priority</h2>
 <div class="row">
@@ -22,7 +25,7 @@
 <div class="card">
   <div class="card-body">
     <h5 class="card-title">{{ root['title'] }}</h5>
-    <p class="card-text">{{ root['content'] }}</p>
+    <p class="card-text" style="text-overflow: ellipsis;">{{ root['content'] }}</p>
     <a href="{{ url_for('negotium.chain_by_nid', nid=root['id']) }}" class="btn btn-primary text-nowrap">Go to chain</a>
   </div>
 </div>

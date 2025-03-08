@@ -11,7 +11,7 @@ from flask import (
 from sqlalchemy import create_engine
 from blog import CustomException
 from blog.auth import protected
-from blog.negotium import NegotiumCRUD, NegotiumModel, REVERSED_PRIORITY
+from blog.negotium import NegotiumCRUD, NegotiumModel, PRIORITY
 import logging
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ def index():
         logged_in=True,
         priority_matrix=priority_matrix,
         root_negotiums=root_negotiums,
-        priority=REVERSED_PRIORITY[priority],
+        priority=PRIORITY[priority],
     )
 
 
