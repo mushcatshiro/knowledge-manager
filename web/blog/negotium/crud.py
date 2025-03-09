@@ -1,12 +1,44 @@
 from blog.core.crud import CRUDBase
 from sqlalchemy import select, func
-from datetime import datetime, timezone
+from datetime import datetime
 from blog.negotium.model import PRIORITY
+from flask import Request
+import datetime as dt
+from blog import CustomException
 
 
 class NegotiumCRUD(CRUDBase):
     def __init__(self, model, engine):
         super().__init__(model, engine)
+
+    @staticmethod
+    def process_request_form(request: Request) -> dict:
+        """
+        Process the request form and return a dict
+        """
+        fields = {
+            "title": request.form.get("title"),
+            "content": request.form.get("content"),
+        }
+        for key in [
+            "deadline",
+            "priority",
+            "completed",
+            "pid",
+        ]:
+            value = request.form.get(key)
+            if key == "deadline" and value:
+                try:
+                    value = dt.datetime.strptime(value, "%Y-%m-%d")
+                except ValueError:
+                    raise CustomException(400, "Invalid deadline format", "Bad request")
+                else:
+                    fields[key] = value
+            elif key == "completed":
+                fields[key] = True if value == 1 else False
+            elif value:
+                fields[key] = value
+        return fields
 
     def _get_negotium_chain(self, negotium_id: int):
         """

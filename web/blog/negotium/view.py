@@ -89,35 +89,12 @@ def negotium_by_nid(nid):
     )
 
 
-@negotium_blueprint.route("/edit/<int:nid>", methods=["GET", "POST"])
+@negotium_blueprint.route("/update/<int:nid>", methods=["GET", "POST"])
 @protected
-def edit_negotium(nid):
+def update_negotium(nid):
     db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     if request.method == "POST":
-        fields = {
-            "title": request.form.get("title"),
-            "content": request.form.get("content"),
-        }
-        for key in [
-            "deadline",
-            "priority",
-            "completed",
-            "pid",
-        ]:  # TODO consider adding to `NegotiumModel`
-            value = request.form.get(key)
-            if key == "deadline" and value:
-                try:
-                    value = dt.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    raise CustomException(400, "Invalid deadline format", "Bad request")
-                else:
-                    fields[key] = value
-            elif key == "completed":
-                logger.debug(f"value: {value}")
-                fields[key] = True if value == "1" else False
-            elif value:
-                fields[key] = value
-        logger.debug(f"fields: {fields}")
+        fields = NegotiumCRUD.process_request_form(request)
         instance = NegotiumCRUD(NegotiumModel, db).safe_execute(
             "update", id=nid, **fields
         )
@@ -145,44 +122,14 @@ def create_negotium(pid=None):
     neg
     """
     if request.method == "POST":
-        fields = {
-            "title": request.form.get("title"),
-            "content": request.form.get("content"),
-        }
-        for key in [
-            "deadline",
-            "priority",
-            "completed",
-            "pid",
-        ]:  # TODO consider adding to `NegotiumModel`
-            value = request.form.get(key)
-            if key == "deadline" and value:
-                try:
-                    value = dt.datetime.strptime(value, "%Y-%m-%d")
-                except ValueError:
-                    raise CustomException(400, "Invalid deadline format", "Bad request")
-                else:
-                    fields[key] = value
-            elif key == "completed":
-                fields[key] = True if value == 1 else False
-            elif value:
-                fields[key] = value
+        fields = NegotiumCRUD.process_request_form(request)
         db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
         instance = NegotiumCRUD(NegotiumModel, db).safe_execute("create", **fields)
         if instance is None:
             raise CustomException(400, "Negotium not created", "Bad request")
         return redirect(url_for("negotium.index"))
     # TODO consider adding to `NegotiumModel`
-    instance = {
-        "id": "",
-        "title": "",
-        "content": "",
-        "timestamp": "",
-        "deadline": "",
-        "priority": "",
-        "completed": False,
-        "pid": "" if pid is None else pid,
-    }
+    instance = NegotiumModel.get_empty_instance(pid)
     return render_template(
         "negentry.html",
         logged_in=True,

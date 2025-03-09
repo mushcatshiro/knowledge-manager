@@ -44,6 +44,19 @@ class NegotiumModel(Base):
 
         return json_data
 
+    @staticmethod
+    def get_empty_instance(pid=None):
+        return {
+            "id": "",
+            "title": "",
+            "content": "",
+            "timestamp": "",
+            "deadline": "",
+            "priority": "",
+            "completed": False,
+            "pid": "" if pid is None else pid,
+        }
+
 
 PRIORITY = {
     3: "Low",
