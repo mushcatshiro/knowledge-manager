@@ -16,6 +16,7 @@ COPY conf conf
 
 COPY run.sh ./
 
-EXPOSE 80
+EXPOSE 5000
 
 ENTRYPOINT [ "./run.sh" ]
+CMD ["plain"]
