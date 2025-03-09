@@ -43,8 +43,9 @@ priority is ranked based on the `*` symbol.
 - [ ] blog preload function calls
   - [ ] read index to memory
   - [ ] check static folder
-- [ ] implement cache
   - [ ] preload to cache
+  - [ ] gunicorn `--preload`
+- [ ] implement cache
   - [ ] in-memory
   - [ ] redis
 - [ ] ANKI adoption
@@ -91,6 +92,7 @@ priority is ranked based on the `*` symbol.
 - [x] github build-test for merging
 - [ ] conf test generation
   - [x] nginx
+  - [ ] non-nginx option
   - [ ] supervisord
 - [x] python 3.8 appeal
   - [ ] litestar
