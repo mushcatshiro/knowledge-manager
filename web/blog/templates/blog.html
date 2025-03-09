@@ -21,7 +21,7 @@
 {% endif %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/base16/material-palenight.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js""></script>
 <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <script>
   hljs.highlightAll();
@@ -30,8 +30,8 @@
   for (var i = 0; i < length; i++) {
     elm[i].className = elm[i].className + " table";
   };
-  var elm = document.getElementsByTagName("blockquote");
-  var length = bqs.length;
+  var bqs = document.getElementsByTagName("blockquote");
+  var length = elm.length;
   for (var i = 0; i < length; i++) {
     elm[i].style.background = "#f9f9f9"
     elm[i].style.margin = "1.5em 10px"
