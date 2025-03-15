@@ -42,8 +42,12 @@ def test_get_priority_matrix(negotium_db):
     """
     engine, total = negotium_db
     basecrud = NegotiumCRUD(NegotiumModel, engine)
-    priority_matrix = basecrud.safe_execute("get_priority_matrix")
+    priority_matrix = basecrud.safe_execute("get_priority_matrix", all=False)
     assert len(priority_matrix) == 4
+
+    priority_matrix = basecrud.safe_execute("get_priority_matrix", all=True)
+    assert len(priority_matrix) == 4
+    assert sum([i["cnt"] for i in priority_matrix]) == total
 
 
 def test_get_all_root_negotiums(negotium_db):

@@ -133,30 +133,30 @@ class NegotiumCRUD(CRUDBase):
         )
         return [instance.to_json() for instance in instances]
 
-    def get_priority_matrix(self, session, query, **kwargs):
+    def get_priority_matrix(self, session, query, all, **kwargs):
         """
         Get the priority matrix, ensure always return all priority levels
         """
-        del kwargs, query
-        instances = session.execute(
-            select(self.model.priority, func.count().label("cnt")).group_by(
-                self.model.priority
-            )
-        ).all()
-        rv = []
-        tracker = [False] * 4
+        del query
+        if all:
+            instances = session.execute(
+                select(self.model.priority, func.count().label("cnt")).group_by(
+                    self.model.priority
+                )
+            ).all()
+        else:
+            instances = session.execute(
+                select(self.model.priority, func.count().label("cnt"))
+                .where(self.model.pid.is_(None))
+                .group_by(self.model.priority)
+            ).all()
+        # TODO test
+        rv = [
+            {"priority_name": PRIORITY.get(p), "cnt": 0, "priority": p}
+            for p in PRIORITY
+        ]
         for instance in instances:
-            tracker[instance[0]] = True
-            rv.append(
-                {
-                    "priority_name": PRIORITY.get(instance[0]),
-                    "cnt": instance[1],
-                    "priority": instance[0],
-                }
-            )
-        for i, val in enumerate(tracker):
-            if not val:
-                rv.append({"priority_name": PRIORITY.get(i), "cnt": 0, "priority": i})
+            rv[instance[0]]["cnt"] = instance[1]
         return rv
 
 

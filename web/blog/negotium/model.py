@@ -58,11 +58,21 @@ class NegotiumModel(Base):
         }
 
 
+class NegBlogLinkerModel:
+    # TODO to inherit from Base
+    __tablename__ = "negotium_blog_linker"
+    blog_id = Column(Integer, nullable=False)
+    negotium_id = Column(Integer, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<NegBlogLinker {self.id}>"
+
+
 PRIORITY = {
-    3: "Low",
-    2: "Medium",
-    1: "High",
     0: "Urgent",
+    1: "High",
+    2: "Medium",
+    3: "Low",
 }
 
 REVERSED_PRIORITY = {v: k for k, v in PRIORITY.items()}
