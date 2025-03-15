@@ -76,6 +76,7 @@ def read_blog_post(model, db, blog_post_name: str, logged_in=False, get_editable
 
 
 def read_blog_post_list(model, db, pagination, logged_in=False):
+    # TODO pagination
     basecrud = BlogPostCrud(model, db)
     instance = basecrud.execute("read_blog_post_list", logged_in=logged_in)
     return instance

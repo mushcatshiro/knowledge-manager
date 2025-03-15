@@ -34,7 +34,7 @@ class BlogPostCrud(CRUDBase):
 
     def read_blog_post(
         self, session, query, title, logged_in=False, get_editable=False
-    ):
+    ) -> dict:
         instance = (
             session.execute(
                 select(self.model)

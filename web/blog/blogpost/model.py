@@ -31,7 +31,7 @@ class BlogPostModel(Base):
             "private": {"value": self.private, "checkbox": True},
         }
 
-    def to_json(self, test=False):
+    def to_json(self, test=False) -> dict:
         json_data = {
             "title": self.title,
             "version": self.version,

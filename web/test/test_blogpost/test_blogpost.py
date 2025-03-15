@@ -1,5 +1,6 @@
 import os
 
+from blog import CustomException
 from blog.blogpost import (
     BlogPostModel,
     create_blog_post,
@@ -10,11 +11,23 @@ from blog.blogpost import (
     blogpost_name_helper,
 )
 
+import pytest
+
 
 def test_blog_post_name_helper():
     # handling special char
     # handling empty string
-    pass
+    assert (
+        blogpost_name_helper("test", 1, "2021-01-01 00:00:00")
+        == "test-1-2021-01-01 00-00-00.md"
+    )
+    assert (
+        blogpost_name_helper("test test", 1, "2021-01-01 00:00:00")
+        == "test-test-1-2021-01-01 00-00-00.md"
+    )
+
+    with pytest.raises(ValueError):
+        blogpost_name_helper("", 1, "2021-01-01 00:00:00")
 
 
 def test_create_blog_post(session_setup, blogpost_db, cleanup_blog, monkeypatch):
@@ -68,21 +81,59 @@ def test_create_blog_post(session_setup, blogpost_db, cleanup_blog, monkeypatch)
 
 def test_read_blog_post(blogpost_db):
     # test get specific blog post -> not tested, wrapper for crud
+    instance = read_blog_post(
+        BlogPostModel,
+        blogpost_db,
+        "test title 1",
+    )
+    assert instance["id"] == 1
     # test get non existing blog post -> not tested, wrapper for crud
+    with pytest.raises(CustomException) as e:
+        read_blog_post(
+            BlogPostModel,
+            blogpost_db,
+            "test title 2",
+        )
+    assert e.value.code == 404
+    assert e.value.description == "Not found"
 
     # test get specific blog post version, behind auth for api
-    pass
+    instance = read_blog_post(
+        BlogPostModel,
+        blogpost_db,
+        "test title 0",
+    )
+    assert instance["id"] == 5
+
+    # test get deleted blog post
+    with pytest.raises(CustomException) as e:
+        read_blog_post(
+            BlogPostModel,
+            blogpost_db,
+            "test title -1",
+        )
+    assert e.value.code == 410
+    assert e.value.description == "Gone"
+
+    # TODO test for private
 
 
-def test_read_blog_post_list():
+def test_read_blog_post_list(blogpost_db):
     # test get list of blog post -> not tested, wrapper for crud
+    instances = read_blog_post_list(
+        BlogPostModel,
+        blogpost_db,
+        pagination=-1,
+    )
+    assert len(instances) == 2
+
     # test get list of blog post with pagination
-    pass
 
 
 def test_delete_blog_post():
     # test delete existing blog post -> not tested, wrapper for crud
     # test delete non existing blog post -> not tested, wrapper for crud
+    # TODO how to ensure db idempotency for random test sequence
     pass
 
 
