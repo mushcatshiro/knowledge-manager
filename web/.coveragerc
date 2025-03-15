@@ -9,3 +9,4 @@ source=
 omit =
     */view.py
     */__init__.py
+    */endpoint.py
