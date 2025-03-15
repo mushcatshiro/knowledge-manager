@@ -1,5 +1,5 @@
 from .crud import NegotiumCRUD, negotium_tree_search
-from .model import NegotiumModel
+from .model import NegotiumModel, NegBlogLinkerModel, PRIORITY, REVERSED_PRIORITY
 from .view import negotium_blueprint
 
 
@@ -8,4 +8,7 @@ __all__ = [
     "NegotiumCRUD",
     "negotium_tree_search",
     "negotium_blueprint",
+    "PRIORITY",
+    "REVERSED_PRIORITY",
+    "NegBlogLinkerModel",
 ]

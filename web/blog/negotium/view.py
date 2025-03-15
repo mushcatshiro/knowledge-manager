@@ -7,12 +7,11 @@ from flask import (
     redirect,
     url_for,
     current_app,
-    session,
 )
 from sqlalchemy import create_engine
 from blog import CustomException
-from blog.auth import verify_token, protected
-from blog.negotium import NegotiumCRUD, NegotiumModel
+from blog.auth import protected
+from blog.negotium import NegotiumCRUD, NegotiumModel, NegBlogLinkerModel, PRIORITY
 import logging
 
 logger = logging.getLogger(__name__)
@@ -23,15 +22,15 @@ negotium_blueprint = Blueprint("negotium", __name__)
 @negotium_blueprint.route("/", methods=["GET"])
 @protected
 def index():
-    # TODO provides priority matrix + calendar view + root negotiums?
-    # TODO consider separating `root_negotiums` out
     # TODO efficient search
+    priority = request.args.get("priority", default=0, type=int)
+    all = request.args.get("all", default=False, type=bool)
     db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     priority_matrix = NegotiumCRUD(NegotiumModel, db).safe_execute(
-        "get_priority_matrix"
+        "get_priority_matrix", all=all
     )
     root_negotiums = NegotiumCRUD(NegotiumModel, db).safe_execute(
-        "get_all_root_negotiums"
+        "get_root_negotiums_by_priority", priority=priority, mode="pending"
     )
     db.dispose()
 
@@ -40,6 +39,7 @@ def index():
         logged_in=True,
         priority_matrix=priority_matrix,
         root_negotiums=root_negotiums,
+        priority=PRIORITY[priority],
     )
 
 
@@ -55,6 +55,22 @@ def chain_by_nid(nid):
         "negchain.html",
         logged_in=True,
         negotiums=negotiums,
+        nid=nid,
+    )
+
+
+@negotium_blueprint.route("/vizchain/<int:nid>", methods=["GET"])
+@protected
+def viz_chain_by_nid(nid):
+    # TODO provides a chain of negotiums from the given nid
+    # TODO consider also provide parents
+    db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
+    negotiums = NegotiumCRUD(NegotiumModel, db).get_negotium_chain_v2(nid)
+    logger.debug(f"negotiums: {negotiums}")
+    return render_template(
+        "negchain2.html",
+        logged_in=True,
+        tree_data=negotiums,
     )
 
 
@@ -75,35 +91,12 @@ def negotium_by_nid(nid):
     )
 
 
-@negotium_blueprint.route("/edit/<int:nid>", methods=["GET", "POST"])
+@negotium_blueprint.route("/update/<int:nid>", methods=["GET", "POST"])
 @protected
-def edit_negotium(nid):
+def update_negotium(nid):
     db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
     if request.method == "POST":
-        fields = {
-            "title": request.form.get("title"),
-            "content": request.form.get("content"),
-        }
-        for key in [
-            "deadline",
-            "priority",
-            "completed",
-            "pid",
-        ]:  # TODO consider adding to `NegotiumModel`
-            value = request.form.get(key)
-            if key == "deadline" and value:
-                try:
-                    value = dt.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    raise CustomException(400, "Invalid deadline format", "Bad request")
-                else:
-                    fields[key] = value
-            elif key == "completed":
-                logger.debug(f"value: {value}")
-                fields[key] = True if value == "1" else False
-            elif value:
-                fields[key] = value
-        logger.debug(f"fields: {fields}")
+        fields = NegotiumCRUD.process_request_form(request)
         instance = NegotiumCRUD(NegotiumModel, db).safe_execute(
             "update", id=nid, **fields
         )
@@ -126,45 +119,19 @@ def edit_negotium(nid):
 @negotium_blueprint.route("/create/<int:pid>", methods=["GET", "POST"])
 @protected
 def create_negotium(pid=None):
+    """
+    TODO handle updating root i.e. existing chain's root is now a child of new
+    neg
+    """
     if request.method == "POST":
-        fields = {
-            "title": request.form.get("title"),
-            "content": request.form.get("content"),
-        }
-        for key in [
-            "deadline",
-            "priority",
-            "completed",
-            "pid",
-        ]:  # TODO consider adding to `NegotiumModel`
-            value = request.form.get(key)
-            if key == "deadline" and value:
-                try:
-                    value = dt.datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    raise CustomException(400, "Invalid deadline format", "Bad request")
-                else:
-                    fields[key] = value
-            elif key == "completed":
-                fields[key] = True if value == 1 else False
-            elif value:
-                fields[key] = value
+        fields = NegotiumCRUD.process_request_form(request)
         db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
         instance = NegotiumCRUD(NegotiumModel, db).safe_execute("create", **fields)
         if instance is None:
             raise CustomException(400, "Negotium not created", "Bad request")
         return redirect(url_for("negotium.index"))
     # TODO consider adding to `NegotiumModel`
-    instance = {
-        "id": "",
-        "title": "",
-        "content": "",
-        "timestamp": "",
-        "deadline": "",
-        "priority": "",
-        "completed": False,
-        "pid": "" if pid is None else pid,
-    }
+    instance = NegotiumModel.get_empty_instance(pid)
     return render_template(
         "negentry.html",
         logged_in=True,
@@ -172,4 +139,24 @@ def create_negotium(pid=None):
         can_submit=True,
         pid=pid,
         instance=instance,
+    )
+
+
+@negotium_blueprint.route("/link/<int:nid>", methods=["GET", "POST"])
+@protected
+def link_negotium(nid):
+    if request.method == "POST":
+        nid = int(request.form["nid"])
+        blog_id = int(request.form["blog_id"])
+        db = create_engine(current_app.config["SQLALCHEMY_DATABASE_URI"])
+        instance = NegBlogLinkerModel(blog_id=blog_id, negotium_id=nid)
+        if instance is None:
+            raise CustomException(400, "Negotium not created", "Bad request")
+        return redirect(url_for("negotium.index"))
+    return render_template(
+        "neglinking.html",
+        logged_in=True,
+        form_type="Link Negotium",
+        can_submit=True,
+        nid=nid,
     )

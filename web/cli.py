@@ -19,7 +19,7 @@ def test(env: str) -> None:
     import pytest
     import sys
 
-    print("Running tests...")
+    click.echo("Running tests...")
     sys.exit(pytest.main(["-qq"]))
 
 

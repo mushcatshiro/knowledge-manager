@@ -48,6 +48,10 @@ pytest
 # show coverage
 pytest --cov=blog/app/ --cov-report html test/test_app/test_view.py
 pytest -v --cov --cov-config=.coveragerc --cov-report html test/test_integration/
+
+playwright codegen --browser firefox
+set PWDEBUG=0 && python -m pytest --base-url http://127.0.0.1:5000 --browser-channel chrome test_view
+set PWDEBUG=1 && python -m pytest --base-url http://127.0.0.1:8080 --browser-channel chrome
 ```
 
 deployment

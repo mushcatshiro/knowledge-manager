@@ -30,6 +30,7 @@ class Config:
     MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", 0)) * 1000 * 1000
     ALLOWED_EXTENSIONS = os.getenv("ALLOWED_EXTENSIONS", "").split(",")
     IMAGE_URL_PREFIX = os.environ.get("IMAGE_URL_PREFIX")  # not directly used
+    EXPIRE_AFTER_SECS = int(os.getenv("EXPIRE_AFTER_SECS", 60 * 30))
 
     @staticmethod
     def init_app(app):

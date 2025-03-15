@@ -2,13 +2,45 @@ from blog.core.crud import CRUDBase
 from sqlalchemy import select, func
 from datetime import datetime
 from blog.negotium.model import PRIORITY
+from flask import Request
+import datetime as dt
+from blog import CustomException
 
 
 class NegotiumCRUD(CRUDBase):
     def __init__(self, model, engine):
         super().__init__(model, engine)
 
-    def get_negotium_chain(self, negotium_id: int):
+    @staticmethod
+    def process_request_form(request: Request) -> dict:
+        """
+        Process the request form and return a dict
+        """
+        fields = {
+            "title": request.form.get("title"),
+            "content": request.form.get("content"),
+        }
+        for key in [
+            "deadline",
+            "priority",
+            "completed",
+            "pid",
+        ]:
+            value = request.form.get(key)
+            if key == "deadline" and value:
+                try:
+                    value = dt.datetime.strptime(value, "%Y-%m-%d")
+                except ValueError:
+                    raise CustomException(400, "Invalid deadline format", "Bad request")
+                else:
+                    fields[key] = value
+            elif key == "completed":
+                fields[key] = True if value == 1 else False
+            elif value:
+                fields[key] = value
+        return fields
+
+    def _get_negotium_chain(self, negotium_id: int):
         """
         Get all negotiums in a chain top down from the given negotium id
         """
@@ -27,6 +59,10 @@ class NegotiumCRUD(CRUDBase):
             "custom_query",
             query=stmt,
         )
+        return instances
+
+    def get_negotium_chain(self, negotium_id: int):
+        instances = self._get_negotium_chain(negotium_id)
         resp = []
         for instance in instances:
             tmp = {}
@@ -39,13 +75,36 @@ class NegotiumCRUD(CRUDBase):
             tmp["is_overdue"] = (
                 False
                 if instance["deadline"] is None
-                or not datetime.strptime(instance["deadline"], "%Y-%m-%d %H:%M:%S.%f")
-                < datetime.utcnow()
+                or not datetime.strptime(instance["deadline"], "%Y-%m-%d")
+                < datetime.now()
                 else True
             )
             tmp["priority"] = PRIORITY.get(instance["priority"], "Low")
             resp.append(tmp)
         return resp
+
+    def get_negotium_chain_v2(self, negotium_id: int):
+        instances = self._get_negotium_chain(negotium_id)
+        nodes = {
+            instance["id"]: {
+                "name": instance["title"],
+                "subname": "",
+                "fill": "blue",
+                "children": [],
+            }
+            for instance in instances
+        }
+        # Initialize the root node
+        root = None
+
+        # Build the tree structure
+        for instance in instances:
+            node_id, parent_id = instance["id"], instance["pid"]
+            if parent_id is None:
+                root = nodes[node_id]
+            else:
+                nodes[parent_id]["children"].append(nodes[node_id])
+        return root
 
     def get_all_root_negotiums(self, session, query, **kwargs):
         """
@@ -59,17 +118,46 @@ class NegotiumCRUD(CRUDBase):
         )
         return [instance.to_json() for instance in instances]
 
-    def get_priority_matrix(self, session, query, **kwargs):
-        """
-        Get the priority matrix
-        """
-        del kwargs, query
-        instances = session.execute(
-            select(self.model.priority, func.count().label("cnt")).group_by(
-                self.model.priority
+    def get_root_negotiums_by_priority(self, session, query, priority, mode, **kwargs):
+        del query, kwargs
+        if mode == "pending":
+            condition = (
+                self.model.pid.is_(None),
+                self.model.priority == priority,
+                self.model.completed == False,
             )
-        ).all()
-        return [{"priority": instance[0], "cnt": instance[1]} for instance in instances]
+        else:
+            condition = (self.model.pid.is_(None), self.model.priority == priority)
+        instances = (
+            session.execute(select(self.model).where(*condition)).scalars().all()
+        )
+        return [instance.to_json() for instance in instances]
+
+    def get_priority_matrix(self, session, query, all, **kwargs):
+        """
+        Get the priority matrix, ensure always return all priority levels
+        """
+        del query
+        if all:
+            instances = session.execute(
+                select(self.model.priority, func.count().label("cnt")).group_by(
+                    self.model.priority
+                )
+            ).all()
+        else:
+            instances = session.execute(
+                select(self.model.priority, func.count().label("cnt"))
+                .where(self.model.pid.is_(None))
+                .group_by(self.model.priority)
+            ).all()
+        # TODO test
+        rv = [
+            {"priority_name": PRIORITY.get(p), "cnt": 0, "priority": p}
+            for p in PRIORITY
+        ]
+        for instance in instances:
+            rv[instance[0]]["cnt"] = instance[1]
+        return rv
 
 
 def negotium_tree_search(id_pairs, target_id):

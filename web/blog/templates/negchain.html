@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="row">
+<div style="margin: 2rem 0rem;"><h1>NegChain of ID {{ nid }}</h1><a>convert to viz</a></div>
 {% for neg in negotiums %}
 <div
     class="card {% if neg['completed'] %}text-white bg-success{% elif neg['is_overdue'] %}text-white bg-danger{% endif %} col-xl-3 col-lg-4 col-md-6 col-sm-12"
+    style="margin: 0rem 0rem 0.5rem 0rem;"
 >
   <div class="card-body">
     <h5 class="card-title">{{ neg['title'] }}</h5>
     <p class="card-text">{{ neg['content'] }}</p>
     <p class="card-text"><small class="text-muted">Created: {{ neg['timestamp'] }}</small></p>
-    <a href="{{ url_for('negotium.edit_negotium', nid=neg['id']) }}" class="btn btn-primary">Edit</a>
+    <a href="{{ url_for('negotium.update_negotium', nid=neg['id']) }}" class="btn btn-primary">Edit</a>
   </div>
 </div>
 {% endfor %}
-</div>
 {% endblock %}

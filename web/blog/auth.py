@@ -35,7 +35,7 @@ def authenticate():
         encoded_jwt = jwt.encode(
             {
                 "auth": current_app.config["AUTH"],
-                # "exp": current_app.config["EXPIRE_AFTER_SECS"],
+                "exp": current_app.config["EXPIRE_AFTER_SECS"],
                 # "path": current_app.config["BLOG_PAT"]
             },
             current_app.config["SECRET_KEY"],
