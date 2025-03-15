@@ -25,10 +25,10 @@
   <div class="form-group" style="margin-top: 1rem;">
     <label for="priority">Priority</label>
     <select class="form-select" name="priority" id="priority">
-      <option value=0 selected="selected">0</option>
-      <option value=1>1</option>
-      <option value=2>2</option>
-      <option value=3>3</option>
+      <option value=0 selected="selected">Urgent</option>
+      <option value=1>High</option>
+      <option value=2>Medium</option>
+      <option value=3>Low</option>
     </select>
   </div>
   <div class="form-group" style="margin-top: 1rem;">
@@ -46,14 +46,14 @@
   {% if can_submit %}
   <div style="margin-top: 1rem;">
     {% if "Edit" in form_type %}
-    <button class="btn btn-success" type="submit" formaction="{{ url_for('negotium.edit_negotium', nid=instance['id']) }}">Submit</button>
+    <button class="btn btn-success" type="submit" formaction="{{ url_for('negotium.update_negotium', nid=instance['id']) }}">Submit</button>
     {% else %}
     <button class="btn btn-success" type="submit" formaction="{{ url_for('negotium.create_negotium') }}">Submit</button>
     {% endif %}
   </div>
   {% else %}
   <div style="margin-top: 1rem;">
-    <button class="btn btn-secondary" type="submit" formaction="{{ url_for('negotium.edit_negotium', nid=instance['id']) }}">Edit</button>
+    <button class="btn btn-secondary" type="submit" formaction="{{ url_for('negotium.update_negotium', nid=instance['id']) }}">Edit</button>
     <button class="btn btn-secondary" type="submit" formaction="{{ url_for('negotium.create_negotium', pid=instance['id']) }}">Create Child Negotium</button>
   </div>
   {% endif %}
